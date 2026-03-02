@@ -1,0 +1,6 @@
+@LanguageDuel.WebApi_HostAddress = http://localhost:5092
+
+GET {{LanguageDuel.WebApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

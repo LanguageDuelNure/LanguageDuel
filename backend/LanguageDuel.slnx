@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="LanguageDuel.Application/LanguageDuel.Application.csproj" Id="15c56bc7-17bb-42d9-95c6-357930f2ec9e" />
+  <Project Path="LanguageDuel.Domain/LanguageDuel.Domain.csproj" Id="abd210ae-3a78-492d-81d4-1f6d7c4e5225" />
+  <Project Path="LanguageDuel.Infrastructure/LanguageDuel.Infrastructure.csproj" Id="37bf2611-db59-4aed-86f7-714644c9df6c" />
+  <Project Path="LanguageDuel.WebApi/LanguageDuel.WebApi.csproj" Id="174fe8d4-208b-4154-9f9e-5f7daf285d0b" />
+</Solution>
