@@ -40,5 +40,8 @@ public enum ErrorKey
     IncorrectLoginOrPassword,
 
     [EnumMember(Value = "INVALID_STRING_LENGTH")]
-    InvalidStringLength
+    InvalidStringLength,
+
+    [EnumMember(Value = "DO_NOT_MATCH")]
+    DoNotMatch
 }

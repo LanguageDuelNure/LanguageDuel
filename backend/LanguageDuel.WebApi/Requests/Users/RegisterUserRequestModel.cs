@@ -1,25 +1,24 @@
-﻿using System.ComponentModel.DataAnnotations;
-using LanguageDuel.WebApi.ValidationAttributes;
+﻿using LanguageDuel.WebApi.ValidationAttributes;
 
 namespace LanguageDuel.WebApi.Requests.Users;
 
 public class RegisterUserRequestModel
 {
-    [Required]
-    [EmailAddress]
+    [RequiredWithCode]
+    [EmailAddressWithCode]
     [StringLengthWithCode(254, MinimumLength = 5)]
     public string Email { get; set; } = string.Empty;
 
-    [Required]
+    [RequiredWithCode]
     [StringLengthWithCode(128, MinimumLength = 8)]
-    [RegularExpression("^(?=.*[a-z])(?=.*[A-Z]).*$", ErrorMessage = "Password must have at least one lowercase and one upperrcase letter")]
+    [StrongPasswordWithCode]
     public string Password { get; set; } = string.Empty;
 
-    [Required]
-    [Compare(nameof(Password))]
+    [RequiredWithCode]
+    [CompareWithCode(nameof(Password))]
     public string ConfirmPassword { get; set; } = string.Empty;
 
-    [Required]
+    [RequiredWithCode]
     [StringLengthWithCode(32, MinimumLength = 3)]
     public string Name { get; set; } = string.Empty;
 }
