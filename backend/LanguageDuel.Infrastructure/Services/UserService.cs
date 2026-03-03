@@ -84,6 +84,22 @@ public class UserService(UserManager<ApplicationUser> userManager, SignInManager
 
         var user = getUserResult.Value;
 
+        if (user.EmailConfirmed)
+        {
+            return new Result<ConfirmEmailResultDto>
+            {
+                Errors =
+                    [
+                        new Error
+                        {
+                            Message = "Email already confirmed",
+                            Field = "Email",
+                            Key = ErrorKey.AlreadyConfirmed,
+                        }
+                    ]
+            };
+        }
+
         string code = GenerateVerificationCode();
         user.VerificationCode = code;
         _ = await _userManager.UpdateAsync(user);
