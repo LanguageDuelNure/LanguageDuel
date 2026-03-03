@@ -206,7 +206,7 @@ public class UserService(UserManager<ApplicationUser> userManager, SignInManager
                 UserId = user.Id,
                 EmailConfirmed = emailConfirmed,
                 Role = role,
-                JwtToken = _jwtTokenService.GenerateToken(user.Id, role)
+                JwtToken = emailConfirmed ? _jwtTokenService.GenerateToken(user.Id, role) : null
             }
         };
     }
