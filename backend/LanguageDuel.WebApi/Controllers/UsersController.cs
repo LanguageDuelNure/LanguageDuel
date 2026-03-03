@@ -16,9 +16,10 @@ public class UsersController(IUserService userService, IMapper mapper) : BaseCon
 
     /// <remarks>
     /// Error keys:
-    /// - INVALID_STRING_LENGTH (with min and max parameters)
+    /// - INVALID_STRING_LENGTH (with Min and Max parameters)
     /// - ALREADY_EXISTS
-    /// - INCORRECT (for incorrect email or not strong password)
+    /// - INCORRECT (for incorrect email or not strong password (with MinNumberOfUppercaseCharacters and MaxNumberOfUppercaseCharacters))
+    /// - DoNotMatch (with OtherProperty)
     /// - UNEXPECTED_ERROR
     /// </remarks>
     [HttpPost("register")]
@@ -85,7 +86,7 @@ public class UsersController(IUserService userService, IMapper mapper) : BaseCon
     /// - NOT_FOUND
     /// - INCORRECT_LOGIN_OR_PASSWORD
     /// - INVALID_STRING_LENGTH (with min and max parameters)
-    /// - INCORRECT (for incorrect email or not strong password)
+    /// - INCORRECT (for incorrect email or not strong password (with MinNumberOfUppercaseCharacters and MaxNumberOfUppercaseCharacters))
     /// - UNEXPECTED_ERROR
     /// </remarks>
     [HttpPost("login")]
