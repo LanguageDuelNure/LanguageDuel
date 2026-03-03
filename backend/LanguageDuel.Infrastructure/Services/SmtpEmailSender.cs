@@ -14,7 +14,7 @@ public class SmtpEmailSender(IOptions<SmtpEmailOptions> options) : IEmailSender
     {
         MimeMessage message = new();
 
-        message.From.Add(new MailboxAddress("Tradio", _options.Email));
+        message.From.Add(new MailboxAddress("LanguageDuel", _options.Email));
 
         message.To.Add(new MailboxAddress(string.Empty, email));
 
