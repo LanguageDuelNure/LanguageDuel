@@ -22,16 +22,13 @@ public class BaseController : ControllerBase
         return error.Key switch
         {
             ErrorKey.ReferenceItself or ErrorKey.RepeatedValue or
-            ErrorKey.Required or ErrorKey.AnsestorAsASubEntitie => BadRequest(result),
-
+            ErrorKey.Required or ErrorKey.AnsestorAsASubEntitie or
+            ErrorKey.InvalidStringLength or ErrorKey.IncorrectLoginOrPassword or
+            ErrorKey.AlreadyConfirmed or ErrorKey.InvalidType or
+            ErrorKey.Incorrect => BadRequest(result),
             ErrorKey.AlreadyExists => Conflict(result),
             ErrorKey.NotFound => NotFound(result),
-            ErrorKey.UnexpectedError => throw new NotImplementedException(),
-            ErrorKey.InvalidType => throw new NotImplementedException(),
-            ErrorKey.AlreadyConfirmed => throw new NotImplementedException(),
-            ErrorKey.Incorrect => throw new NotImplementedException(),
-            ErrorKey.IncorrectLoginOrPassword => throw new NotImplementedException(),
-            _ => StatusCode(500, result),
+            ErrorKey.UnexpectedError or _ => StatusCode(500, result),
         };
     }
 }

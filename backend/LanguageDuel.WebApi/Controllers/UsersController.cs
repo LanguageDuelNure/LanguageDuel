@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using LanguageDuel.Application.Dtos.Results;
 using LanguageDuel.Application.Dtos.Users;
 using LanguageDuel.Application.Services;
 using LanguageDuel.WebApi.Requests.Users;
@@ -13,7 +14,18 @@ public class UsersController(IUserService userService, IMapper mapper) : BaseCon
     private readonly IUserService _userService = userService;
     private readonly IMapper _mapper = mapper;
 
+    /// <remarks>
+    /// Error keys:
+    /// - INVALID_STRING_LENGTH (with min and max parameters)
+    /// - ALREADY_EXISTS
+    /// - INCORRECT (for incorrect email or not strong password)
+    /// - UNEXPECTED_ERROR
+    /// </remarks>
     [HttpPost("register")]
+    [ProducesResponseType(typeof(RegisterResultDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Result), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(Result), StatusCodes.Status409Conflict)]
+    [ProducesResponseType(typeof(Result), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<RegisterResultDto>> RegisterUser(RegisterUserRequestModel request)
     {
         var result = await _userService.RegisterUserAsync(_mapper.Map<RegisterUserDto>(request));
@@ -27,7 +39,18 @@ public class UsersController(IUserService userService, IMapper mapper) : BaseCon
         return Accepted(registerResultDto);
     }
 
+    /// <remarks>
+    /// Error keys:
+    /// - NOT_FOUND
+    /// - INCORRECT
+    /// - ALREADY_CONFIRMED
+    /// - UNEXPECTED_ERROR
+    /// </remarks>
     [HttpPost("confirm-email")]
+    [ProducesResponseType(typeof(ConfirmEmailResultDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Result), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(Result), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(Result), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<ConfirmEmailResultDto>> ConfirmEmail(EmailConfirmationRequestModel request)
     {
         var result = await _userService.ConfirmEmailAsync(_mapper.Map<ConfirmEmailDto>(request));
@@ -41,7 +64,15 @@ public class UsersController(IUserService userService, IMapper mapper) : BaseCon
         return Ok(confirmEmailResultDto);
     }
 
+    /// <remarks>
+    /// Error keys:
+    /// - NOT_FOUND
+    /// - UNEXPECTED_ERROR
+    /// </remarks>
     [HttpPost("resend-confirm-email")]
+    [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(Result), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(Result), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> ResendConfirmEmail(ResendEmailConfirmationRequestModel request)
     {
         var result = await _userService.ResendRegistrationEmailAsync(request.UserId);
@@ -49,7 +80,19 @@ public class UsersController(IUserService userService, IMapper mapper) : BaseCon
         return !result.IsSuccess ? HandleErrors(result) : NoContent();
     }
 
+    /// <remarks>
+    /// Error keys:
+    /// - NOT_FOUND
+    /// - INCORRECT_LOGIN_OR_PASSWORD
+    /// - INVALID_STRING_LENGTH (with min and max parameters)
+    /// - INCORRECT (for incorrect email or not strong password)
+    /// - UNEXPECTED_ERROR
+    /// </remarks>
     [HttpPost("login")]
+    [ProducesResponseType(typeof(LoginResultDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Result), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(Result), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(Result), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<LoginResultDto>> Login(LoginRequestModel request)
     {
         var result = await _userService.LoginAsync(_mapper.Map<LoginUserDto>(request));
@@ -64,7 +107,15 @@ public class UsersController(IUserService userService, IMapper mapper) : BaseCon
         return Ok(loginResultDto);
     }
 
+    /// <remarks>
+    /// Error keys:
+    /// - NOT_FOUND
+    /// - UNEXPECTED_ERROR
+    /// </remarks>
     [HttpGet("{userId}")]
+    [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Result), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(Result), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<UserDto>> GetUser(string userId)
     {
         var result = await _userService.GetUserDtoAsync(userId);
