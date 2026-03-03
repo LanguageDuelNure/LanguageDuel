@@ -40,7 +40,7 @@ public class UserService(UserManager<ApplicationUser> userManager, SignInManager
                         {
                             Message = "User with this email already exists",
                             Field = "Email",
-                            Key = ErrorKey.RepeatedValue,
+                            Key = ErrorKey.AlreadyExists,
                         }
                     ]
                 }
@@ -133,7 +133,7 @@ public class UserService(UserManager<ApplicationUser> userManager, SignInManager
                         {
                             Message = "Email already confirmed",
                             Field = "Email",
-                            Key = ErrorKey.UnexpectedError,
+                            Key = ErrorKey.AlreadyConfirmed,
                         }
                     ]
             };
