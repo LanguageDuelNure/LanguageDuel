@@ -15,9 +15,19 @@ public static class InfrastructureServiceExtensions
 {
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfigurationManager configuration)
     {
-        var connectionString = configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+        string connectionString = string.Empty;
+        
+        if (OperatingSystem.IsWindows())
+        {
+            connectionString = configuration.GetConnectionString("WindowsConnection") ?? throw new InvalidOperationException("Connection string 'WindowsConnection' not found.");
+        }
+        else if (OperatingSystem.IsLinux())
+        {
+            connectionString = configuration.GetConnectionString("LinuxConnection") ?? throw new InvalidOperationException("Connection string 'LinuxConnection' not found.");;
+        }
+        
         services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseSqlServer(connectionString));
+            options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
         services.AddDefaultIdentity<ApplicationUser>(options =>
         {

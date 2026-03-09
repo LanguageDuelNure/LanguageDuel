@@ -1,0 +1,5 @@
+docker compose up -d       # start in background
+docker compose down        # stop and remove containers
+docker compose down -v     # stop + delete database data too
+docker compose logs -f     # view logs
+docker compose restart     # restart everything

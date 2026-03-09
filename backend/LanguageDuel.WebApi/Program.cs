@@ -7,10 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen(options =>
@@ -31,6 +28,15 @@ var issuer = builder.Configuration.GetSection("Jwt:Issuer").Value ?? throw new I
 var audience = builder.Configuration.GetSection("Jwt:Audience").Value ?? throw new InvalidOperationException("Jwt key not found");
 
 builder.Services
+    .AddCors(options =>
+    {
+        options.AddPolicy("Access-Control-Allow-Origin", policy =>
+        {
+            policy.AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader();
+        });
+    })
     .AddAuthentication(opt =>
     {
         opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -58,7 +64,11 @@ if (app.Environment.IsDevelopment())
     _ = app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+
+app.UseCors("Access-Control-Allow-Origin");
+
+app.UseDefaultFiles();
+app.UseStaticFiles();
 
 app.UseAuthorization();
 
