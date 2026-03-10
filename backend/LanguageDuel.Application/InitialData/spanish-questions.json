@@ -1,0 +1,442 @@
+﻿[
+  {
+    "Level": "Easy",
+    "Language": "Spanish",
+    "Question": "Yo ___ un perro.",
+    "Answers": [
+      {"Text": "tengo", "IsTrue": true},
+      {"Text": "tener", "IsTrue": false},
+      {"Text": "tienes", "IsTrue": false},
+      {"Text": "tenemos", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Easy",
+    "Language": "Spanish",
+    "Question": "¿Cuál es el color del cielo?",
+    "Answers": [
+      {"Text": "azul", "IsTrue": true},
+      {"Text": "verde", "IsTrue": false},
+      {"Text": "rojo", "IsTrue": false},
+      {"Text": "amarillo", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Easy",
+    "Language": "Spanish",
+    "Question": "Ella ___ a la escuela todos los días.",
+    "Answers": [
+      {"Text": "va", "IsTrue": true},
+      {"Text": "voy", "IsTrue": false},
+      {"Text": "vamos", "IsTrue": false},
+      {"Text": "van", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Easy",
+    "Language": "Spanish",
+    "Question": "Nosotros ___ pan en el desayuno.",
+    "Answers": [
+      {"Text": "comemos", "IsTrue": true},
+      {"Text": "come", "IsTrue": false},
+      {"Text": "comen", "IsTrue": false},
+      {"Text": "como", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Easy",
+    "Language": "Spanish",
+    "Question": "¿Cuál palabra es un número?",
+    "Answers": [
+      {"Text": "cinco", "IsTrue": true},
+      {"Text": "rojo", "IsTrue": false},
+      {"Text": "perro", "IsTrue": false},
+      {"Text": "grande", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Easy",
+    "Language": "Spanish",
+    "Question": "Yo ___ feliz hoy.",
+    "Answers": [
+      {"Text": "estoy", "IsTrue": true},
+      {"Text": "es", "IsTrue": false},
+      {"Text": "son", "IsTrue": false},
+      {"Text": "esta", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Easy",
+    "Language": "Spanish",
+    "Question": "El gato ___ en el jardín.",
+    "Answers": [
+      {"Text": "está", "IsTrue": true},
+      {"Text": "estan", "IsTrue": false},
+      {"Text": "es", "IsTrue": false},
+      {"Text": "soy", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Easy",
+    "Language": "Spanish",
+    "Question": "¿Cuál es un animal?",
+    "Answers": [
+      {"Text": "perro", "IsTrue": true},
+      {"Text": "mesa", "IsTrue": false},
+      {"Text": "silla", "IsTrue": false},
+      {"Text": "pluma", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Easy",
+    "Language": "Spanish",
+    "Question": "Nosotros ___ al cine los fines de semana.",
+    "Answers": [
+      {"Text": "vamos", "IsTrue": true},
+      {"Text": "va", "IsTrue": false},
+      {"Text": "van", "IsTrue": false},
+      {"Text": "voy", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Easy",
+    "Language": "Spanish",
+    "Question": "Ella ___ libros interesantes.",
+    "Answers": [
+      {"Text": "lee", "IsTrue": true},
+      {"Text": "leer", "IsTrue": false},
+      {"Text": "leo", "IsTrue": false},
+      {"Text": "leemos", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Easy",
+    "Language": "Spanish",
+    "Question": "¿Cuál palabra significa 'grande'?",
+    "Answers": [
+      {"Text": "grande", "IsTrue": true},
+      {"Text": "pequeño", "IsTrue": false},
+      {"Text": "corto", "IsTrue": false},
+      {"Text": "delgado", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Easy",
+    "Language": "Spanish",
+    "Question": "Yo ___ un vaso de agua.",
+    "Answers": [
+      {"Text": "bebo", "IsTrue": true},
+      {"Text": "bebe", "IsTrue": false},
+      {"Text": "bebes", "IsTrue": false},
+      {"Text": "bebemos", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Easy",
+    "Language": "Spanish",
+    "Question": "Nosotros ___ música en la fiesta.",
+    "Answers": [
+      {"Text": "escuchamos", "IsTrue": true},
+      {"Text": "escucha", "IsTrue": false},
+      {"Text": "escucho", "IsTrue": false},
+      {"Text": "escuchan", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Easy",
+    "Language": "Spanish",
+    "Question": "Él ___ en la oficina todos los días.",
+    "Answers": [
+      {"Text": "trabaja", "IsTrue": true},
+      {"Text": "trabajan", "IsTrue": false},
+      {"Text": "trabajo", "IsTrue": false},
+      {"Text": "trabajamos", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Easy",
+    "Language": "Spanish",
+    "Question": "Yo ___ temprano por la mañana.",
+    "Answers": [
+      {"Text": "me levanto", "IsTrue": true},
+      {"Text": "se levanta", "IsTrue": false},
+      {"Text": "te levantas", "IsTrue": false},
+      {"Text": "nos levantamos", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Easy",
+    "Language": "Spanish",
+    "Question": "¿Cuál palabra significa 'feliz'?",
+    "Answers": [
+      {"Text": "feliz", "IsTrue": true},
+      {"Text": "triste", "IsTrue": false},
+      {"Text": "enojado", "IsTrue": false},
+      {"Text": "cansado", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Easy",
+    "Language": "Spanish",
+    "Question": "Ella ___ al supermercado los lunes.",
+    "Answers": [
+      {"Text": "va", "IsTrue": true},
+      {"Text": "vamos", "IsTrue": false},
+      {"Text": "van", "IsTrue": false},
+      {"Text": "voy", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Easy",
+    "Language": "Spanish",
+    "Question": "Nosotros ___ con nuestros amigos.",
+    "Answers": [
+      {"Text": "jugamos", "IsTrue": true},
+      {"Text": "juego", "IsTrue": false},
+      {"Text": "juegan", "IsTrue": false},
+      {"Text": "juega", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Easy",
+    "Language": "Spanish",
+    "Question": "Yo ___ una carta a mi amigo.",
+    "Answers": [
+      {"Text": "escribo", "IsTrue": true},
+      {"Text": "escribe", "IsTrue": false},
+      {"Text": "escriben", "IsTrue": false},
+      {"Text": "escribimos", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Easy",
+    "Language": "Spanish",
+    "Question": "¿Cuál palabra es un día de la semana?",
+    "Answers": [
+      {"Text": "lunes", "IsTrue": true},
+      {"Text": "rojo", "IsTrue": false},
+      {"Text": "perro", "IsTrue": false},
+      {"Text": "azul", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Medium",
+    "Language": "Spanish",
+    "Question": "Si llueve mañana, nosotros ___ en casa.",
+    "Answers": [
+      {"Text": "quedaremos", "IsTrue": true},
+      {"Text": "quedamos", "IsTrue": false},
+      {"Text": "quedarán", "IsTrue": false},
+      {"Text": "queda", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Medium",
+    "Language": "Spanish",
+    "Question": "¿Cuál palabra es sinónimo de 'rápido'?",
+    "Answers": [
+      {"Text": "veloz", "IsTrue": true},
+      {"Text": "lento", "IsTrue": false},
+      {"Text": "débil", "IsTrue": false},
+      {"Text": "tranquilo", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Medium",
+    "Language": "Spanish",
+    "Question": "Él no ___ comido todavía.",
+    "Answers": [
+      {"Text": "ha", "IsTrue": true},
+      {"Text": "haber", "IsTrue": false},
+      {"Text": "han", "IsTrue": false},
+      {"Text": "haya", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Medium",
+    "Language": "Spanish",
+    "Question": "Yo deseo que tú ___ feliz.",
+    "Answers": [
+      {"Text": "seas", "IsTrue": true},
+      {"Text": "eres", "IsTrue": false},
+      {"Text": "estés", "IsTrue": false},
+      {"Text": "estás", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Medium",
+    "Language": "Spanish",
+    "Question": "Nosotros viajaremos a España ___ tengamos tiempo.",
+    "Answers": [
+      {"Text": "si", "IsTrue": true},
+      {"Text": "cuando", "IsTrue": false},
+      {"Text": "aunque", "IsTrue": false},
+      {"Text": "porque", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Medium",
+    "Language": "Spanish",
+    "Question": "El libro que ___ leíste es interesante.",
+    "Answers": [
+      {"Text": "tú", "IsTrue": false},
+      {"Text": "has", "IsTrue": true},
+      {"Text": "haces", "IsTrue": false},
+      {"Text": "ser", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Medium",
+    "Language": "Spanish",
+    "Question": "¿Cuál palabra significa 'trabajador'?",
+    "Answers": [
+      {"Text": "diligente", "IsTrue": true},
+      {"Text": "perezoso", "IsTrue": false},
+      {"Text": "tonto", "IsTrue": false},
+      {"Text": "débil", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Medium",
+    "Language": "Spanish",
+    "Question": "Si yo ___ rico, viajaría por el mundo.",
+    "Answers": [
+      {"Text": "fuera", "IsTrue": true},
+      {"Text": "soy", "IsTrue": false},
+      {"Text": "era", "IsTrue": false},
+      {"Text": "es", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Medium",
+    "Language": "Spanish",
+    "Question": "Ellos no ___ la película todavía.",
+    "Answers": [
+      {"Text": "han visto", "IsTrue": true},
+      {"Text": "vieron", "IsTrue": false},
+      {"Text": "verán", "IsTrue": false},
+      {"Text": "ven", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Medium",
+    "Language": "Spanish",
+    "Question": "Cuando llegues, nosotros ya ___ comido.",
+    "Answers": [
+      {"Text": "habremos", "IsTrue": true},
+      {"Text": "hemos", "IsTrue": false},
+      {"Text": "había", "IsTrue": false},
+      {"Text": "habían", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Medium",
+    "Language": "Spanish",
+    "Question": "No creo que él ___ la respuesta correcta.",
+    "Answers": [
+      {"Text": "sepa", "IsTrue": true},
+      {"Text": "sabe", "IsTrue": false},
+      {"Text": "sabrá", "IsTrue": false},
+      {"Text": "supiera", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Medium",
+    "Language": "Spanish",
+    "Question": "Ella actúa ___ si fuera la jefa.",
+    "Answers": [
+      {"Text": "como", "IsTrue": true},
+      {"Text": "como si", "IsTrue": false},
+      {"Text": "aunque", "IsTrue": false},
+      {"Text": "cuando", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Medium",
+    "Language": "Spanish",
+    "Question": "No estoy seguro de que ellos ___ la verdad.",
+    "Answers": [
+      {"Text": "digan", "IsTrue": true},
+      {"Text": "dicen", "IsTrue": false},
+      {"Text": "dijo", "IsTrue": false},
+      {"Text": "decir", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Medium",
+    "Language": "Spanish",
+    "Question": "Si tú ___ más estudioso, aprobarías el examen.",
+    "Answers": [
+      {"Text": "fueras", "IsTrue": true},
+      {"Text": "eres", "IsTrue": false},
+      {"Text": "serías", "IsTrue": false},
+      {"Text": "fuistes", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Medium",
+    "Language": "Spanish",
+    "Question": "Aunque ___ cansados, seguimos trabajando.",
+    "Answers": [
+      {"Text": "estábamos", "IsTrue": true},
+      {"Text": "estuvimos", "IsTrue": false},
+      {"Text": "estén", "IsTrue": false},
+      {"Text": "estás", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Medium",
+    "Language": "Spanish",
+    "Question": "Ojalá que ella ___ a tiempo.",
+    "Answers": [
+      {"Text": "llegue", "IsTrue": true},
+      {"Text": "llega", "IsTrue": false},
+      {"Text": "llegó", "IsTrue": false},
+      {"Text": "llegaría", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Medium",
+    "Language": "Spanish",
+    "Question": "No me parece que ellos ___ la solución correcta.",
+    "Answers": [
+      {"Text": "tengan", "IsTrue": true},
+      {"Text": "tienen", "IsTrue": false},
+      {"Text": "tenían", "IsTrue": false},
+      {"Text": "tuvieran", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Medium",
+    "Language": "Spanish",
+    "Question": "Si yo ___ más tiempo, aprendería otro idioma.",
+    "Answers": [
+      {"Text": "tuviera", "IsTrue": true},
+      {"Text": "tengo", "IsTrue": false},
+      {"Text": "tenía", "IsTrue": false},
+      {"Text": "tendría", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Medium",
+    "Language": "Spanish",
+    "Question": "Ellos irán a la playa a menos que ___ lluvia.",
+    "Answers": [
+      {"Text": "haya", "IsTrue": true},
+      {"Text": "hay", "IsTrue": false},
+      {"Text": "hubo", "IsTrue": false},
+      {"Text": "ha", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Medium",
+    "Language": "Spanish",
+    "Question": "Es necesario que todos los estudiantes ___ sus tareas.",
+    "Answers": [
+      {"Text": "entreguen", "IsTrue": true},
+      {"Text": "entregan", "IsTrue": false},
+      {"Text": "entregó", "IsTrue": false},
+      {"Text": "entregar", "IsTrue": false}
+    ]
+  }
+]

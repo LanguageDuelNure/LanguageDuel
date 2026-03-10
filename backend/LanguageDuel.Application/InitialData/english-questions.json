@@ -1,0 +1,717 @@
+﻿[
+  {
+    "Level": "Easy",
+    "Language": "English",
+    "Question": "I ___ a cat.",
+    "Answers": [
+      {"Text": "has", "IsTrue": false},
+      {"Text": "have", "IsTrue": true},
+      {"Text": "is", "IsTrue": false},
+      {"Text": "am", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Easy",
+    "Language": "English",
+    "Question": "Which word means 'happy'?",
+    "Answers": [
+      {"Text": "sad", "IsTrue": false},
+      {"Text": "angry", "IsTrue": false},
+      {"Text": "joyful", "IsTrue": true},
+      {"Text": "tired", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Easy",
+    "Language": "English",
+    "Question": "She ___ to school every day.",
+    "Answers": [
+      {"Text": "go", "IsTrue": false},
+      {"Text": "goes", "IsTrue": true},
+      {"Text": "going", "IsTrue": false},
+      {"Text": "gone", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Easy",
+    "Language": "English",
+    "Question": "Which word is a color?",
+    "Answers": [
+      {"Text": "apple", "IsTrue": false},
+      {"Text": "red", "IsTrue": true},
+      {"Text": "run", "IsTrue": false},
+      {"Text": "happy", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Easy",
+    "Language": "English",
+    "Question": "We ___ breakfast in the morning.",
+    "Answers": [
+      {"Text": "eats", "IsTrue": false},
+      {"Text": "eat", "IsTrue": true},
+      {"Text": "eating", "IsTrue": false},
+      {"Text": "ate", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Easy",
+    "Language": "English",
+    "Question": "I like to ___ books.",
+    "Answers": [
+      {"Text": "read", "IsTrue": true},
+      {"Text": "eat", "IsTrue": false},
+      {"Text": "run", "IsTrue": false},
+      {"Text": "sleep", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Easy",
+    "Language": "English",
+    "Question": "What is the opposite of 'cold'?",
+    "Answers": [
+      {"Text": "hot", "IsTrue": true},
+      {"Text": "cool", "IsTrue": false},
+      {"Text": "warmth", "IsTrue": false},
+      {"Text": "chilly", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Easy",
+    "Language": "English",
+    "Question": "She ___ a beautiful dress yesterday.",
+    "Answers": [
+      {"Text": "wear", "IsTrue": false},
+      {"Text": "wore", "IsTrue": true},
+      {"Text": "wears", "IsTrue": false},
+      {"Text": "wearing", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Easy",
+    "Language": "English",
+    "Question": "Which word is a fruit?",
+    "Answers": [
+      {"Text": "banana", "IsTrue": true},
+      {"Text": "carrot", "IsTrue": false},
+      {"Text": "potato", "IsTrue": false},
+      {"Text": "cucumber", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Easy",
+    "Language": "English",
+    "Question": "I ___ happy today.",
+    "Answers": [
+      {"Text": "am", "IsTrue": true},
+      {"Text": "is", "IsTrue": false},
+      {"Text": "are", "IsTrue": false},
+      {"Text": "be", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Easy",
+    "Language": "English",
+    "Question": "Which word means 'big'?",
+    "Answers": [
+      {"Text": "large", "IsTrue": true},
+      {"Text": "small", "IsTrue": false},
+      {"Text": "tiny", "IsTrue": false},
+      {"Text": "short", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Easy",
+    "Language": "English",
+    "Question": "We ___ to the park every Sunday.",
+    "Answers": [
+      {"Text": "go", "IsTrue": true},
+      {"Text": "goes", "IsTrue": false},
+      {"Text": "gone", "IsTrue": false},
+      {"Text": "going", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Easy",
+    "Language": "English",
+    "Question": "I have ___ apples.",
+    "Answers": [
+      {"Text": "two", "IsTrue": true},
+      {"Text": "to", "IsTrue": false},
+      {"Text": "too", "IsTrue": false},
+      {"Text": "twoes", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Easy",
+    "Language": "English",
+    "Question": "Fill in the blank: She ___ a teacher.",
+    "Answers": [
+      {"Text": "is", "IsTrue": true},
+      {"Text": "are", "IsTrue": false},
+      {"Text": "am", "IsTrue": false},
+      {"Text": "be", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Easy",
+    "Language": "English",
+    "Question": "Which word is a number?",
+    "Answers": [
+      {"Text": "seven", "IsTrue": true},
+      {"Text": "blue", "IsTrue": false},
+      {"Text": "apple", "IsTrue": false},
+      {"Text": "fast", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Easy",
+    "Language": "English",
+    "Question": "I ___ playing football now.",
+    "Answers": [
+      {"Text": "am", "IsTrue": true},
+      {"Text": "is", "IsTrue": false},
+      {"Text": "are", "IsTrue": false},
+      {"Text": "be", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Easy",
+    "Language": "English",
+    "Question": "Which word means 'fast'?",
+    "Answers": [
+      {"Text": "quick", "IsTrue": true},
+      {"Text": "slow", "IsTrue": false},
+      {"Text": "lazy", "IsTrue": false},
+      {"Text": "weak", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Easy",
+    "Language": "English",
+    "Question": "I ___ a cup of tea every morning.",
+    "Answers": [
+      {"Text": "drink", "IsTrue": true},
+      {"Text": "drinks", "IsTrue": false},
+      {"Text": "drank", "IsTrue": false},
+      {"Text": "drinking", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Easy",
+    "Language": "English",
+    "Question": "Which word is an animal?",
+    "Answers": [
+      {"Text": "dog", "IsTrue": true},
+      {"Text": "chair", "IsTrue": false},
+      {"Text": "table", "IsTrue": false},
+      {"Text": "pen", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Easy",
+    "Language": "English",
+    "Question": "We ___ English at school.",
+    "Answers": [
+      {"Text": "study", "IsTrue": true},
+      {"Text": "studies", "IsTrue": false},
+      {"Text": "studying", "IsTrue": false},
+      {"Text": "studied", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Medium",
+    "Language": "English",
+    "Question": "Which word means 'a place where you can borrow books'?",
+    "Answers": [
+      {"Text": "library", "IsTrue": true},
+      {"Text": "hospital", "IsTrue": false},
+      {"Text": "bakery", "IsTrue": false},
+      {"Text": "cinema", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Medium",
+    "Language": "English",
+    "Question": "If it ___ tomorrow, we will go to the park.",
+    "Answers": [
+      {"Text": "rains", "IsTrue": true},
+      {"Text": "rain", "IsTrue": false},
+      {"Text": "rained", "IsTrue": false},
+      {"Text": "raining", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Medium",
+    "Language": "English",
+    "Question": "Which word is closest in meaning to 'big'?",
+    "Answers": [
+      {"Text": "small", "IsTrue": false},
+      {"Text": "large", "IsTrue": true},
+      {"Text": "thin", "IsTrue": false},
+      {"Text": "short", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Medium",
+    "Language": "English",
+    "Question": "I have never ___ sushi before.",
+    "Answers": [
+      {"Text": "eats", "IsTrue": false},
+      {"Text": "eaten", "IsTrue": true},
+      {"Text": "ate", "IsTrue": false},
+      {"Text": "eating", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Medium",
+    "Language": "English",
+    "Question": "Which word is a verb?",
+    "Answers": [
+      {"Text": "quickly", "IsTrue": false},
+      {"Text": "run", "IsTrue": true},
+      {"Text": "table", "IsTrue": false},
+      {"Text": "blue", "IsTrue": false}
+    ]
+  },
+  {
+      "Level": "Medium",
+      "Language": "English",
+      "Question": "Which word means 'a place where you can borrow books'?",
+      "Answers": [
+          {"Text": "library", "IsTrue": true},
+          {"Text": "hospital", "IsTrue": false},
+          {"Text": "bakery", "IsTrue": false},
+          {"Text": "cinema", "IsTrue": false}
+      ]
+  },
+  {
+      "Level": "Medium",
+      "Language": "English",
+      "Question": "If it ___ tomorrow, we will go to the park.",
+      "Answers": [
+          {"Text": "rains", "IsTrue": true},
+          {"Text": "rain", "IsTrue": false},
+          {"Text": "rained", "IsTrue": false},
+          {"Text": "raining", "IsTrue": false}
+      ]
+  },
+  {
+      "Level": "Medium",
+      "Language": "English",
+      "Question": "Which word is closest in meaning to 'big'?",
+      "Answers": [
+          {"Text": "small", "IsTrue": false},
+          {"Text": "large", "IsTrue": true},
+          {"Text": "thin", "IsTrue": false},
+          {"Text": "short", "IsTrue": false}
+      ]
+  },
+  {
+      "Level": "Medium",
+      "Language": "English",
+      "Question": "I have never ___ sushi before.",
+      "Answers": [
+          {"Text": "eats", "IsTrue": false},
+          {"Text": "eaten", "IsTrue": true},
+          {"Text": "ate", "IsTrue": false},
+          {"Text": "eating", "IsTrue": false}
+      ]
+  },
+  {
+      "Level": "Medium",
+      "Language": "English",
+      "Question": "Which word is a verb?",
+      "Answers": [
+          {"Text": "quickly", "IsTrue": false},
+          {"Text": "run", "IsTrue": true},
+          {"Text": "table", "IsTrue": false},
+          {"Text": "blue", "IsTrue": false}
+      ]
+  },
+  {
+      "Level": "Medium",
+      "Language": "English",
+      "Question": "He ___ to the gym every morning.",
+      "Answers": [
+          {"Text": "go", "IsTrue": false},
+          {"Text": "goes", "IsTrue": true},
+          {"Text": "gone", "IsTrue": false},
+          {"Text": "going", "IsTrue": false}
+      ]
+  },
+  {
+      "Level": "Medium",
+      "Language": "English",
+      "Question": "Fill in the blank: She ___ like chocolate.",
+      "Answers": [
+          {"Text": "does", "IsTrue": true},
+          {"Text": "do", "IsTrue": false},
+          {"Text": "did", "IsTrue": false},
+          {"Text": "done", "IsTrue": false}
+      ]
+  },
+  {
+      "Level": "Medium",
+      "Language": "English",
+      "Question": "Which word means 'angry'?",
+      "Answers": [
+          {"Text": "sad", "IsTrue": false},
+          {"Text": "happy", "IsTrue": false},
+          {"Text": "mad", "IsTrue": true},
+          {"Text": "tired", "IsTrue": false}
+      ]
+  },
+  {
+      "Level": "Medium",
+      "Language": "English",
+      "Question": "We ___ dinner at 7 pm every day.",
+      "Answers": [
+          {"Text": "have", "IsTrue": true},
+          {"Text": "has", "IsTrue": false},
+          {"Text": "had", "IsTrue": false},
+          {"Text": "having", "IsTrue": false}
+      ]
+  },
+  {
+      "Level": "Medium",
+      "Language": "English",
+      "Question": "Fill in the blank: They ___ in London last year.",
+      "Answers": [
+          {"Text": "live", "IsTrue": false},
+          {"Text": "lived", "IsTrue": true},
+          {"Text": "living", "IsTrue": false},
+          {"Text": "lives", "IsTrue": false}
+      ]
+  },
+  {
+      "Level": "Medium",
+      "Language": "English",
+      "Question": "Which word is closest in meaning to 'easy'?",
+      "Answers": [
+          {"Text": "simple", "IsTrue": true},
+          {"Text": "hard", "IsTrue": false},
+          {"Text": "difficult", "IsTrue": false},
+          {"Text": "complicated", "IsTrue": false}
+      ]
+  },
+  {
+      "Level": "Medium",
+      "Language": "English",
+      "Question": "Fill in the blank: I ___ my homework yesterday.",
+      "Answers": [
+          {"Text": "do", "IsTrue": false},
+          {"Text": "did", "IsTrue": true},
+          {"Text": "done", "IsTrue": false},
+          {"Text": "doing", "IsTrue": false}
+      ]
+  },
+  {
+      "Level": "Medium",
+      "Language": "English",
+      "Question": "Which word means 'a person who cooks'?",
+      "Answers": [
+          {"Text": "teacher", "IsTrue": false},
+          {"Text": "chef", "IsTrue": true},
+          {"Text": "doctor", "IsTrue": false},
+          {"Text": "driver", "IsTrue": false}
+      ]
+  },
+  {
+      "Level": "Medium",
+      "Language": "English",
+      "Question": "Fill in the blank: My brother ___ football every weekend.",
+      "Answers": [
+          {"Text": "plays", "IsTrue": true},
+          {"Text": "play", "IsTrue": false},
+          {"Text": "playing", "IsTrue": false},
+          {"Text": "played", "IsTrue": false}
+      ]
+  },
+  {
+      "Level": "Medium",
+      "Language": "English",
+      "Question": "Which word is opposite of 'short'?",
+      "Answers": [
+          {"Text": "tall", "IsTrue": true},
+          {"Text": "small", "IsTrue": false},
+          {"Text": "thin", "IsTrue": false},
+          {"Text": "weak", "IsTrue": false}
+      ]
+  },
+  {
+      "Level": "Hard",
+      "Language": "English",
+      "Question": "Fill in the blank: He acts ___ he were the boss of the company.",
+      "Answers": [
+          {"Text": "as if", "IsTrue": true},
+          {"Text": "like", "IsTrue": false},
+          {"Text": "so", "IsTrue": false},
+          {"Text": "although", "IsTrue": false}
+      ]
+  },
+  {
+      "Level": "Hard",
+      "Language": "English",
+      "Question": "Which word means 'a short story with a moral lesson'?",
+      "Answers": [
+          {"Text": "fable", "IsTrue": true},
+          {"Text": "novel", "IsTrue": false},
+          {"Text": "poem", "IsTrue": false},
+          {"Text": "article", "IsTrue": false}
+      ]
+  },
+  {
+      "Level": "Hard",
+      "Language": "English",
+      "Question": "Fill in the blank: It is important that every student ___ on time.",
+      "Answers": [
+          {"Text": "arrive", "IsTrue": false},
+          {"Text": "arrives", "IsTrue": false},
+          {"Text": "arrive", "IsTrue": true},
+          {"Text": "arriving", "IsTrue": false}
+      ]
+  },
+  {
+      "Level": "Hard",
+      "Language": "English",
+      "Question": "Which word means 'to strongly suggest or recommend'?",
+      "Answers": [
+          {"Text": "advocate", "IsTrue": true},
+          {"Text": "ignore", "IsTrue": false},
+          {"Text": "avoid", "IsTrue": false},
+          {"Text": "reject", "IsTrue": false}
+      ]
+  },
+  {
+      "Level": "Hard",
+      "Language": "English",
+      "Question": "Fill in the blank: No sooner ___ she arrived than it started raining.",
+      "Answers": [
+          {"Text": "had", "IsTrue": true},
+          {"Text": "has", "IsTrue": false},
+          {"Text": "did", "IsTrue": false},
+          {"Text": "was", "IsTrue": false}
+      ]
+  },
+  {
+      "Level": "Hard",
+      "Language": "English",
+      "Question": "Despite ___ tired, he continued working.",
+      "Answers": [
+          {"Text": "being", "IsTrue": true},
+          {"Text": "be", "IsTrue": false},
+          {"Text": "was", "IsTrue": false},
+          {"Text": "been", "IsTrue": false}
+      ]
+  },
+  {
+      "Level": "Hard",
+      "Language": "English",
+      "Question": "Which word means 'a person who studies the past'?",
+      "Answers": [
+          {"Text": "historian", "IsTrue": true},
+          {"Text": "biologist", "IsTrue": false},
+          {"Text": "chef", "IsTrue": false},
+          {"Text": "teacher", "IsTrue": false}
+      ]
+  },
+  {
+      "Level": "Hard",
+      "Language": "English",
+      "Question": "She suggested ___ earlier to avoid the traffic.",
+      "Answers": [
+          {"Text": "to leave", "IsTrue": false},
+          {"Text": "leave", "IsTrue": false},
+          {"Text": "leaving", "IsTrue": true},
+          {"Text": "left", "IsTrue": false}
+      ]
+  },
+  {
+      "Level": "Hard",
+      "Language": "English",
+      "Question": "Which word is closest in meaning to 'difficult to understand'?",
+      "Answers": [
+          {"Text": "obvious", "IsTrue": false},
+          {"Text": "confusing", "IsTrue": true},
+          {"Text": "clear", "IsTrue": false},
+          {"Text": "simple", "IsTrue": false}
+      ]
+  },
+  {
+      "Level": "Hard",
+      "Language": "English",
+      "Question": "He ___ never seen such a beautiful sunset before.",
+      "Answers": [
+          {"Text": "have", "IsTrue": false},
+          {"Text": "has", "IsTrue": true},
+          {"Text": "had", "IsTrue": false},
+          {"Text": "having", "IsTrue": false}
+      ]
+  },
+  {
+      "Level": "Hard",
+      "Language": "English",
+      "Question": "Fill in the blank: If I ___ more time, I would travel the world.",
+      "Answers": [
+          {"Text": "have", "IsTrue": false},
+          {"Text": "had", "IsTrue": true},
+          {"Text": "has", "IsTrue": false},
+          {"Text": "having", "IsTrue": false}
+      ]
+  },
+  {
+      "Level": "Hard",
+      "Language": "English",
+      "Question": "Which word means 'able to do something easily'?",
+      "Answers": [
+          {"Text": "capable", "IsTrue": true},
+          {"Text": "incapable", "IsTrue": false},
+          {"Text": "weak", "IsTrue": false},
+          {"Text": "clumsy", "IsTrue": false}
+      ]
+  },
+  {
+      "Level": "Hard",
+      "Language": "English",
+      "Question": "Fill in the blank: By the time she arrived, we ___ already eaten.",
+      "Answers": [
+          {"Text": "have", "IsTrue": false},
+          {"Text": "had", "IsTrue": true},
+          {"Text": "has", "IsTrue": false},
+          {"Text": "having", "IsTrue": false}
+      ]
+  },
+  {
+      "Level": "Hard",
+      "Language": "English",
+      "Question": "Which word is closest in meaning to 'to improve something'?",
+      "Answers": [
+          {"Text": "enhance", "IsTrue": true},
+          {"Text": "worsen", "IsTrue": false},
+          {"Text": "destroy", "IsTrue": false},
+          {"Text": "ignore", "IsTrue": false}
+      ]
+  },
+  {
+      "Level": "Hard",
+      "Language": "English",
+      "Question": "Fill in the blank: She acts ___ she knows everything.",
+      "Answers": [
+          {"Text": "as if", "IsTrue": true},
+          {"Text": "like", "IsTrue": false},
+          {"Text": "so that", "IsTrue": false},
+          {"Text": "although", "IsTrue": false}
+      ]
+  },
+  {
+      "Level": "Hard",
+      "Language": "English",
+      "Question": "Which word means 'a person who teaches at a university'?",
+      "Answers": [
+          {"Text": "professor", "IsTrue": true},
+          {"Text": "student", "IsTrue": false},
+          {"Text": "teacher", "IsTrue": false},
+          {"Text": "tutor", "IsTrue": false}
+      ]
+  },
+  {
+      "Level": "Hard",
+      "Language": "English",
+      "Question": "Fill in the blank: I wish I ___ more careful yesterday.",
+      "Answers": [
+          {"Text": "was", "IsTrue": false},
+          {"Text": "had been", "IsTrue": true},
+          {"Text": "were", "IsTrue": false},
+          {"Text": "been", "IsTrue": false}
+      ]
+  },
+  {
+      "Level": "Hard",
+      "Language": "English",
+      "Question": "Which word is opposite in meaning to 'optimistic'?",
+      "Answers": [
+          {"Text": "pessimistic", "IsTrue": true},
+          {"Text": "happy", "IsTrue": false},
+          {"Text": "confident", "IsTrue": false},
+          {"Text": "cheerful", "IsTrue": false}
+      ]
+  },
+  {
+      "Level": "Hard",
+      "Language": "English",
+      "Question": "Fill in the blank: The more he studies, ___ he becomes.",
+      "Answers": [
+          {"Text": "the intelligent", "IsTrue": false},
+          {"Text": "the more intelligent", "IsTrue": true},
+          {"Text": "more intelligent", "IsTrue": false},
+          {"Text": "intelligent", "IsTrue": false}
+      ]
+  },
+  {
+      "Level": "Hard",
+      "Language": "English",
+      "Question": "Which word means 'to say something is not true'?",
+      "Answers": [
+          {"Text": "deny", "IsTrue": true},
+          {"Text": "admit", "IsTrue": false},
+          {"Text": "confirm", "IsTrue": false},
+          {"Text": "agree", "IsTrue": false}
+      ]
+  },
+  {
+    "Level": "Very Hard",
+    "Language": "English",
+    "Question": "The committee demanded that the report ___ immediately.",
+    "Answers": [
+      {"Text": "is submitted", "IsTrue": false},
+      {"Text": "submitted", "IsTrue": false},
+      {"Text": "be submitted", "IsTrue": true},
+      {"Text": "submits", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Very Hard",
+    "Language": "English",
+    "Question": "Which word means 'fear of heights'?",
+    "Answers": [
+      {"Text": "claustrophobia", "IsTrue": false},
+      {"Text": "acrophobia", "IsTrue": true},
+      {"Text": "hydrophobia", "IsTrue": false},
+      {"Text": "agoraphobia", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Very Hard",
+    "Language": "English",
+    "Question": "___ his reputation, he refused to compromise on quality.",
+    "Answers": [
+      {"Text": "In spite of", "IsTrue": false},
+      {"Text": "Considering", "IsTrue": false},
+      {"Text": "Concerning", "IsTrue": false},
+      {"Text": "In order to", "IsTrue": true}
+    ]
+  },
+  {
+    "Level": "Very Hard",
+    "Language": "English",
+    "Question": "Which word is closest in meaning to 'extremely careful'?",
+    "Answers": [
+      {"Text": "meticulous", "IsTrue": true},
+      {"Text": "reckless", "IsTrue": false},
+      {"Text": "careless", "IsTrue": false},
+      {"Text": "negligent", "IsTrue": false}
+    ]
+  },
+  {
+    "Level": "Very Hard",
+    "Language": "English",
+    "Question": "Had she ___ harder, she would have passed the exam.",
+    "Answers": [
+      {"Text": "study", "IsTrue": false},
+      {"Text": "studied", "IsTrue": true},
+      {"Text": "studying", "IsTrue": false},
+      {"Text": "studies", "IsTrue": false}
+    ]
+  }
+]
