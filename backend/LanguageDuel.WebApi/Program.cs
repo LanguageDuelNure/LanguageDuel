@@ -1,6 +1,7 @@
 using System.Reflection;
 using System.Text;
 using LanguageDuel.Infrastructure;
+using LanguageDuel.Infrastructure.Hubs;
 using LanguageDuel.WebApi;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -71,6 +72,8 @@ app.UseDefaultFiles();
 app.UseStaticFiles();
 
 app.UseAuthorization();
+
+app.MapHub<GameHub>("/gameHub");
 
 app.MapControllers();
 

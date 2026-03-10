@@ -1,4 +1,5 @@
-﻿using LanguageDuel.Application.Dtos.Results;
+﻿using System.Security.Claims;
+using LanguageDuel.Application.Dtos.Results;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LanguageDuel.WebApi.Controllers;
@@ -30,5 +31,11 @@ public class BaseController : ControllerBase
             ErrorKey.NotFound => NotFound(result),
             ErrorKey.UnexpectedError or _ => StatusCode(500, result),
         };
+    }
+
+    [NonAction]
+    public Guid GetUserId()
+    {
+        return new Guid(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
     }
 }

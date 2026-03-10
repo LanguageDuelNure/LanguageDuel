@@ -10,4 +10,5 @@ public interface IUserService
     Task<Result<LoginResultDto>> LoginAsync(LoginUserDto dto);
     Task<Result<RegisterResultDto>> RegisterUserAsync(RegisterUserDto dto);
     Task<Result> ResendRegistrationEmailAsync(string userId);
+    Task<Result<RatingRangeDto>> GetRatingRangeAsync(Guid userId);
 }

@@ -8,6 +8,9 @@ public static class ApplicationServiceExtensions
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IGameService, GameService>();
+        
+        services.AddScoped<IGameNotificationService, GameNotificationService>();
 
         return services;
     }
