@@ -15,16 +15,7 @@ public static class InfrastructureServiceExtensions
 {
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfigurationManager configuration)
     {
-        string connectionString = string.Empty;
-        
-        if (OperatingSystem.IsWindows())
-        {
-            connectionString = configuration.GetConnectionString("WindowsConnection") ?? throw new InvalidOperationException("Connection string 'WindowsConnection' not found.");
-        }
-        else if (OperatingSystem.IsLinux())
-        {
-            connectionString = configuration.GetConnectionString("LinuxConnection") ?? throw new InvalidOperationException("Connection string 'LinuxConnection' not found.");;
-        }
+        var connectionString = configuration.GetConnectionString("LinuxConnection") ?? throw new InvalidOperationException("Connection string 'LinuxConnection' not found.");
         
         services.AddDbContext<ApplicationDbContext>(options =>
             options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
@@ -39,6 +30,8 @@ public static class InfrastructureServiceExtensions
         })
             .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>();
+        
+        services.AddSignalR();
 
         services.AddScoped<IEmailSender, SmtpEmailSender>();
         services.AddScoped<IJwtTokenService, JwtTokenService>();
