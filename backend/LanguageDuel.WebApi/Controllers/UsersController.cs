@@ -11,9 +11,6 @@ namespace LanguageDuel.WebApi.Controllers;
 [ApiController]
 public class UsersController(IUserService userService, IMapper mapper) : BaseController
 {
-    private readonly IUserService _userService = userService;
-    private readonly IMapper _mapper = mapper;
-
     /// <remarks>
     /// Error keys:
     /// - INVALID_STRING_LENGTH (with Min and Max parameters)
@@ -29,7 +26,7 @@ public class UsersController(IUserService userService, IMapper mapper) : BaseCon
     [ProducesResponseType(typeof(Result), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<RegisterResultDto>> RegisterUser(RegisterUserRequestModel request)
     {
-        var result = await _userService.RegisterUserAsync(_mapper.Map<RegisterUserDto>(request));
+        var result = await userService.RegisterUserAsync(mapper.Map<RegisterUserDto>(request));
         if (!result.IsSuccess)
         {
             return HandleErrors(result);
@@ -54,7 +51,7 @@ public class UsersController(IUserService userService, IMapper mapper) : BaseCon
     [ProducesResponseType(typeof(Result), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<ConfirmEmailResultDto>> ConfirmEmail(EmailConfirmationRequestModel request)
     {
-        var result = await _userService.ConfirmEmailAsync(_mapper.Map<ConfirmEmailDto>(request));
+        var result = await userService.ConfirmEmailAsync(mapper.Map<ConfirmEmailDto>(request));
         if (!result.IsSuccess)
         {
             return HandleErrors(result);
@@ -76,7 +73,7 @@ public class UsersController(IUserService userService, IMapper mapper) : BaseCon
     [ProducesResponseType(typeof(Result), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> ResendConfirmEmail(ResendEmailConfirmationRequestModel request)
     {
-        var result = await _userService.ResendRegistrationEmailAsync(request.UserId);
+        var result = await userService.ResendRegistrationEmailAsync(request.UserId);
 
         return !result.IsSuccess ? HandleErrors(result) : NoContent();
     }
@@ -96,7 +93,7 @@ public class UsersController(IUserService userService, IMapper mapper) : BaseCon
     [ProducesResponseType(typeof(Result), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<LoginResultDto>> Login(LoginRequestModel request)
     {
-        var result = await _userService.LoginAsync(_mapper.Map<LoginUserDto>(request));
+        var result = await userService.LoginAsync(mapper.Map<LoginUserDto>(request));
 
         if (!result.IsSuccess)
         {
@@ -119,7 +116,7 @@ public class UsersController(IUserService userService, IMapper mapper) : BaseCon
     [ProducesResponseType(typeof(Result), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<UserDto>> GetUser(string userId)
     {
-        var result = await _userService.GetUserDtoAsync(userId);
+        var result = await userService.GetUserDtoAsync(userId);
         if (!result.IsSuccess)
         {
             return HandleErrors(result);

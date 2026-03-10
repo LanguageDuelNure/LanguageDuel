@@ -11,12 +11,6 @@ namespace LanguageDuel.Infrastructure.Services;
 
 public class UserService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IEmailSender emailSender, ApplicationDbContext dbContext, IJwtTokenService jwtTokenService) : IUserService
 {
-    private readonly UserManager<ApplicationUser> _userManager = userManager;
-    private readonly SignInManager<ApplicationUser> _signInManager = signInManager;
-    private readonly IEmailSender _emailSender = emailSender;
-    private readonly ApplicationDbContext _dbContext = dbContext;
-    private readonly IJwtTokenService _jwtTokenService = jwtTokenService;
-
     public async Task<Result<RegisterResultDto>> RegisterUserAsync(RegisterUserDto dto)
     {
         string code = GenerateVerificationCode();
@@ -27,7 +21,7 @@ public class UserService(UserManager<ApplicationUser> userManager, SignInManager
             Name = dto.Name,
             VerificationCode = code
         };
-        var result = await _userManager.CreateAsync(user, dto.Password);
+        var result = await userManager.CreateAsync(user, dto.Password);
 
         if (!result.Succeeded)
         {
@@ -58,7 +52,7 @@ public class UserService(UserManager<ApplicationUser> userManager, SignInManager
                 };
         }
 
-        _ = await _userManager.AddToRoleAsync(user, DefaultRoles.UserRole.Name!);
+        _ = await userManager.AddToRoleAsync(user, DefaultRoles.UserRole.Name!);
 
         await SendRegistrationEmailAsync(user.Email!, user.VerificationCode!);
 
@@ -102,7 +96,7 @@ public class UserService(UserManager<ApplicationUser> userManager, SignInManager
 
         string code = GenerateVerificationCode();
         user.VerificationCode = code;
-        _ = await _userManager.UpdateAsync(user);
+        _ = await userManager.UpdateAsync(user);
 
         await SendRegistrationEmailAsync(user.Email!, code);
 
@@ -156,24 +150,24 @@ public class UserService(UserManager<ApplicationUser> userManager, SignInManager
         }
 
         user.EmailConfirmed = true;
-        _ = await _userManager.UpdateAsync(user);
-        await _signInManager.SignInAsync(user, true);
+        _ = await userManager.UpdateAsync(user);
+        await signInManager.SignInAsync(user, true);
 
-        var role = (await _userManager.GetRolesAsync(user)).First();
+        var role = (await userManager.GetRolesAsync(user)).First();
 
         return new Result<ConfirmEmailResultDto>
         {
             Value = new ConfirmEmailResultDto
             {
                 Role = role,
-                JwtToken = _jwtTokenService.GenerateToken(user.Id, role)
+                JwtToken = jwtTokenService.GenerateToken(user.Id, role)
             }
         };
     }
 
     public async Task<Result<LoginResultDto>> LoginAsync(LoginUserDto dto)
     {
-        var user = await _userManager.FindByEmailAsync(dto.Email);
+        var user = await userManager.FindByEmailAsync(dto.Email);
         if (user == null)
         {
             return new Result<LoginResultDto>
@@ -184,7 +178,7 @@ public class UserService(UserManager<ApplicationUser> userManager, SignInManager
                 ]
             };
         }
-        var result = await _signInManager.PasswordSignInAsync(user, dto.Password, true, false);
+        var result = await signInManager.PasswordSignInAsync(user, dto.Password, true, false);
         bool emailConfirmed = true;
         if (!result.Succeeded)
         {
@@ -206,14 +200,14 @@ public class UserService(UserManager<ApplicationUser> userManager, SignInManager
 
             string code = GenerateVerificationCode();
             user.VerificationCode = code;
-            _ = await _userManager.UpdateAsync(user);
+            _ = await userManager.UpdateAsync(user);
 
             await SendRegistrationEmailAsync(dto.Email, code);
 
             emailConfirmed = false;
         }
 
-        var role = (await _userManager.GetRolesAsync(user)).First();
+        var role = (await userManager.GetRolesAsync(user)).First();
 
         return new Result<LoginResultDto>
         {
@@ -222,14 +216,14 @@ public class UserService(UserManager<ApplicationUser> userManager, SignInManager
                 UserId = user.Id,
                 EmailConfirmed = emailConfirmed,
                 Role = role,
-                JwtToken = emailConfirmed ? _jwtTokenService.GenerateToken(user.Id, role) : null
+                JwtToken = emailConfirmed ? jwtTokenService.GenerateToken(user.Id, role) : null
             }
         };
     }
 
     public async Task<Result<UserDto>> GetUserDtoAsync(string userId)
     {
-        var user = await _dbContext.Users
+        var user = await dbContext.Users
             .Where(u => u.Id == userId)
             .Select(u => new UserDto
             {
@@ -258,7 +252,7 @@ public class UserService(UserManager<ApplicationUser> userManager, SignInManager
 
     private async Task<Result<ApplicationUser>> GetUserAsync(string userId)
     {
-        var user = await _userManager.FindByIdAsync(userId);
+        var user = await userManager.FindByIdAsync(userId);
         return user == null
             ? new Result<ApplicationUser>
             {
@@ -291,7 +285,7 @@ public class UserService(UserManager<ApplicationUser> userManager, SignInManager
 
     private async Task SendRegistrationEmailAsync(string email, string code)
     {
-        await _emailSender.SendEmailAsync(
+        await emailSender.SendEmailAsync(
             email,
             "Registration confirmation",
             $"Confirm email to register in LanguageDuel. Confirmation code: {code}");
