@@ -2,6 +2,7 @@
 using LanguageDuel.Application.Dtos.Users;
 using LanguageDuel.Application.Services;
 using LanguageDuel.Domain;
+using LanguageDuel.Domain.Entities;
 using LanguageDuel.Infrastructure.Common;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -65,7 +66,7 @@ public class UserService(UserManager<ApplicationUser> userManager, SignInManager
         };
     }
 
-    public async Task<Result> ResendRegistrationEmailAsync(string userId)
+    public async Task<Result> ResendRegistrationEmailAsync(Guid userId)
     {
         var getUserResult = await GetUserAsync(userId);
         if (!getUserResult.IsSuccess)
@@ -106,7 +107,7 @@ public class UserService(UserManager<ApplicationUser> userManager, SignInManager
 
     public async Task<Result<RatingRangeDto>> GetRatingRangeAsync(Guid userId)
     {
-        var getUserResult = await GetUserAsync(userId.ToString());
+        var getUserResult = await GetUserAsync(userId);
         if (!getUserResult.IsSuccess)
         {
             return new Result<RatingRangeDto>
@@ -242,7 +243,7 @@ public class UserService(UserManager<ApplicationUser> userManager, SignInManager
         };
     }
 
-    public async Task<Result<UserDto>> GetUserDtoAsync(string userId)
+    public async Task<Result<UserDto>> GetUserDtoAsync(Guid userId)
     {
         var user = await dbContext.Users
             .Where(u => u.Id == userId)
@@ -271,9 +272,9 @@ public class UserService(UserManager<ApplicationUser> userManager, SignInManager
             };
     }
 
-    private async Task<Result<ApplicationUser>> GetUserAsync(string userId)
+    private async Task<Result<ApplicationUser>> GetUserAsync(Guid userId)
     {
-        var user = await userManager.FindByIdAsync(userId);
+        var user = await userManager.FindByIdAsync(userId.ToString());
         return user == null
             ? new Result<ApplicationUser>
             {

@@ -2,9 +2,9 @@
 
 public class UserInGameDto
 {
-    public string Id { get; set; } = string.Empty;
+    public Guid Id { get; set; }
 
     public string Name { get; set; } = string.Empty;
     
-    public int Hp { get; set; } = 10;
+    public int Hp { get; set; }
 }

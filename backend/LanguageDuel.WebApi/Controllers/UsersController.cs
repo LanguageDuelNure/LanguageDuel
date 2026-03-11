@@ -114,7 +114,7 @@ public class UsersController(IUserService userService, IMapper mapper) : BaseCon
     [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(Result), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(Result), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<UserDto>> GetUser(string userId)
+    public async Task<ActionResult<UserDto>> GetUser(Guid userId)
     {
         var result = await userService.GetUserDtoAsync(userId);
         if (!result.IsSuccess)
