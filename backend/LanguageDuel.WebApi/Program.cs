@@ -65,6 +65,9 @@ if (app.Environment.IsDevelopment())
     _ = app.UseSwaggerUI();
 }
 
+using var scope = app.Services.CreateScope();
+var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+await DbInitializer.InitializeAsync(dbContext);
 
 app.UseCors("Access-Control-Allow-Origin");
 
