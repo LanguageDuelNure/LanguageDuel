@@ -1,0 +1,717 @@
+﻿[
+  {
+    "DifficultyLevelId": "fa9a4d67-89b0-4837-84da-e43268302def",
+    "Language": "English",
+    "Name": "I ___ a cat.",
+    "Answers": [
+      {"Name": "has", "IsCorrect": false},
+      {"Name": "have", "IsCorrect": true},
+      {"Name": "is", "IsCorrect": false},
+      {"Name": "am", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "fa9a4d67-89b0-4837-84da-e43268302def",
+    "Language": "English",
+    "Name": "Which word means 'happy'?",
+    "Answers": [
+      {"Name": "sad", "IsCorrect": false},
+      {"Name": "angry", "IsCorrect": false},
+      {"Name": "joyful", "IsCorrect": true},
+      {"Name": "tired", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "fa9a4d67-89b0-4837-84da-e43268302def",
+    "Language": "English",
+    "Name": "She ___ to school every day.",
+    "Answers": [
+      {"Name": "go", "IsCorrect": false},
+      {"Name": "goes", "IsCorrect": true},
+      {"Name": "going", "IsCorrect": false},
+      {"Name": "gone", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "fa9a4d67-89b0-4837-84da-e43268302def",
+    "Language": "English",
+    "Name": "Which word is a color?",
+    "Answers": [
+      {"Name": "apple", "IsCorrect": false},
+      {"Name": "red", "IsCorrect": true},
+      {"Name": "run", "IsCorrect": false},
+      {"Name": "happy", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "fa9a4d67-89b0-4837-84da-e43268302def",
+    "Language": "English",
+    "Name": "We ___ breakfast in the morning.",
+    "Answers": [
+      {"Name": "eats", "IsCorrect": false},
+      {"Name": "eat", "IsCorrect": true},
+      {"Name": "eating", "IsCorrect": false},
+      {"Name": "ate", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "fa9a4d67-89b0-4837-84da-e43268302def",
+    "Language": "English",
+    "Name": "I like to ___ books.",
+    "Answers": [
+      {"Name": "read", "IsCorrect": true},
+      {"Name": "eat", "IsCorrect": false},
+      {"Name": "run", "IsCorrect": false},
+      {"Name": "sleep", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "fa9a4d67-89b0-4837-84da-e43268302def",
+    "Language": "English",
+    "Name": "What is the opposite of 'cold'?",
+    "Answers": [
+      {"Name": "hot", "IsCorrect": true},
+      {"Name": "cool", "IsCorrect": false},
+      {"Name": "warmth", "IsCorrect": false},
+      {"Name": "chilly", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "fa9a4d67-89b0-4837-84da-e43268302def",
+    "Language": "English",
+    "Name": "She ___ a beautiful dress yesterday.",
+    "Answers": [
+      {"Name": "wear", "IsCorrect": false},
+      {"Name": "wore", "IsCorrect": true},
+      {"Name": "wears", "IsCorrect": false},
+      {"Name": "wearing", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "fa9a4d67-89b0-4837-84da-e43268302def",
+    "Language": "English",
+    "Name": "Which word is a fruit?",
+    "Answers": [
+      {"Name": "banana", "IsCorrect": true},
+      {"Name": "carrot", "IsCorrect": false},
+      {"Name": "potato", "IsCorrect": false},
+      {"Name": "cucumber", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "fa9a4d67-89b0-4837-84da-e43268302def",
+    "Language": "English",
+    "Name": "I ___ happy today.",
+    "Answers": [
+      {"Name": "am", "IsCorrect": true},
+      {"Name": "is", "IsCorrect": false},
+      {"Name": "are", "IsCorrect": false},
+      {"Name": "be", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "fa9a4d67-89b0-4837-84da-e43268302def",
+    "Language": "English",
+    "Name": "Which word means 'big'?",
+    "Answers": [
+      {"Name": "large", "IsCorrect": true},
+      {"Name": "small", "IsCorrect": false},
+      {"Name": "tiny", "IsCorrect": false},
+      {"Name": "short", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "fa9a4d67-89b0-4837-84da-e43268302def",
+    "Language": "English",
+    "Name": "We ___ to the park every Sunday.",
+    "Answers": [
+      {"Name": "go", "IsCorrect": true},
+      {"Name": "goes", "IsCorrect": false},
+      {"Name": "gone", "IsCorrect": false},
+      {"Name": "going", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "fa9a4d67-89b0-4837-84da-e43268302def",
+    "Language": "English",
+    "Name": "I have ___ apples.",
+    "Answers": [
+      {"Name": "two", "IsCorrect": true},
+      {"Name": "to", "IsCorrect": false},
+      {"Name": "too", "IsCorrect": false},
+      {"Name": "twoes", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "fa9a4d67-89b0-4837-84da-e43268302def",
+    "Language": "English",
+    "Name": "Fill in the blank: She ___ a teacher.",
+    "Answers": [
+      {"Name": "is", "IsCorrect": true},
+      {"Name": "are", "IsCorrect": false},
+      {"Name": "am", "IsCorrect": false},
+      {"Name": "be", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "fa9a4d67-89b0-4837-84da-e43268302def",
+    "Language": "English",
+    "Name": "Which word is a number?",
+    "Answers": [
+      {"Name": "seven", "IsCorrect": true},
+      {"Name": "blue", "IsCorrect": false},
+      {"Name": "apple", "IsCorrect": false},
+      {"Name": "fast", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "fa9a4d67-89b0-4837-84da-e43268302def",
+    "Language": "English",
+    "Name": "I ___ playing football now.",
+    "Answers": [
+      {"Name": "am", "IsCorrect": true},
+      {"Name": "is", "IsCorrect": false},
+      {"Name": "are", "IsCorrect": false},
+      {"Name": "be", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "fa9a4d67-89b0-4837-84da-e43268302def",
+    "Language": "English",
+    "Name": "Which word means 'fast'?",
+    "Answers": [
+      {"Name": "quick", "IsCorrect": true},
+      {"Name": "slow", "IsCorrect": false},
+      {"Name": "lazy", "IsCorrect": false},
+      {"Name": "weak", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "fa9a4d67-89b0-4837-84da-e43268302def",
+    "Language": "English",
+    "Name": "I ___ a cup of tea every morning.",
+    "Answers": [
+      {"Name": "drink", "IsCorrect": true},
+      {"Name": "drinks", "IsCorrect": false},
+      {"Name": "drank", "IsCorrect": false},
+      {"Name": "drinking", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "fa9a4d67-89b0-4837-84da-e43268302def",
+    "Language": "English",
+    "Name": "Which word is an animal?",
+    "Answers": [
+      {"Name": "dog", "IsCorrect": true},
+      {"Name": "chair", "IsCorrect": false},
+      {"Name": "table", "IsCorrect": false},
+      {"Name": "pen", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "fa9a4d67-89b0-4837-84da-e43268302def",
+    "Language": "English",
+    "Name": "We ___ English at school.",
+    "Answers": [
+      {"Name": "study", "IsCorrect": true},
+      {"Name": "studies", "IsCorrect": false},
+      {"Name": "studying", "IsCorrect": false},
+      {"Name": "studied", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "57d4c26a-2fe4-45c5-99fe-41907a9cfeb7",
+    "Language": "English",
+    "Name": "Which word means 'a place where you can borrow books'?",
+    "Answers": [
+      {"Name": "library", "IsCorrect": true},
+      {"Name": "hospital", "IsCorrect": false},
+      {"Name": "bakery", "IsCorrect": false},
+      {"Name": "cinema", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "57d4c26a-2fe4-45c5-99fe-41907a9cfeb7",
+    "Language": "English",
+    "Name": "If it ___ tomorrow, we will go to the park.",
+    "Answers": [
+      {"Name": "rains", "IsCorrect": true},
+      {"Name": "rain", "IsCorrect": false},
+      {"Name": "rained", "IsCorrect": false},
+      {"Name": "raining", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "57d4c26a-2fe4-45c5-99fe-41907a9cfeb7",
+    "Language": "English",
+    "Name": "Which word is closest in meaning to 'big'?",
+    "Answers": [
+      {"Name": "small", "IsCorrect": false},
+      {"Name": "large", "IsCorrect": true},
+      {"Name": "thin", "IsCorrect": false},
+      {"Name": "short", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "57d4c26a-2fe4-45c5-99fe-41907a9cfeb7",
+    "Language": "English",
+    "Name": "I have never ___ sushi before.",
+    "Answers": [
+      {"Name": "eats", "IsCorrect": false},
+      {"Name": "eaten", "IsCorrect": true},
+      {"Name": "ate", "IsCorrect": false},
+      {"Name": "eating", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "57d4c26a-2fe4-45c5-99fe-41907a9cfeb7",
+    "Language": "English",
+    "Name": "Which word is a verb?",
+    "Answers": [
+      {"Name": "quickly", "IsCorrect": false},
+      {"Name": "run", "IsCorrect": true},
+      {"Name": "table", "IsCorrect": false},
+      {"Name": "blue", "IsCorrect": false}
+    ]
+  },
+  {
+      "DifficultyLevelId": "57d4c26a-2fe4-45c5-99fe-41907a9cfeb7",
+      "Language": "English",
+      "Name": "Which word means 'a place where you can borrow books'?",
+      "Answers": [
+          {"Name": "library", "IsCorrect": true},
+          {"Name": "hospital", "IsCorrect": false},
+          {"Name": "bakery", "IsCorrect": false},
+          {"Name": "cinema", "IsCorrect": false}
+      ]
+  },
+  {
+      "DifficultyLevelId": "57d4c26a-2fe4-45c5-99fe-41907a9cfeb7",
+      "Language": "English",
+      "Name": "If it ___ tomorrow, we will go to the park.",
+      "Answers": [
+          {"Name": "rains", "IsCorrect": true},
+          {"Name": "rain", "IsCorrect": false},
+          {"Name": "rained", "IsCorrect": false},
+          {"Name": "raining", "IsCorrect": false}
+      ]
+  },
+  {
+      "DifficultyLevelId": "57d4c26a-2fe4-45c5-99fe-41907a9cfeb7",
+      "Language": "English",
+      "Name": "Which word is closest in meaning to 'big'?",
+      "Answers": [
+          {"Name": "small", "IsCorrect": false},
+          {"Name": "large", "IsCorrect": true},
+          {"Name": "thin", "IsCorrect": false},
+          {"Name": "short", "IsCorrect": false}
+      ]
+  },
+  {
+      "DifficultyLevelId": "57d4c26a-2fe4-45c5-99fe-41907a9cfeb7",
+      "Language": "English",
+      "Name": "I have never ___ sushi before.",
+      "Answers": [
+          {"Name": "eats", "IsCorrect": false},
+          {"Name": "eaten", "IsCorrect": true},
+          {"Name": "ate", "IsCorrect": false},
+          {"Name": "eating", "IsCorrect": false}
+      ]
+  },
+  {
+      "DifficultyLevelId": "57d4c26a-2fe4-45c5-99fe-41907a9cfeb7",
+      "Language": "English",
+      "Name": "Which word is a verb?",
+      "Answers": [
+          {"Name": "quickly", "IsCorrect": false},
+          {"Name": "run", "IsCorrect": true},
+          {"Name": "table", "IsCorrect": false},
+          {"Name": "blue", "IsCorrect": false}
+      ]
+  },
+  {
+      "DifficultyLevelId": "57d4c26a-2fe4-45c5-99fe-41907a9cfeb7",
+      "Language": "English",
+      "Name": "He ___ to the gym every morning.",
+      "Answers": [
+          {"Name": "go", "IsCorrect": false},
+          {"Name": "goes", "IsCorrect": true},
+          {"Name": "gone", "IsCorrect": false},
+          {"Name": "going", "IsCorrect": false}
+      ]
+  },
+  {
+      "DifficultyLevelId": "57d4c26a-2fe4-45c5-99fe-41907a9cfeb7",
+      "Language": "English",
+      "Name": "Fill in the blank: She ___ like chocolate.",
+      "Answers": [
+          {"Name": "does", "IsCorrect": true},
+          {"Name": "do", "IsCorrect": false},
+          {"Name": "did", "IsCorrect": false},
+          {"Name": "done", "IsCorrect": false}
+      ]
+  },
+  {
+      "DifficultyLevelId": "57d4c26a-2fe4-45c5-99fe-41907a9cfeb7",
+      "Language": "English",
+      "Name": "Which word means 'angry'?",
+      "Answers": [
+          {"Name": "sad", "IsCorrect": false},
+          {"Name": "happy", "IsCorrect": false},
+          {"Name": "mad", "IsCorrect": true},
+          {"Name": "tired", "IsCorrect": false}
+      ]
+  },
+  {
+      "DifficultyLevelId": "57d4c26a-2fe4-45c5-99fe-41907a9cfeb7",
+      "Language": "English",
+      "Name": "We ___ dinner at 7 pm every day.",
+      "Answers": [
+          {"Name": "have", "IsCorrect": true},
+          {"Name": "has", "IsCorrect": false},
+          {"Name": "had", "IsCorrect": false},
+          {"Name": "having", "IsCorrect": false}
+      ]
+  },
+  {
+      "DifficultyLevelId": "57d4c26a-2fe4-45c5-99fe-41907a9cfeb7",
+      "Language": "English",
+      "Name": "Fill in the blank: They ___ in London last year.",
+      "Answers": [
+          {"Name": "live", "IsCorrect": false},
+          {"Name": "lived", "IsCorrect": true},
+          {"Name": "living", "IsCorrect": false},
+          {"Name": "lives", "IsCorrect": false}
+      ]
+  },
+  {
+      "DifficultyLevelId": "57d4c26a-2fe4-45c5-99fe-41907a9cfeb7",
+      "Language": "English",
+      "Name": "Which word is closest in meaning to 'easy'?",
+      "Answers": [
+          {"Name": "simple", "IsCorrect": true},
+          {"Name": "hard", "IsCorrect": false},
+          {"Name": "difficult", "IsCorrect": false},
+          {"Name": "complicated", "IsCorrect": false}
+      ]
+  },
+  {
+      "DifficultyLevelId": "57d4c26a-2fe4-45c5-99fe-41907a9cfeb7",
+      "Language": "English",
+      "Name": "Fill in the blank: I ___ my homework yesterday.",
+      "Answers": [
+          {"Name": "do", "IsCorrect": false},
+          {"Name": "did", "IsCorrect": true},
+          {"Name": "done", "IsCorrect": false},
+          {"Name": "doing", "IsCorrect": false}
+      ]
+  },
+  {
+      "DifficultyLevelId": "57d4c26a-2fe4-45c5-99fe-41907a9cfeb7",
+      "Language": "English",
+      "Name": "Which word means 'a person who cooks'?",
+      "Answers": [
+          {"Name": "teacher", "IsCorrect": false},
+          {"Name": "chef", "IsCorrect": true},
+          {"Name": "doctor", "IsCorrect": false},
+          {"Name": "driver", "IsCorrect": false}
+      ]
+  },
+  {
+      "DifficultyLevelId": "57d4c26a-2fe4-45c5-99fe-41907a9cfeb7",
+      "Language": "English",
+      "Name": "Fill in the blank: My brother ___ football every weekend.",
+      "Answers": [
+          {"Name": "plays", "IsCorrect": true},
+          {"Name": "play", "IsCorrect": false},
+          {"Name": "playing", "IsCorrect": false},
+          {"Name": "played", "IsCorrect": false}
+      ]
+  },
+  {
+      "DifficultyLevelId": "57d4c26a-2fe4-45c5-99fe-41907a9cfeb7",
+      "Language": "English",
+      "Name": "Which word is opposite of 'short'?",
+      "Answers": [
+          {"Name": "tall", "IsCorrect": true},
+          {"Name": "small", "IsCorrect": false},
+          {"Name": "thin", "IsCorrect": false},
+          {"Name": "weak", "IsCorrect": false}
+      ]
+  },
+  {
+      "DifficultyLevelId": "1cd354c5-ae2d-4ea0-baad-5742dae6162f",
+      "Language": "English",
+      "Name": "Fill in the blank: He acts ___ he were the boss of the company.",
+      "Answers": [
+          {"Name": "as if", "IsCorrect": true},
+          {"Name": "like", "IsCorrect": false},
+          {"Name": "so", "IsCorrect": false},
+          {"Name": "although", "IsCorrect": false}
+      ]
+  },
+  {
+      "DifficultyLevelId": "1cd354c5-ae2d-4ea0-baad-5742dae6162f",
+      "Language": "English",
+      "Name": "Which word means 'a short story with a moral lesson'?",
+      "Answers": [
+          {"Name": "fable", "IsCorrect": true},
+          {"Name": "novel", "IsCorrect": false},
+          {"Name": "poem", "IsCorrect": false},
+          {"Name": "article", "IsCorrect": false}
+      ]
+  },
+  {
+      "DifficultyLevelId": "1cd354c5-ae2d-4ea0-baad-5742dae6162f",
+      "Language": "English",
+      "Name": "Fill in the blank: It is important that every student ___ on time.",
+      "Answers": [
+          {"Name": "arrive", "IsCorrect": false},
+          {"Name": "arrives", "IsCorrect": false},
+          {"Name": "arrive", "IsCorrect": true},
+          {"Name": "arriving", "IsCorrect": false}
+      ]
+  },
+  {
+      "DifficultyLevelId": "1cd354c5-ae2d-4ea0-baad-5742dae6162f",
+      "Language": "English",
+      "Name": "Which word means 'to strongly suggest or recommend'?",
+      "Answers": [
+          {"Name": "advocate", "IsCorrect": true},
+          {"Name": "ignore", "IsCorrect": false},
+          {"Name": "avoid", "IsCorrect": false},
+          {"Name": "reject", "IsCorrect": false}
+      ]
+  },
+  {
+      "DifficultyLevelId": "1cd354c5-ae2d-4ea0-baad-5742dae6162f",
+      "Language": "English",
+      "Name": "Fill in the blank: No sooner ___ she arrived than it started raining.",
+      "Answers": [
+          {"Name": "had", "IsCorrect": true},
+          {"Name": "has", "IsCorrect": false},
+          {"Name": "did", "IsCorrect": false},
+          {"Name": "was", "IsCorrect": false}
+      ]
+  },
+  {
+      "DifficultyLevelId": "1cd354c5-ae2d-4ea0-baad-5742dae6162f",
+      "Language": "English",
+      "Name": "Despite ___ tired, he continued working.",
+      "Answers": [
+          {"Name": "being", "IsCorrect": true},
+          {"Name": "be", "IsCorrect": false},
+          {"Name": "was", "IsCorrect": false},
+          {"Name": "been", "IsCorrect": false}
+      ]
+  },
+  {
+      "DifficultyLevelId": "1cd354c5-ae2d-4ea0-baad-5742dae6162f",
+      "Language": "English",
+      "Name": "Which word means 'a person who studies the past'?",
+      "Answers": [
+          {"Name": "historian", "IsCorrect": true},
+          {"Name": "biologist", "IsCorrect": false},
+          {"Name": "chef", "IsCorrect": false},
+          {"Name": "teacher", "IsCorrect": false}
+      ]
+  },
+  {
+      "DifficultyLevelId": "1cd354c5-ae2d-4ea0-baad-5742dae6162f",
+      "Language": "English",
+      "Name": "She suggested ___ earlier to avoid the traffic.",
+      "Answers": [
+          {"Name": "to leave", "IsCorrect": false},
+          {"Name": "leave", "IsCorrect": false},
+          {"Name": "leaving", "IsCorrect": true},
+          {"Name": "left", "IsCorrect": false}
+      ]
+  },
+  {
+      "DifficultyLevelId": "1cd354c5-ae2d-4ea0-baad-5742dae6162f",
+      "Language": "English",
+      "Name": "Which word is closest in meaning to 'difficult to understand'?",
+      "Answers": [
+          {"Name": "obvious", "IsCorrect": false},
+          {"Name": "confusing", "IsCorrect": true},
+          {"Name": "clear", "IsCorrect": false},
+          {"Name": "simple", "IsCorrect": false}
+      ]
+  },
+  {
+      "DifficultyLevelId": "1cd354c5-ae2d-4ea0-baad-5742dae6162f",
+      "Language": "English",
+      "Name": "He ___ never seen such a beautiful sunset before.",
+      "Answers": [
+          {"Name": "have", "IsCorrect": false},
+          {"Name": "has", "IsCorrect": true},
+          {"Name": "had", "IsCorrect": false},
+          {"Name": "having", "IsCorrect": false}
+      ]
+  },
+  {
+      "DifficultyLevelId": "1cd354c5-ae2d-4ea0-baad-5742dae6162f",
+      "Language": "English",
+      "Name": "Fill in the blank: If I ___ more time, I would travel the world.",
+      "Answers": [
+          {"Name": "have", "IsCorrect": false},
+          {"Name": "had", "IsCorrect": true},
+          {"Name": "has", "IsCorrect": false},
+          {"Name": "having", "IsCorrect": false}
+      ]
+  },
+  {
+      "DifficultyLevelId": "1cd354c5-ae2d-4ea0-baad-5742dae6162f",
+      "Language": "English",
+      "Name": "Which word means 'able to do something easily'?",
+      "Answers": [
+          {"Name": "capable", "IsCorrect": true},
+          {"Name": "incapable", "IsCorrect": false},
+          {"Name": "weak", "IsCorrect": false},
+          {"Name": "clumsy", "IsCorrect": false}
+      ]
+  },
+  {
+      "DifficultyLevelId": "1cd354c5-ae2d-4ea0-baad-5742dae6162f",
+      "Language": "English",
+      "Name": "Fill in the blank: By the time she arrived, we ___ already eaten.",
+      "Answers": [
+          {"Name": "have", "IsCorrect": false},
+          {"Name": "had", "IsCorrect": true},
+          {"Name": "has", "IsCorrect": false},
+          {"Name": "having", "IsCorrect": false}
+      ]
+  },
+  {
+      "DifficultyLevelId": "1cd354c5-ae2d-4ea0-baad-5742dae6162f",
+      "Language": "English",
+      "Name": "Which word is closest in meaning to 'to improve something'?",
+      "Answers": [
+          {"Name": "enhance", "IsCorrect": true},
+          {"Name": "worsen", "IsCorrect": false},
+          {"Name": "destroy", "IsCorrect": false},
+          {"Name": "ignore", "IsCorrect": false}
+      ]
+  },
+  {
+      "DifficultyLevelId": "1cd354c5-ae2d-4ea0-baad-5742dae6162f",
+      "Language": "English",
+      "Name": "Fill in the blank: She acts ___ she knows everything.",
+      "Answers": [
+          {"Name": "as if", "IsCorrect": true},
+          {"Name": "like", "IsCorrect": false},
+          {"Name": "so that", "IsCorrect": false},
+          {"Name": "although", "IsCorrect": false}
+      ]
+  },
+  {
+      "DifficultyLevelId": "1cd354c5-ae2d-4ea0-baad-5742dae6162f",
+      "Language": "English",
+      "Name": "Which word means 'a person who teaches at a university'?",
+      "Answers": [
+          {"Name": "professor", "IsCorrect": true},
+          {"Name": "student", "IsCorrect": false},
+          {"Name": "teacher", "IsCorrect": false},
+          {"Name": "tutor", "IsCorrect": false}
+      ]
+  },
+  {
+      "DifficultyLevelId": "1cd354c5-ae2d-4ea0-baad-5742dae6162f",
+      "Language": "English",
+      "Name": "Fill in the blank: I wish I ___ more careful yesterday.",
+      "Answers": [
+          {"Name": "was", "IsCorrect": false},
+          {"Name": "had been", "IsCorrect": true},
+          {"Name": "were", "IsCorrect": false},
+          {"Name": "been", "IsCorrect": false}
+      ]
+  },
+  {
+      "DifficultyLevelId": "1cd354c5-ae2d-4ea0-baad-5742dae6162f",
+      "Language": "English",
+      "Name": "Which word is opposite in meaning to 'optimistic'?",
+      "Answers": [
+          {"Name": "pessimistic", "IsCorrect": true},
+          {"Name": "happy", "IsCorrect": false},
+          {"Name": "confident", "IsCorrect": false},
+          {"Name": "cheerful", "IsCorrect": false}
+      ]
+  },
+  {
+      "DifficultyLevelId": "1cd354c5-ae2d-4ea0-baad-5742dae6162f",
+      "Language": "English",
+      "Name": "Fill in the blank: The more he studies, ___ he becomes.",
+      "Answers": [
+          {"Name": "the intelligent", "IsCorrect": false},
+          {"Name": "the more intelligent", "IsCorrect": true},
+          {"Name": "more intelligent", "IsCorrect": false},
+          {"Name": "intelligent", "IsCorrect": false}
+      ]
+  },
+  {
+      "DifficultyLevelId": "1cd354c5-ae2d-4ea0-baad-5742dae6162f",
+      "Language": "English",
+      "Name": "Which word means 'to say something is not true'?",
+      "Answers": [
+          {"Name": "deny", "IsCorrect": true},
+          {"Name": "admit", "IsCorrect": false},
+          {"Name": "confirm", "IsCorrect": false},
+          {"Name": "agree", "IsCorrect": false}
+      ]
+  },
+  {
+    "DifficultyLevelId": "70fbf803-119f-4be1-a6b5-4da306b4828f",
+    "Language": "English",
+    "Name": "The committee demanded that the report ___ immediately.",
+    "Answers": [
+      {"Name": "is submitted", "IsCorrect": false},
+      {"Name": "submitted", "IsCorrect": false},
+      {"Name": "be submitted", "IsCorrect": true},
+      {"Name": "submits", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "70fbf803-119f-4be1-a6b5-4da306b4828f",
+    "Language": "English",
+    "Name": "Which word means 'fear of heights'?",
+    "Answers": [
+      {"Name": "claustrophobia", "IsCorrect": false},
+      {"Name": "acrophobia", "IsCorrect": true},
+      {"Name": "hydrophobia", "IsCorrect": false},
+      {"Name": "agoraphobia", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "70fbf803-119f-4be1-a6b5-4da306b4828f",
+    "Language": "English",
+    "Name": "___ his reputation, he refused to compromise on quality.",
+    "Answers": [
+      {"Name": "In spite of", "IsCorrect": false},
+      {"Name": "Considering", "IsCorrect": false},
+      {"Name": "Concerning", "IsCorrect": false},
+      {"Name": "In order to", "IsCorrect": true}
+    ]
+  },
+  {
+    "DifficultyLevelId": "70fbf803-119f-4be1-a6b5-4da306b4828f",
+    "Language": "English",
+    "Name": "Which word is closest in meaning to 'extremely careful'?",
+    "Answers": [
+      {"Name": "meticulous", "IsCorrect": true},
+      {"Name": "reckless", "IsCorrect": false},
+      {"Name": "careless", "IsCorrect": false},
+      {"Name": "negligent", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "70fbf803-119f-4be1-a6b5-4da306b4828f",
+    "Language": "English",
+    "Name": "Had she ___ harder, she would have passed the exam.",
+    "Answers": [
+      {"Name": "study", "IsCorrect": false},
+      {"Name": "studied", "IsCorrect": true},
+      {"Name": "studying", "IsCorrect": false},
+      {"Name": "studies", "IsCorrect": false}
+    ]
+  }
+]

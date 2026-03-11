@@ -1,0 +1,882 @@
+﻿[
+  {
+    "DifficultyLevelId": "fa9a4d67-89b0-4837-84da-e43268302def",
+    "Language": "Spanish",
+    "Name": "Yo ___ un perro.",
+    "Answers": [
+      {"Name": "tengo", "IsCorrect": true},
+      {"Name": "tener", "IsCorrect": false},
+      {"Name": "tienes", "IsCorrect": false},
+      {"Name": "tenemos", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "fa9a4d67-89b0-4837-84da-e43268302def",
+    "Language": "Spanish",
+    "Name": "¿Cuál es el color del cielo?",
+    "Answers": [
+      {"Name": "azul", "IsCorrect": true},
+      {"Name": "verde", "IsCorrect": false},
+      {"Name": "rojo", "IsCorrect": false},
+      {"Name": "amarillo", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "fa9a4d67-89b0-4837-84da-e43268302def",
+    "Language": "Spanish",
+    "Name": "Ella ___ a la escuela todos los días.",
+    "Answers": [
+      {"Name": "va", "IsCorrect": true},
+      {"Name": "voy", "IsCorrect": false},
+      {"Name": "vamos", "IsCorrect": false},
+      {"Name": "van", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "fa9a4d67-89b0-4837-84da-e43268302def",
+    "Language": "Spanish",
+    "Name": "Nosotros ___ pan en el desayuno.",
+    "Answers": [
+      {"Name": "comemos", "IsCorrect": true},
+      {"Name": "come", "IsCorrect": false},
+      {"Name": "comen", "IsCorrect": false},
+      {"Name": "como", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "fa9a4d67-89b0-4837-84da-e43268302def",
+    "Language": "Spanish",
+    "Name": "¿Cuál palabra es un número?",
+    "Answers": [
+      {"Name": "cinco", "IsCorrect": true},
+      {"Name": "rojo", "IsCorrect": false},
+      {"Name": "perro", "IsCorrect": false},
+      {"Name": "grande", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "fa9a4d67-89b0-4837-84da-e43268302def",
+    "Language": "Spanish",
+    "Name": "Yo ___ feliz hoy.",
+    "Answers": [
+      {"Name": "estoy", "IsCorrect": true},
+      {"Name": "es", "IsCorrect": false},
+      {"Name": "son", "IsCorrect": false},
+      {"Name": "esta", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "fa9a4d67-89b0-4837-84da-e43268302def",
+    "Language": "Spanish",
+    "Name": "El gato ___ en el jardín.",
+    "Answers": [
+      {"Name": "está", "IsCorrect": true},
+      {"Name": "estan", "IsCorrect": false},
+      {"Name": "es", "IsCorrect": false},
+      {"Name": "soy", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "fa9a4d67-89b0-4837-84da-e43268302def",
+    "Language": "Spanish",
+    "Name": "¿Cuál es un animal?",
+    "Answers": [
+      {"Name": "perro", "IsCorrect": true},
+      {"Name": "mesa", "IsCorrect": false},
+      {"Name": "silla", "IsCorrect": false},
+      {"Name": "pluma", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "fa9a4d67-89b0-4837-84da-e43268302def",
+    "Language": "Spanish",
+    "Name": "Nosotros ___ al cine los fines de semana.",
+    "Answers": [
+      {"Name": "vamos", "IsCorrect": true},
+      {"Name": "va", "IsCorrect": false},
+      {"Name": "van", "IsCorrect": false},
+      {"Name": "voy", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "fa9a4d67-89b0-4837-84da-e43268302def",
+    "Language": "Spanish",
+    "Name": "Ella ___ libros interesantes.",
+    "Answers": [
+      {"Name": "lee", "IsCorrect": true},
+      {"Name": "leer", "IsCorrect": false},
+      {"Name": "leo", "IsCorrect": false},
+      {"Name": "leemos", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "fa9a4d67-89b0-4837-84da-e43268302def",
+    "Language": "Spanish",
+    "Name": "¿Cuál palabra significa 'grande'?",
+    "Answers": [
+      {"Name": "grande", "IsCorrect": true},
+      {"Name": "pequeño", "IsCorrect": false},
+      {"Name": "corto", "IsCorrect": false},
+      {"Name": "delgado", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "fa9a4d67-89b0-4837-84da-e43268302def",
+    "Language": "Spanish",
+    "Name": "Yo ___ un vaso de agua.",
+    "Answers": [
+      {"Name": "bebo", "IsCorrect": true},
+      {"Name": "bebe", "IsCorrect": false},
+      {"Name": "bebes", "IsCorrect": false},
+      {"Name": "bebemos", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "fa9a4d67-89b0-4837-84da-e43268302def",
+    "Language": "Spanish",
+    "Name": "Nosotros ___ música en la fiesta.",
+    "Answers": [
+      {"Name": "escuchamos", "IsCorrect": true},
+      {"Name": "escucha", "IsCorrect": false},
+      {"Name": "escucho", "IsCorrect": false},
+      {"Name": "escuchan", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "fa9a4d67-89b0-4837-84da-e43268302def",
+    "Language": "Spanish",
+    "Name": "Él ___ en la oficina todos los días.",
+    "Answers": [
+      {"Name": "trabaja", "IsCorrect": true},
+      {"Name": "trabajan", "IsCorrect": false},
+      {"Name": "trabajo", "IsCorrect": false},
+      {"Name": "trabajamos", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "fa9a4d67-89b0-4837-84da-e43268302def",
+    "Language": "Spanish",
+    "Name": "Yo ___ temprano por la mañana.",
+    "Answers": [
+      {"Name": "me levanto", "IsCorrect": true},
+      {"Name": "se levanta", "IsCorrect": false},
+      {"Name": "te levantas", "IsCorrect": false},
+      {"Name": "nos levantamos", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "fa9a4d67-89b0-4837-84da-e43268302def",
+    "Language": "Spanish",
+    "Name": "¿Cuál palabra significa 'feliz'?",
+    "Answers": [
+      {"Name": "feliz", "IsCorrect": true},
+      {"Name": "triste", "IsCorrect": false},
+      {"Name": "enojado", "IsCorrect": false},
+      {"Name": "cansado", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "fa9a4d67-89b0-4837-84da-e43268302def",
+    "Language": "Spanish",
+    "Name": "Ella ___ al supermercado los lunes.",
+    "Answers": [
+      {"Name": "va", "IsCorrect": true},
+      {"Name": "vamos", "IsCorrect": false},
+      {"Name": "van", "IsCorrect": false},
+      {"Name": "voy", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "fa9a4d67-89b0-4837-84da-e43268302def",
+    "Language": "Spanish",
+    "Name": "Nosotros ___ con nuestros amigos.",
+    "Answers": [
+      {"Name": "jugamos", "IsCorrect": true},
+      {"Name": "juego", "IsCorrect": false},
+      {"Name": "juegan", "IsCorrect": false},
+      {"Name": "juega", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "fa9a4d67-89b0-4837-84da-e43268302def",
+    "Language": "Spanish",
+    "Name": "Yo ___ una carta a mi amigo.",
+    "Answers": [
+      {"Name": "escribo", "IsCorrect": true},
+      {"Name": "escribe", "IsCorrect": false},
+      {"Name": "escriben", "IsCorrect": false},
+      {"Name": "escribimos", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "fa9a4d67-89b0-4837-84da-e43268302def",
+    "Language": "Spanish",
+    "Name": "¿Cuál palabra es un día de la semana?",
+    "Answers": [
+      {"Name": "lunes", "IsCorrect": true},
+      {"Name": "rojo", "IsCorrect": false},
+      {"Name": "perro", "IsCorrect": false},
+      {"Name": "azul", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "57d4c26a-2fe4-45c5-99fe-41907a9cfeb7",
+    "Language": "Spanish",
+    "Name": "Si llueve mañana, nosotros ___ en casa.",
+    "Answers": [
+      {"Name": "quedaremos", "IsCorrect": true},
+      {"Name": "quedamos", "IsCorrect": false},
+      {"Name": "quedarán", "IsCorrect": false},
+      {"Name": "queda", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "57d4c26a-2fe4-45c5-99fe-41907a9cfeb7",
+    "Language": "Spanish",
+    "Name": "¿Cuál palabra es sinónimo de 'rápido'?",
+    "Answers": [
+      {"Name": "veloz", "IsCorrect": true},
+      {"Name": "lento", "IsCorrect": false},
+      {"Name": "débil", "IsCorrect": false},
+      {"Name": "tranquilo", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "57d4c26a-2fe4-45c5-99fe-41907a9cfeb7",
+    "Language": "Spanish",
+    "Name": "Él no ___ comido todavía.",
+    "Answers": [
+      {"Name": "ha", "IsCorrect": true},
+      {"Name": "haber", "IsCorrect": false},
+      {"Name": "han", "IsCorrect": false},
+      {"Name": "haya", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "57d4c26a-2fe4-45c5-99fe-41907a9cfeb7",
+    "Language": "Spanish",
+    "Name": "Yo deseo que tú ___ feliz.",
+    "Answers": [
+      {"Name": "seas", "IsCorrect": true},
+      {"Name": "eres", "IsCorrect": false},
+      {"Name": "estés", "IsCorrect": false},
+      {"Name": "estás", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "57d4c26a-2fe4-45c5-99fe-41907a9cfeb7",
+    "Language": "Spanish",
+    "Name": "Nosotros viajaremos a España ___ tengamos tiempo.",
+    "Answers": [
+      {"Name": "si", "IsCorrect": true},
+      {"Name": "cuando", "IsCorrect": false},
+      {"Name": "aunque", "IsCorrect": false},
+      {"Name": "porque", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "57d4c26a-2fe4-45c5-99fe-41907a9cfeb7",
+    "Language": "Spanish",
+    "Name": "El libro que ___ leíste es interesante.",
+    "Answers": [
+      {"Name": "tú", "IsCorrect": false},
+      {"Name": "has", "IsCorrect": true},
+      {"Name": "haces", "IsCorrect": false},
+      {"Name": "ser", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "57d4c26a-2fe4-45c5-99fe-41907a9cfeb7",
+    "Language": "Spanish",
+    "Name": "¿Cuál palabra significa 'trabajador'?",
+    "Answers": [
+      {"Name": "diligente", "IsCorrect": true},
+      {"Name": "perezoso", "IsCorrect": false},
+      {"Name": "tonto", "IsCorrect": false},
+      {"Name": "débil", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "57d4c26a-2fe4-45c5-99fe-41907a9cfeb7",
+    "Language": "Spanish",
+    "Name": "Si yo ___ rico, viajaría por el mundo.",
+    "Answers": [
+      {"Name": "fuera", "IsCorrect": true},
+      {"Name": "soy", "IsCorrect": false},
+      {"Name": "era", "IsCorrect": false},
+      {"Name": "es", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "57d4c26a-2fe4-45c5-99fe-41907a9cfeb7",
+    "Language": "Spanish",
+    "Name": "Ellos no ___ la película todavía.",
+    "Answers": [
+      {"Name": "han visto", "IsCorrect": true},
+      {"Name": "vieron", "IsCorrect": false},
+      {"Name": "verán", "IsCorrect": false},
+      {"Name": "ven", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "57d4c26a-2fe4-45c5-99fe-41907a9cfeb7",
+    "Language": "Spanish",
+    "Name": "Cuando llegues, nosotros ya ___ comido.",
+    "Answers": [
+      {"Name": "habremos", "IsCorrect": true},
+      {"Name": "hemos", "IsCorrect": false},
+      {"Name": "había", "IsCorrect": false},
+      {"Name": "habían", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "57d4c26a-2fe4-45c5-99fe-41907a9cfeb7",
+    "Language": "Spanish",
+    "Name": "No creo que él ___ la respuesta correcta.",
+    "Answers": [
+      {"Name": "sepa", "IsCorrect": true},
+      {"Name": "sabe", "IsCorrect": false},
+      {"Name": "sabrá", "IsCorrect": false},
+      {"Name": "supiera", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "57d4c26a-2fe4-45c5-99fe-41907a9cfeb7",
+    "Language": "Spanish",
+    "Name": "Ella actúa ___ si fuera la jefa.",
+    "Answers": [
+      {"Name": "como", "IsCorrect": true},
+      {"Name": "como si", "IsCorrect": false},
+      {"Name": "aunque", "IsCorrect": false},
+      {"Name": "cuando", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "57d4c26a-2fe4-45c5-99fe-41907a9cfeb7",
+    "Language": "Spanish",
+    "Name": "No estoy seguro de que ellos ___ la verdad.",
+    "Answers": [
+      {"Name": "digan", "IsCorrect": true},
+      {"Name": "dicen", "IsCorrect": false},
+      {"Name": "dijo", "IsCorrect": false},
+      {"Name": "decir", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "57d4c26a-2fe4-45c5-99fe-41907a9cfeb7",
+    "Language": "Spanish",
+    "Name": "Si tú ___ más estudioso, aprobarías el examen.",
+    "Answers": [
+      {"Name": "fueras", "IsCorrect": true},
+      {"Name": "eres", "IsCorrect": false},
+      {"Name": "serías", "IsCorrect": false},
+      {"Name": "fuistes", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "57d4c26a-2fe4-45c5-99fe-41907a9cfeb7",
+    "Language": "Spanish",
+    "Name": "Aunque ___ cansados, seguimos trabajando.",
+    "Answers": [
+      {"Name": "estábamos", "IsCorrect": true},
+      {"Name": "estuvimos", "IsCorrect": false},
+      {"Name": "estén", "IsCorrect": false},
+      {"Name": "estás", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "57d4c26a-2fe4-45c5-99fe-41907a9cfeb7",
+    "Language": "Spanish",
+    "Name": "Ojalá que ella ___ a tiempo.",
+    "Answers": [
+      {"Name": "llegue", "IsCorrect": true},
+      {"Name": "llega", "IsCorrect": false},
+      {"Name": "llegó", "IsCorrect": false},
+      {"Name": "llegaría", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "57d4c26a-2fe4-45c5-99fe-41907a9cfeb7",
+    "Language": "Spanish",
+    "Name": "No me parece que ellos ___ la solución correcta.",
+    "Answers": [
+      {"Name": "tengan", "IsCorrect": true},
+      {"Name": "tienen", "IsCorrect": false},
+      {"Name": "tenían", "IsCorrect": false},
+      {"Name": "tuvieran", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "57d4c26a-2fe4-45c5-99fe-41907a9cfeb7",
+    "Language": "Spanish",
+    "Name": "Si yo ___ más tiempo, aprendería otro idioma.",
+    "Answers": [
+      {"Name": "tuviera", "IsCorrect": true},
+      {"Name": "tengo", "IsCorrect": false},
+      {"Name": "tenía", "IsCorrect": false},
+      {"Name": "tendría", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "57d4c26a-2fe4-45c5-99fe-41907a9cfeb7",
+    "Language": "Spanish",
+    "Name": "Ellos irán a la playa a menos que ___ lluvia.",
+    "Answers": [
+      {"Name": "haya", "IsCorrect": true},
+      {"Name": "hay", "IsCorrect": false},
+      {"Name": "hubo", "IsCorrect": false},
+      {"Name": "ha", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "57d4c26a-2fe4-45c5-99fe-41907a9cfeb7",
+    "Language": "Spanish",
+    "Name": "Es necesario que todos los estudiantes ___ sus tareas.",
+    "Answers": [
+      {"Name": "entreguen", "IsCorrect": true},
+      {"Name": "entregan", "IsCorrect": false},
+      {"Name": "entregó", "IsCorrect": false},
+      {"Name": "entregar", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "1cd354c5-ae2d-4ea0-baad-5742dae6162f",
+    "Language": "Spanish",
+    "Name": "A menos que tú ___, no podremos empezar la reunión.",
+    "Answers": [
+      {"Name": "llegues", "IsCorrect": true},
+      {"Name": "llegas", "IsCorrect": false},
+      {"Name": "llegaste", "IsCorrect": false},
+      {"Name": "llegará", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "1cd354c5-ae2d-4ea0-baad-5742dae6162f",
+    "Language": "Spanish",
+    "Name": "Si yo ___ más tiempo, habría viajado por el mundo.",
+    "Answers": [
+      {"Name": "hubiera tenido", "IsCorrect": true},
+      {"Name": "tuviera", "IsCorrect": false},
+      {"Name": "tenía", "IsCorrect": false},
+      {"Name": "tengo", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "1cd354c5-ae2d-4ea0-baad-5742dae6162f",
+    "Language": "Spanish",
+    "Name": "No creo que ellos ___ la verdad completa.",
+    "Answers": [
+      {"Name": "digan", "IsCorrect": true},
+      {"Name": "dicen", "IsCorrect": false},
+      {"Name": "dijeron", "IsCorrect": false},
+      {"Name": "decían", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "1cd354c5-ae2d-4ea0-baad-5742dae6162f",
+    "Language": "Spanish",
+    "Name": "Es improbable que ella ___ tan rápido.",
+    "Answers": [
+      {"Name": "corra", "IsCorrect": true},
+      {"Name": "corre", "IsCorrect": false},
+      {"Name": "corría", "IsCorrect": false},
+      {"Name": "corrí", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "1cd354c5-ae2d-4ea0-baad-5742dae6162f",
+    "Language": "Spanish",
+    "Name": "Aunque ___ cansados, seguimos trabajando.",
+    "Answers": [
+      {"Name": "estuvimos", "IsCorrect": false},
+      {"Name": "estábamos", "IsCorrect": true},
+      {"Name": "estén", "IsCorrect": false},
+      {"Name": "estan", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "1cd354c5-ae2d-4ea0-baad-5742dae6162f",
+    "Language": "Spanish",
+    "Name": "Ojalá que tú ___ todo correctamente.",
+    "Answers": [
+      {"Name": "hagas", "IsCorrect": true},
+      {"Name": "haces", "IsCorrect": false},
+      {"Name": "hiciste", "IsCorrect": false},
+      {"Name": "harás", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "1cd354c5-ae2d-4ea0-baad-5742dae6162f",
+    "Language": "Spanish",
+    "Name": "Si yo ___ sabido antes, habría ayudado.",
+    "Answers": [
+      {"Name": "hubiera", "IsCorrect": true},
+      {"Name": "hubo", "IsCorrect": false},
+      {"Name": "habría", "IsCorrect": false},
+      {"Name": "tenía", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "1cd354c5-ae2d-4ea0-baad-5742dae6162f",
+    "Language": "Spanish",
+    "Name": "No es cierto que ellos ___ todo el trabajo solos.",
+    "Answers": [
+      {"Name": "hayan hecho", "IsCorrect": true},
+      {"Name": "hicieron", "IsCorrect": false},
+      {"Name": "hacen", "IsCorrect": false},
+      {"Name": "habían hecho", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "1cd354c5-ae2d-4ea0-baad-5742dae6162f",
+    "Language": "Spanish",
+    "Name": "Es importante que todos ___ sus tareas a tiempo.",
+    "Answers": [
+      {"Name": "entreguen", "IsCorrect": true},
+      {"Name": "entregan", "IsCorrect": false},
+      {"Name": "entregaron", "IsCorrect": false},
+      {"Name": "entregará", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "1cd354c5-ae2d-4ea0-baad-5742dae6162f",
+    "Language": "Spanish",
+    "Name": "Si ella ___ más estudiosa, aprobaría sin problemas.",
+    "Answers": [
+      {"Name": "fuera", "IsCorrect": true},
+      {"Name": "era", "IsCorrect": false},
+      {"Name": "es", "IsCorrect": false},
+      {"Name": "será", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "1cd354c5-ae2d-4ea0-baad-5742dae6162f",
+    "Language": "Spanish",
+    "Name": "Aunque ___ llueva, iremos al parque.",
+    "Answers": [
+      {"Name": "esté", "IsCorrect": true},
+      {"Name": "está", "IsCorrect": false},
+      {"Name": "estaba", "IsCorrect": false},
+      {"Name": "estuvo", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "1cd354c5-ae2d-4ea0-baad-5742dae6162f",
+    "Language": "Spanish",
+    "Name": "No creo que ellos ___ entendido la lección.",
+    "Answers": [
+      {"Name": "hayan", "IsCorrect": true},
+      {"Name": "han", "IsCorrect": false},
+      {"Name": "hubieran", "IsCorrect": false},
+      {"Name": "habían", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "1cd354c5-ae2d-4ea0-baad-5742dae6162f",
+    "Language": "Spanish",
+    "Name": "Si tú ___ más cuidadoso, no habría problemas.",
+    "Answers": [
+      {"Name": "fueras", "IsCorrect": true},
+      {"Name": "eras", "IsCorrect": false},
+      {"Name": "serás", "IsCorrect": false},
+      {"Name": "fuiste", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "1cd354c5-ae2d-4ea0-baad-5742dae6162f",
+    "Language": "Spanish",
+    "Name": "No parece que él ___ preparado para el examen.",
+    "Answers": [
+      {"Name": "esté", "IsCorrect": true},
+      {"Name": "está", "IsCorrect": false},
+      {"Name": "estuvo", "IsCorrect": false},
+      {"Name": "estaba", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "1cd354c5-ae2d-4ea0-baad-5742dae6162f",
+    "Language": "Spanish",
+    "Name": "Ojalá que nosotros ___ a tiempo para la reunión.",
+    "Answers": [
+      {"Name": "lleguemos", "IsCorrect": true},
+      {"Name": "llegamos", "IsCorrect": false},
+      {"Name": "llegamos", "IsCorrect": false},
+      {"Name": "llegaremos", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "1cd354c5-ae2d-4ea0-baad-5742dae6162f",
+    "Language": "Spanish",
+    "Name": "Si ellos ___ escuchado, habrían entendido mejor.",
+    "Answers": [
+      {"Name": "hubieran", "IsCorrect": true},
+      {"Name": "habían", "IsCorrect": false},
+      {"Name": "tuvieron", "IsCorrect": false},
+      {"Name": "tenían", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "1cd354c5-ae2d-4ea0-baad-5742dae6162f",
+    "Language": "Spanish",
+    "Name": "Es probable que ella ___ ganado el premio.",
+    "Answers": [
+      {"Name": "haya", "IsCorrect": true},
+      {"Name": "ha", "IsCorrect": false},
+      {"Name": "había", "IsCorrect": false},
+      {"Name": "hubo", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "1cd354c5-ae2d-4ea0-baad-5742dae6162f",
+    "Language": "Spanish",
+    "Name": "Aunque tú ___ cansado, debes seguir estudiando.",
+    "Answers": [
+      {"Name": "estés", "IsCorrect": true},
+      {"Name": "estás", "IsCorrect": false},
+      {"Name": "estabas", "IsCorrect": false},
+      {"Name": "estuviste", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "1cd354c5-ae2d-4ea0-baad-5742dae6162f",
+    "Language": "Spanish",
+    "Name": "Si yo ___ sabido antes, habría prevenido el error.",
+    "Answers": [
+      {"Name": "hubiera", "IsCorrect": true},
+      {"Name": "había", "IsCorrect": false},
+      {"Name": "tuve", "IsCorrect": false},
+      {"Name": "tuviera", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "1cd354c5-ae2d-4ea0-baad-5742dae6162f",
+    "Language": "Spanish",
+    "Name": "No creo que ellos ___ terminado la tarea a tiempo.",
+    "Answers": [
+      {"Name": "hayan", "IsCorrect": true},
+      {"Name": "han", "IsCorrect": false},
+      {"Name": "hubieran", "IsCorrect": false},
+      {"Name": "habían", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "70fbf803-119f-4be1-a6b5-4da306b4828f",
+    "Language": "Spanish",
+    "Name": "A menos que él ___ asistido, no podrá entender la lección.",
+    "Answers": [
+      {"Name": "hubiera", "IsCorrect": true},
+      {"Name": "ha", "IsCorrect": false},
+      {"Name": "tenía", "IsCorrect": false},
+      {"Name": "tuvo", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "70fbf803-119f-4be1-a6b5-4da306b4828f",
+    "Language": "Spanish",
+    "Name": "Es esencial que los documentos ___ entregados antes de la fecha límite.",
+    "Answers": [
+      {"Name": "sean", "IsCorrect": true},
+      {"Name": "son", "IsCorrect": false},
+      {"Name": "fueron", "IsCorrect": false},
+      {"Name": "están", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "70fbf803-119f-4be1-a6b5-4da306b4828f",
+    "Language": "Spanish",
+    "Name": "Si yo ___ más diligente, habría logrado mejores resultados.",
+    "Answers": [
+      {"Name": "hubiera sido", "IsCorrect": true},
+      {"Name": "fui", "IsCorrect": false},
+      {"Name": "era", "IsCorrect": false},
+      {"Name": "seré", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "70fbf803-119f-4be1-a6b5-4da306b4828f",
+    "Language": "Spanish",
+    "Name": "Aunque ellos ___ avisados, cometieron el error.",
+    "Answers": [
+      {"Name": "hubieran", "IsCorrect": true},
+      {"Name": "tenían", "IsCorrect": false},
+      {"Name": "tuvieron", "IsCorrect": false},
+      {"Name": "habían", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "70fbf803-119f-4be1-a6b5-4da306b4828f",
+    "Language": "Spanish",
+    "Name": "No parece que ella ___ preparado para la presentación.",
+    "Answers": [
+      {"Name": "esté", "IsCorrect": true},
+      {"Name": "está", "IsCorrect": false},
+      {"Name": "estuvo", "IsCorrect": false},
+      {"Name": "estaba", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "70fbf803-119f-4be1-a6b5-4da306b4828f",
+    "Language": "Spanish",
+    "Name": "Ojalá que nosotros ___ completado el proyecto a tiempo.",
+    "Answers": [
+      {"Name": "hayamos", "IsCorrect": true},
+      {"Name": "hemos", "IsCorrect": false},
+      {"Name": "habíamos", "IsCorrect": false},
+      {"Name": "hubiéramos", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "70fbf803-119f-4be1-a6b5-4da306b4828f",
+    "Language": "Spanish",
+    "Name": "Si tú ___ más concentrado, habrías resuelto el problema.",
+    "Answers": [
+      {"Name": "hubieras estado", "IsCorrect": true},
+      {"Name": "estabas", "IsCorrect": false},
+      {"Name": "estés", "IsCorrect": false},
+      {"Name": "estarás", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "70fbf803-119f-4be1-a6b5-4da306b4828f",
+    "Language": "Spanish",
+    "Name": "Es improbable que ellos ___ completado la tarea sin ayuda.",
+    "Answers": [
+      {"Name": "hayan", "IsCorrect": true},
+      {"Name": "han", "IsCorrect": false},
+      {"Name": "hubieran", "IsCorrect": false},
+      {"Name": "habían", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "70fbf803-119f-4be1-a6b5-4da306b4828f",
+    "Language": "Spanish",
+    "Name": "A fin de que todos ___ comprendido, explicaremos otra vez.",
+    "Answers": [
+      {"Name": "hayan", "IsCorrect": true},
+      {"Name": "han", "IsCorrect": false},
+      {"Name": "habían", "IsCorrect": false},
+      {"Name": "hubieran", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "70fbf803-119f-4be1-a6b5-4da306b4828f",
+    "Language": "Spanish",
+    "Name": "Si yo ___ sabido antes, habría prevenido el error.",
+    "Answers": [
+      {"Name": "hubiera", "IsCorrect": true},
+      {"Name": "hubo", "IsCorrect": false},
+      {"Name": "tenía", "IsCorrect": false},
+      {"Name": "tuve", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "70fbf803-119f-4be1-a6b5-4da306b4828f",
+    "Language": "Spanish",
+    "Name": "No creo que ellos ___ entendido las instrucciones completamente.",
+    "Answers": [
+      {"Name": "hayan", "IsCorrect": true},
+      {"Name": "han", "IsCorrect": false},
+      {"Name": "hubieran", "IsCorrect": false},
+      {"Name": "habían", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "70fbf803-119f-4be1-a6b5-4da306b4828f",
+    "Language": "Spanish",
+    "Name": "Aunque tú ___ cansado, debes seguir trabajando.",
+    "Answers": [
+      {"Name": "estés", "IsCorrect": true},
+      {"Name": "estás", "IsCorrect": false},
+      {"Name": "estabas", "IsCorrect": false},
+      {"Name": "estuviste", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "70fbf803-119f-4be1-a6b5-4da306b4828f",
+    "Language": "Spanish",
+    "Name": "Si ellos ___ escuchado, habrían aprendido más.",
+    "Answers": [
+      {"Name": "hubieran", "IsCorrect": true},
+      {"Name": "habían", "IsCorrect": false},
+      {"Name": "tuvieron", "IsCorrect": false},
+      {"Name": "tenían", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "70fbf803-119f-4be1-a6b5-4da306b4828f",
+    "Language": "Spanish",
+    "Name": "Es probable que ella ___ ganado el concurso.",
+    "Answers": [
+      {"Name": "haya", "IsCorrect": true},
+      {"Name": "ha", "IsCorrect": false},
+      {"Name": "hubo", "IsCorrect": false},
+      {"Name": "había", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "70fbf803-119f-4be1-a6b5-4da306b4828f",
+    "Language": "Spanish",
+    "Name": "A menos que él ___ estudiado, no aprobará el examen.",
+    "Answers": [
+      {"Name": "haya", "IsCorrect": true},
+      {"Name": "ha", "IsCorrect": false},
+      {"Name": "hubo", "IsCorrect": false},
+      {"Name": "hubiera", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "70fbf803-119f-4be1-a6b5-4da306b4828f",
+    "Language": "Spanish",
+    "Name": "Es fundamental que todos los informes ___ entregados puntualmente.",
+    "Answers": [
+      {"Name": "sean", "IsCorrect": true},
+      {"Name": "son", "IsCorrect": false},
+      {"Name": "fueron", "IsCorrect": false},
+      {"Name": "están", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "70fbf803-119f-4be1-a6b5-4da306b4828f",
+    "Language": "Spanish",
+    "Name": "No creo que él ___ comprendido la lección.",
+    "Answers": [
+      {"Name": "haya", "IsCorrect": true},
+      {"Name": "ha", "IsCorrect": false},
+      {"Name": "hubo", "IsCorrect": false},
+      {"Name": "había", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "70fbf803-119f-4be1-a6b5-4da306b4828f",
+    "Language": "Spanish",
+    "Name": "Si tú ___ más atento, habrías evitado el problema.",
+    "Answers": [
+      {"Name": "hubieras sido", "IsCorrect": true},
+      {"Name": "fuiste", "IsCorrect": false},
+      {"Name": "eras", "IsCorrect": false},
+      {"Name": "serás", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "70fbf803-119f-4be1-a6b5-4da306b4828f",
+    "Language": "Spanish",
+    "Name": "Aunque ellos ___ avisados, fallaron en la tarea.",
+    "Answers": [
+      {"Name": "hubieran sido", "IsCorrect": true},
+      {"Name": "fueron", "IsCorrect": false},
+      {"Name": "eran", "IsCorrect": false},
+      {"Name": "estuvieron", "IsCorrect": false}
+    ]
+  },
+  {
+    "DifficultyLevelId": "70fbf803-119f-4be1-a6b5-4da306b4828f",
+    "Language": "Spanish",
+    "Name": "A fin de que todos ___ entendido, explicaremos otra vez.",
+    "Answers": [
+      {"Name": "hayan", "IsCorrect": true},
+      {"Name": "han", "IsCorrect": false},
+      {"Name": "hubieran", "IsCorrect": false},
+      {"Name": "habían", "IsCorrect": false}
+    ]
+  }
+]

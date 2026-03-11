@@ -6,4 +6,17 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\LanguageDuel.Domain\LanguageDuel.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="15.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="InitialData\english-questions.json" />
+    <None Remove="InitialData\spanish-questions.json" />
+  </ItemGroup>
+
 </Project>
