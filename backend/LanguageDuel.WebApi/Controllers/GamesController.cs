@@ -1,4 +1,5 @@
 ﻿using LanguageDuel.Application.Services;
+using LanguageDuel.Application.Services.Games;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -11,9 +12,9 @@ public class GamesController(IGameService gameService) : BaseController
 {
     [HttpPost]
     [Authorize]
-    public async Task<ActionResult> SendGameInvitation()
+    public async Task<ActionResult> SendGameInvitation(Guid languageId)
     {
-        var result = await gameService.SendGameInvitationsAsync(GetUserId());
+        var result = await gameService.SendGameInvitationsAsync(GetUserId(), languageId);
         return !result.IsSuccess ? HandleErrors(result) : NoContent();
     }
 }

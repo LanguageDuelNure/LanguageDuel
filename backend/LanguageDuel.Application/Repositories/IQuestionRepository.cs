@@ -1,0 +1,8 @@
+﻿using LanguageDuel.Domain;
+
+namespace LanguageDuel.Application.Repositories;
+
+public interface IQuestionRepository
+{
+    Task<IEnumerable<Question>> GetRandomQuestionsAsync(Guid languageId, Guid difficultyLevelId, int questionCount);
+}

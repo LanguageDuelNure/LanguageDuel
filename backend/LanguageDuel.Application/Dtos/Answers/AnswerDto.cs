@@ -1,4 +1,4 @@
-﻿namespace LanguageDuel.Application.Dtos.Games;
+﻿namespace LanguageDuel.Application.Dtos.Answers;
 
 public class AnswerDto
 {

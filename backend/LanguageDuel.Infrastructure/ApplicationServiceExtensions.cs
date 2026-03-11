@@ -1,4 +1,7 @@
 ﻿using LanguageDuel.Application.Services;
+using LanguageDuel.Application.Services.Games;
+using LanguageDuel.Application.Services.Languages;
+using LanguageDuel.Application.Services.Questions;
 using LanguageDuel.Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
 namespace LanguageDuel.Infrastructure;
@@ -9,8 +12,10 @@ public static class ApplicationServiceExtensions
     {
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IGameService, GameService>();
+        services.AddScoped<ILanguageService, LanguageService>();
+        services.AddScoped<IQuestionService, QuestionService>();
         
-        services.AddScoped<IGameNotificationService, GameNotificationService>();
+        services.AddScoped<INotificationService, NotificationService>();
 
         return services;
     }

@@ -1,6 +1,6 @@
-﻿namespace LanguageDuel.Application.Dtos.Games;
+﻿namespace LanguageDuel.Application.Dtos.Languages;
 
-public class QuestionDto
+public class LanguageDto
 {
     public Guid Id { get; set; }
     

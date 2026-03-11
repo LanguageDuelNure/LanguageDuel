@@ -1,6 +1,7 @@
 ﻿using LanguageDuel.Application.Repositories;
 using LanguageDuel.Application.Services;
 using LanguageDuel.Domain;
+using LanguageDuel.Domain.Entities;
 using LanguageDuel.Infrastructure.Options;
 using LanguageDuel.Infrastructure.Repositories;
 using LanguageDuel.Infrastructure.Services;
@@ -17,7 +18,7 @@ public static class InfrastructureServiceExtensions
     {
         var connectionString = configuration.GetConnectionString("LinuxConnection") ?? throw new InvalidOperationException("Connection string 'LinuxConnection' not found.");
         
-        services.AddDbContext<ApplicationDbContext>(options =>
+        services.AddDbContextFactory<ApplicationDbContext>(options =>
             options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
         services.AddDefaultIdentity<ApplicationUser>(options =>
@@ -28,7 +29,7 @@ public static class InfrastructureServiceExtensions
                 RequireNonAlphanumeric = false
             };
         })
-            .AddRoles<IdentityRole>()
+            .AddRoles<IdentityRole<Guid>>()
             .AddEntityFrameworkStores<ApplicationDbContext>();
         
         services.AddSignalR();
@@ -37,6 +38,9 @@ public static class InfrastructureServiceExtensions
         services.AddScoped<IJwtTokenService, JwtTokenService>();
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+        services.AddScoped<IDifficultyRepository, DifficultyRepository>();
+        services.AddScoped<IQuestionRepository, QuestionRepository>();
 
         services.Configure<SmtpEmailOptions>(configuration.GetSection("EmailOptions"));
         services.Configure<JwtTokenOptions>(configuration.GetSection("Jwt"));

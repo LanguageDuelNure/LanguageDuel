@@ -6,7 +6,7 @@ namespace LanguageDuel.Infrastructure.Hubs;
 
 public class GameHub(IUserService userService) : Hub
 {
-    public async Task<Result> StartSearchGameAsync(Guid userId)
+    public async Task<Result> StartSearchGameAsync(Guid userId, Guid languageId)
     {
         var result = await userService.GetRatingRangeAsync(userId);
         if (!result.IsSuccess)
@@ -18,7 +18,10 @@ public class GameHub(IUserService userService) : Hub
 
         var tasks = Enumerable
             .Range(range.StartRange, range.Count)
-            .Select(i => Groups.AddToGroupAsync(Context.ConnectionId, i.ToString()));
+            .Select(i => Groups
+                .AddToGroupAsync(
+                    Context.ConnectionId, 
+                    i.ToString() + "-" + languageId.ToString()));
 
         await Task.WhenAll(tasks);
         
@@ -44,8 +47,10 @@ public class GameHub(IUserService userService) : Hub
         return new Result();
     }
     
-    public async Task AddToGameAsync(Guid gameId)
+    public async Task<Result> AddToGameAsync(Guid gameId)
     {
         await Groups.AddToGroupAsync(Context.ConnectionId, "game-id-" + gameId.ToString());
+        
+        return new Result();
     }
 }
