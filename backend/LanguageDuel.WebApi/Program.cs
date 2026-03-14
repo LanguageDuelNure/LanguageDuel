@@ -18,11 +18,11 @@ builder.Services.AddSwaggerGen(options =>
     options.IncludeXmlComments(xmlPath);
 });
 
-builder.Services.AddAutoMapper(p => { }, AppDomain.CurrentDomain.GetAssemblies());
-
 builder.Services
     .AddInfrastructureServices(builder.Configuration)
     .AddApplicationServices();
+
+builder.Services.AddAutoMapper(_ => { }, AppDomain.CurrentDomain.GetAssemblies());
 
 var token = builder.Configuration.GetSection("Jwt:Key").Value ?? throw new InvalidOperationException("Jwt key not found");
 var issuer = builder.Configuration.GetSection("Jwt:Issuer").Value ?? throw new InvalidOperationException("Jwt key not found");
