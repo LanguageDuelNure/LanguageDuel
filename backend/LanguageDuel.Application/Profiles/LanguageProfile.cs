@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using LanguageDuel.Application.Dtos.Languages;
 using LanguageDuel.Domain;
+using LanguageDuel.Domain.Entities;
 
 namespace LanguageDuel.Application.Profiles;
 

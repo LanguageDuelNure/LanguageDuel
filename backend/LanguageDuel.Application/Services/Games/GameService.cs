@@ -4,7 +4,7 @@ using LanguageDuel.Application.Dtos.Questions;
 using LanguageDuel.Application.Dtos.Results;
 using LanguageDuel.Application.Repositories;
 using LanguageDuel.Application.Services.Questions;
-using LanguageDuel.Domain;
+using LanguageDuel.Domain.Entities;
 
 namespace LanguageDuel.Application.Services.Games;
 

@@ -1,4 +1,5 @@
 ﻿using LanguageDuel.Domain;
+using LanguageDuel.Domain.Entities;
 
 namespace LanguageDuel.Application.Repositories;
 

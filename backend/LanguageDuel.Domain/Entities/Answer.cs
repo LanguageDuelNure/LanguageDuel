@@ -1,4 +1,4 @@
-﻿namespace LanguageDuel.Domain;
+﻿namespace LanguageDuel.Domain.Entities;
 
 public class Answer
 {
