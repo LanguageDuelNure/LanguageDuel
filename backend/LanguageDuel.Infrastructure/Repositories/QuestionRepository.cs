@@ -11,7 +11,7 @@ public class QuestionRepository(ApplicationDbContext dbContext) : Repository<Que
         var random = new Random();
         return await DbSet
             .Where(q => q.LanguageId == languageId && q.DifficultyLevelId == difficultyLevelId)
-            .OrderBy(q => random.Next())
+            .OrderBy(q => Guid.NewGuid())
             .Take(questionCount)
             .Include(q => q.Answers)
             .ToListAsync();
