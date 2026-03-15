@@ -11,7 +11,7 @@ public class QuestionRepository(ApplicationDbContext dbContext) : Repository<Que
         return await DbSet
             .AsNoTracking()
             .Where(q => q.LanguageId == languageId && q.DifficultyLevelId == difficultyLevelId)
-            .OrderBy(q => Guid.NewGuid())
+            .OrderBy(q => EF.Functions.Random())
             .Take(questionCount)
             .Include(q => q.Answers)
             .ToListAsync();
