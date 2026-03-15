@@ -28,7 +28,7 @@ public class GameHub(IUserService userService) : Hub
         return new Result();
     }
 
-    public async Task<Result> StopSearchGameAsync(Guid userId)
+    public async Task<Result> StopSearchGameAsync(Guid userId, Guid languageId)
     {
         var result = await userService.GetRatingRangeAsync(userId);
         if (!result.IsSuccess)
@@ -40,7 +40,9 @@ public class GameHub(IUserService userService) : Hub
 
         var tasks = Enumerable
             .Range(range.StartRange, range.Count)
-            .Select(i => Groups.RemoveFromGroupAsync(Context.ConnectionId, i.ToString()));
+            .Select(i => Groups.RemoveFromGroupAsync(
+                Context.ConnectionId, 
+                i.ToString() + "-" + languageId.ToString()));
 
         await Task.WhenAll(tasks);
         
