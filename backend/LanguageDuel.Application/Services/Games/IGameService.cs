@@ -7,4 +7,5 @@ public interface IGameService
     Task<Result> SendGameInvitationsAsync(Guid userId, Guid languageId);
     Task<IEnumerable<string>> GetSearchGroupsAsync(Guid userId, Guid languageId);
     string GetGameGroupAsync(Guid gameId);
+    Task<Result> ChooseAnswerAsync(Guid userId, Guid gameId, Guid answerId);
 }

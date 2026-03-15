@@ -17,4 +17,12 @@ public class GamesController(IGameService gameService) : BaseController
         var result = await gameService.SendGameInvitationsAsync(GetUserId(), languageId);
         return !result.IsSuccess ? HandleErrors(result) : NoContent();
     }
+    
+    [HttpPost("answer")]
+    [Authorize]
+    public async Task<ActionResult> ChooseAnswer(Guid gameId, Guid answerId)
+    {
+        var result = await gameService.ChooseAnswerAsync(GetUserId(), gameId, answerId);
+        return !result.IsSuccess ? HandleErrors(result) : NoContent();
+    }
 }
