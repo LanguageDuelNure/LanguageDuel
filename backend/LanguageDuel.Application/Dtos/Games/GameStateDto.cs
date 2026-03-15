@@ -5,5 +5,9 @@ namespace LanguageDuel.Application.Dtos.Games;
 
 public class GameStateDto
 {
-    public QuestionDto CurrentQuestion { get; set; } = null!;
+    public GameStateQuestionDto CurrentQuestion { get; set; } = null!;
+    
+    public List<GameSessionUserDto> Users { get; set; } = [];
+    
+    public int TimeRemainingInSeconds { get; set; }
 }

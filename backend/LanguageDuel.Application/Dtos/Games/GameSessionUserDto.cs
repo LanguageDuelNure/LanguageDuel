@@ -1,6 +1,6 @@
 ﻿namespace LanguageDuel.Application.Dtos.Games;
 
-public class UserInGameDto
+public class GameSessionUserDto
 {
     public Guid Id { get; set; }
 

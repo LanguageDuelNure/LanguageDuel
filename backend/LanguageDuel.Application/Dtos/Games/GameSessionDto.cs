@@ -10,7 +10,9 @@ public class GameSessionDto
 
     public List<QuestionDto> Questions { get; set; } = [];
     
-    public List<UserInGameDto> Users { get; set; } = [];
+    public int CurrentQuestionIndex { get; set; }
+    
+    public List<GameSessionUserDto> Users { get; set; } = [];
     
     public Timer Timer { get; set; }
 }
