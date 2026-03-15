@@ -9,5 +9,6 @@ public class AnswerProfile : Profile
     public AnswerProfile()
     {
         CreateMap<Answer, AnswerDto>();
+        CreateMap<AnswerDto, GameStateAnswerDto>();
     }
 }

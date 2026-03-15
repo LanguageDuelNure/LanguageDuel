@@ -8,7 +8,7 @@ public class GameStateQuestionDto
     
     public string Name { get; set; } = string.Empty;
     
-    public IEnumerable<AnswerDto> Answers { get; set; } =[];
+    public IEnumerable<GameStateAnswerDto> Answers { get; set; } =[];
     
     public Dictionary<Guid, Guid> UserAnswers { get; set; } = [];
 }
