@@ -1,27 +1,20 @@
 ﻿using LanguageDuel.Application.Dtos.Results;
-using LanguageDuel.Application.Services;
+using LanguageDuel.Application.Services.Games;
 using Microsoft.AspNetCore.SignalR;
 
 namespace LanguageDuel.Infrastructure.Hubs;
 
-public class GameHub(IUserService userService) : Hub
+public class GameHub(IGameService gameService) : Hub
 {
     public async Task<Result> StartSearchGameAsync(Guid userId, Guid languageId)
     {
-        var result = await userService.GetRatingRangeAsync(userId);
-        if (!result.IsSuccess)
-        {
-            return  result;
-        }
-        
-        var range = result.Value;
+        var groups = await gameService.GetSearchGroupsAsync(userId, languageId);
 
-        var tasks = Enumerable
-            .Range(range.StartRange, range.Count)
-            .Select(i => Groups
+        var tasks = groups
+            .Select(g => Groups
                 .AddToGroupAsync(
                     Context.ConnectionId, 
-                    i.ToString() + "-" + languageId.ToString()));
+                    g));
 
         await Task.WhenAll(tasks);
         
@@ -30,19 +23,12 @@ public class GameHub(IUserService userService) : Hub
 
     public async Task<Result> StopSearchGameAsync(Guid userId, Guid languageId)
     {
-        var result = await userService.GetRatingRangeAsync(userId);
-        if (!result.IsSuccess)
-        {
-            return  result;
-        }
-        
-        var range = result.Value;
+        var groups = await gameService.GetSearchGroupsAsync(userId, languageId);
 
-        var tasks = Enumerable
-            .Range(range.StartRange, range.Count)
-            .Select(i => Groups.RemoveFromGroupAsync(
+        var tasks = groups
+            .Select(g => Groups.RemoveFromGroupAsync(
                 Context.ConnectionId, 
-                i.ToString() + "-" + languageId.ToString()));
+                g));
 
         await Task.WhenAll(tasks);
         
@@ -51,7 +37,7 @@ public class GameHub(IUserService userService) : Hub
     
     public async Task<Result> AddToGameAsync(Guid gameId)
     {
-        await Groups.AddToGroupAsync(Context.ConnectionId, "game-id-" + gameId.ToString());
+        await Groups.AddToGroupAsync(Context.ConnectionId, gameService.GetGameGroupAsync(gameId));
         
         return new Result();
     }

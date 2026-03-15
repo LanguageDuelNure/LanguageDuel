@@ -105,27 +105,6 @@ public class UserService(UserManager<ApplicationUser> userManager, SignInManager
 
     }
 
-    public async Task<Result<RatingRangeDto>> GetRatingRangeAsync(Guid userId)
-    {
-        var getUserResult = await GetUserAsync(userId);
-        if (!getUserResult.IsSuccess)
-        {
-            return new Result<RatingRangeDto>
-            {
-                Errors = getUserResult.Errors
-            };
-        }
-
-        return new Result<RatingRangeDto>
-        {
-            Value = new RatingRangeDto
-            {
-                StartRange = 0,
-                Count = 10
-            }
-        };
-    }
-
     public async Task<Result<ConfirmEmailResultDto>> ConfirmEmailAsync(ConfirmEmailDto dto)
     {
         var getUserResult = await GetUserAsync(dto.UserId);

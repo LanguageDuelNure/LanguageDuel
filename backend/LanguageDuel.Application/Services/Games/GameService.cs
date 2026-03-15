@@ -17,6 +17,29 @@ public class GameService(INotificationService notificationService, IQuestionServ
     private readonly ConcurrentDictionary<Guid, GameSessionDto> _games = new();
     
     private readonly ConcurrentDictionary<string, GameInvitationDto> _searchGroups = [];
+
+    public async Task<IEnumerable<string>> GetSearchGroupsAsync(Guid userId, Guid languageId)
+    {
+        var serviceProvider = serviceScopeFactory.CreateScope().ServiceProvider;
+        var applicationUserLanguageRep = serviceProvider.GetRequiredService<IRepository<ApplicationUserLanguage>>();
+        
+        var applicationUserLanguage = await applicationUserLanguageRep.GetAsync(userId, languageId);
+        return GetGameGroups(languageId, applicationUserLanguage);
+    }
+    
+    public string GetGameGroupAsync(Guid gameId)
+    {
+        return "game-id" + gameId;
+    }
+    
+    private static IEnumerable<string> GetGameGroups(Guid languageId, ApplicationUserLanguage? applicationUserLanguage)
+    {
+        var rating = applicationUserLanguage?.Rating ?? 0;
+        var minimalRating = rating - RatingRange;
+        return Enumerable
+            .Range(minimalRating < 0 ? 0 : minimalRating, rating + RatingRange)
+            .Select(i => languageId + "-" + i);
+    }
     
     public async Task<Result> SendGameInvitationsAsync(Guid userId, Guid languageId)
     {
