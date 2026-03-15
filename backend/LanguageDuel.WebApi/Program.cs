@@ -2,6 +2,7 @@ using System.Reflection;
 using System.Text;
 using LanguageDuel.Infrastructure;
 using LanguageDuel.Infrastructure.Hubs;
+using LanguageDuel.Infrastructure.Options;
 using LanguageDuel.WebApi;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -23,6 +24,8 @@ builder.Services
     .AddApplicationServices();
 
 builder.Services.AddAutoMapper(_ => { }, AppDomain.CurrentDomain.GetAssemblies());
+
+builder.Services.Configure<GameLogicOptions>(builder.Configuration.GetSection("GameLogic"));
 
 var token = builder.Configuration.GetSection("Jwt:Key").Value ?? throw new InvalidOperationException("Jwt key not found");
 var issuer = builder.Configuration.GetSection("Jwt:Issuer").Value ?? throw new InvalidOperationException("Jwt key not found");

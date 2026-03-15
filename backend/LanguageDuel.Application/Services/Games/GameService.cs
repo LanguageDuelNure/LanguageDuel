@@ -1,27 +1,23 @@
 ﻿using System.Collections.Concurrent;
-using System.Timers;
 using AutoMapper;
-using LanguageDuel.Application.Dtos.Answers;
 using LanguageDuel.Application.Dtos.Games;
 using LanguageDuel.Application.Dtos.Questions;
 using LanguageDuel.Application.Dtos.Results;
 using LanguageDuel.Application.Repositories;
 using LanguageDuel.Application.Services.Questions;
 using LanguageDuel.Domain.Entities;
+using LanguageDuel.Infrastructure.Options;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Timer = System.Timers.Timer;
 
 namespace LanguageDuel.Application.Services.Games;
 
-public class GameService(INotificationService notificationService, IServiceScopeFactory serviceScopeFactory) : IGameService
+public class GameService(INotificationService notificationService, IServiceScopeFactory serviceScopeFactory, IOptions<GameLogicOptions> gameLogicOptions) : IGameService
 {
-    private const int QuestionsCount = 6;
+    private readonly GameLogicOptions _gameLogicOptions = gameLogicOptions.Value;
     
     private const int PlayersInGame = 2;
-
-    private const int TimeForQuestionInSeconds = 1000000;
-    
-    private const int RatingRange = 5;
     
     private readonly ConcurrentDictionary<Guid, GameSessionDto> _games = new();
     
@@ -45,9 +41,24 @@ public class GameService(INotificationService notificationService, IServiceScope
     {
         _games.TryGetValue(gameId, out var gameSession);
         var currentQuestion = gameSession.Questions[gameSession.CurrentQuestionIndex];
-        var choosedAnswer = currentQuestion.Answers.FirstOrDefault(a => a.Id == answerId);
-        var answerHaveAlreadyChosen = !currentQuestion.UserAnswers.TryAdd(userId, answerId);
-        if (answerHaveAlreadyChosen)
+        var chosenAnswer = currentQuestion.Answers.FirstOrDefault(a => a.Id == answerId);
+        
+        var isOpponentSelectedThisAnswer = currentQuestion.UserAnswers.ContainsValue(answerId);
+        if (isOpponentSelectedThisAnswer)
+        {
+            return new Result()
+            {
+                Errors = [new Error
+                {
+                    Field = nameof(answerId),
+                    Key = ErrorKey.AlreadyChosen,
+                    Message = "Opponent has already chosen this answer and it is incorrect",
+                }]
+            };
+        }
+        
+        var isAnswerSelected = !currentQuestion.UserAnswers.TryAdd(userId, answerId);
+        if (isAnswerSelected)
         {
             return new Result()
             {
@@ -55,24 +66,19 @@ public class GameService(INotificationService notificationService, IServiceScope
                 {
                     Field = nameof(answerId),
                     Key = ErrorKey.AlreadyExists,
-                    Message = "Answer have already chosen",
+                    Message = "You have already chosen answer",
                 }]
             };
         }
-        if (choosedAnswer.IsCorrect)
+        
+        if (chosenAnswer.IsCorrect)
         {
             foreach (var user in gameSession.Users.Where(user => user.Id != userId))
             {
                 user.Hp--;
             }
 
-            gameSession.CurrentQuestionIndex++;
-            var timer = gameSession.Timer;
-            timer?.Stop();
-            timer?.Dispose();
-            timer = new Timer(TimeForQuestionInSeconds * 1000);
-            await SendQuestionRecursiveAsync(gameSession);
-            return new Result();
+            return await MoveToNextQuestionAsync(gameSession);
         }
 
         var allChooseIncorrectQuestions = currentQuestion.UserAnswers.Count == PlayersInGame;
@@ -83,29 +89,36 @@ public class GameService(INotificationService notificationService, IServiceScope
                 user.Hp--;
             }
 
-            gameSession.CurrentQuestionIndex++;
-            
-            var timer = gameSession.Timer;
-            timer?.Stop();
-            timer?.Dispose();
-            timer = new Timer(TimeForQuestionInSeconds * 1000);
-            await SendQuestionRecursiveAsync(gameSession);
-            return new Result();
+            return await MoveToNextQuestionAsync(gameSession);
         }
         
         await SendGameStateChangeAsync(gameSession);
         
         return new Result();
     }
+
+    private async Task<Result> MoveToNextQuestionAsync(GameSessionDto gameSession)
+    {
+        gameSession.CurrentQuestionIndex++;
+
+        gameSession.Timer.Stop();
+        gameSession.Timer.Start();
+        
+        await SendQuestionRecursiveAsync(gameSession);
+        
+        return new Result();
+    }
     
-    private static IEnumerable<string> GetGameGroups(Guid languageId, ApplicationUserLanguage? applicationUserLanguage)
+    private IEnumerable<string> GetGameGroups(Guid languageId, ApplicationUserLanguage? applicationUserLanguage)
     {
         var rating = applicationUserLanguage?.Rating ?? 0;
-        var minimalRating = rating - RatingRange;
+        var minimalRating = rating - _gameLogicOptions.RatingRange;
         return Enumerable
-            .Range(minimalRating < 0 ? 0 : minimalRating, rating + RatingRange)
+            .Range(minimalRating < 0 ? 0 : minimalRating, rating + _gameLogicOptions.RatingRange)
             .Select(i => languageId + "-" + i);
     }
+    
+    
     
     public async Task<Result> SendGameInvitationsAsync(Guid userId, Guid languageId)
     {
@@ -118,8 +131,9 @@ public class GameService(INotificationService notificationService, IServiceScope
 
         string existingGroup = string.Empty;
         GameInvitationDto? gameInvitationDto = null;
-        
-        foreach (var group in groups)
+
+        var groupsList = groups.ToList();
+        foreach (var group in groupsList)
         {
             _searchGroups.TryGetValue(group, out gameInvitationDto);
             if (gameInvitationDto == null)
@@ -135,10 +149,10 @@ public class GameService(INotificationService notificationService, IServiceScope
         {
             var difficultyRep = serviceProvider.GetRequiredService<IDifficultyRepository>();
             var difficultyLevel = await difficultyRep.GetDifficultyLevelByRatingAsync(applicationUserLanguage?.Rating ?? 0);
-            var result = await CreateGameSessionAsync(userId, languageId, difficultyLevel.Id);
+            var result = await CreateGameSessionAsync(languageId, difficultyLevel.Id);
             if (!result.IsSuccess)
             {
-                return new Result()
+                return new Result
                 {
                     Errors =  result.Errors
                 };
@@ -163,23 +177,25 @@ public class GameService(INotificationService notificationService, IServiceScope
                 new GameSessionUserDto()
                 {
                     Id =  userId,
-                    Hp = QuestionsCount /  PlayersInGame,
+                    Hp = _gameLogicOptions.QuestionsCount /  PlayersInGame,
                     Name = (await userRep.GetAsync(userId)).Name,
                 },
                 new GameSessionUserDto()
                 {
                     Id =  gameInvitationDto.InviterUserId,
-                    Hp = QuestionsCount /  PlayersInGame,
+                    Hp = _gameLogicOptions.QuestionsCount /  PlayersInGame,
                     Name = (await userRep.GetAsync(gameInvitationDto.InviterUserId)).Name,
                 },
             ]);
+            
+            gameSession.Timer.Start();
 
             await SendQuestionRecursiveAsync(gameSession);
             
             return new Result();
         }
         
-        var tasks = groups
+        var tasks = groupsList
             .Select(g =>
             {
                 var gameInvitation = new GameInvitationDto()
@@ -208,25 +224,6 @@ public class GameService(INotificationService notificationService, IServiceScope
         }
 
         await SendGameStateChangeAsync(gameSession);
-        
-        var timer = gameSession.Timer;
-
-        ElapsedEventHandler handler = null;
-        handler = async void (sender, e) =>
-        {
-            timer.Elapsed -= handler; 
-            timer.Stop();
-            foreach (var user in gameSession.Users)
-            {
-                user.Hp--;
-            }
-
-            gameSession.CurrentQuestionIndex++;
-            await SendQuestionRecursiveAsync(gameSession);
-        };
-        timer.Elapsed += handler;
-        timer.AutoReset = false;
-        timer.Start();
     }
 
     private async Task SendGameStateChangeAsync(GameSessionDto gameSession)
@@ -240,12 +237,13 @@ public class GameService(INotificationService notificationService, IServiceScope
             {
                 CurrentQuestion = mapper.Map<GameStateQuestionDto>(gameSession.Questions[gameSession.CurrentQuestionIndex]),
                 Users =  gameSession.Users,
-                TimeRemainingInSeconds = TimeForQuestionInSeconds,
+                TimeRemainingInSeconds = _gameLogicOptions.TimeForQuestionInSeconds,
             });
     }
 
     private async Task SendGameResultAsync(GameSessionDto gameSession)
     {
+        var winner = gameSession.Users.FirstOrDefault(u => u.Hp != 0);
         await notificationService
             .SendNotificationAsync(
                 GetGameGroupAsync(gameSession.Id),
@@ -253,17 +251,18 @@ public class GameService(INotificationService notificationService, IServiceScope
                 new GameResultDto()
                 {
                     Questions = gameSession.Questions.Take(gameSession.CurrentQuestionIndex).ToList(),
-                    WinnerUserName = gameSession.Users.FirstOrDefault(u => u.Hp != 0)?.Name,
+                    WinnerUserId = winner?.Id,
+                    WinnerUserName = winner?.Name,
                 });
     }
 
-    private async Task<Result<GameSessionDto>> CreateGameSessionAsync(Guid userId, Guid languageId, Guid difficultyLevelId)
+    private async Task<Result<GameSessionDto>> CreateGameSessionAsync(Guid languageId, Guid difficultyLevelId)
     {
         var serviceProvider = serviceScopeFactory.CreateScope().ServiceProvider;
         var questionService = serviceProvider.GetRequiredService<IQuestionService>();
         
         var getQuestionsResult =
-            await questionService.GetRandomQuestionsAsync(languageId, difficultyLevelId, QuestionsCount);
+            await questionService.GetRandomQuestionsAsync(languageId, difficultyLevelId, _gameLogicOptions.QuestionsCount);
         if (!getQuestionsResult.IsSuccess)
         {
             return new Result<GameSessionDto>
@@ -276,7 +275,18 @@ public class GameService(INotificationService notificationService, IServiceScope
         {
             Id = Guid.NewGuid(),
             Questions = randomQuestions,
-            Timer = new Timer(TimeForQuestionInSeconds * 1000),
+            Timer = new Timer(_gameLogicOptions.TimeForQuestionInSeconds * 1000),
+        };
+
+        gameSession.Timer.Elapsed += async void (_, _) =>
+        {
+            foreach (var user in gameSession.Users)
+            {
+                user.Hp--;
+            }
+        
+            gameSession.CurrentQuestionIndex++;
+            await SendQuestionRecursiveAsync(gameSession);
         };
 
         return new Result<GameSessionDto>

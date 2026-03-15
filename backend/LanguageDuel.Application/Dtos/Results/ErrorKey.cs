@@ -43,5 +43,8 @@ public enum ErrorKey
     InvalidStringLength,
 
     [EnumMember(Value = "DO_NOT_MATCH")]
-    DoNotMatch
+    DoNotMatch,
+    
+    [EnumMember(Value = "ALREADY_CHOSEN")]
+    AlreadyChosen
 }
