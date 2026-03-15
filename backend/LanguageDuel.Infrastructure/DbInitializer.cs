@@ -1,8 +1,8 @@
 ﻿using System.Reflection;
 using System.Text.Json;
 using LanguageDuel.Domain;
+using LanguageDuel.Domain.Common;
 using LanguageDuel.Domain.Entities;
-using LanguageDuel.Infrastructure.Common;
 using Microsoft.EntityFrameworkCore;
 
 namespace LanguageDuel.Infrastructure;

@@ -2,8 +2,8 @@
 using LanguageDuel.Application.Dtos.Users;
 using LanguageDuel.Application.Services;
 using LanguageDuel.Domain;
+using LanguageDuel.Domain.Common;
 using LanguageDuel.Domain.Entities;
-using LanguageDuel.Infrastructure.Common;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;

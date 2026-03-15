@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace LanguageDuel.Infrastructure.Common;
+namespace LanguageDuel.Domain.Common;
 
-public class DefaultRoles
+public static class DefaultRoles
 {
     public static readonly IdentityRole<Guid> UserRole = new()
     {

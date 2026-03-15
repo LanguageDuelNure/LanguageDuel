@@ -1,9 +1,8 @@
-﻿using LanguageDuel.Domain;
-using LanguageDuel.Domain.Entities;
+﻿using LanguageDuel.Domain.Entities;
 
-namespace LanguageDuel.Infrastructure.Common;
+namespace LanguageDuel.Domain.Common;
 
-public class DefaultLanguages
+public static class DefaultLanguages
 {
     public static readonly Language EnglishLanguage = new()
     {
