@@ -8,8 +8,8 @@ public class QuestionRepository(ApplicationDbContext dbContext) : Repository<Que
 {
     public async Task<IEnumerable<Question>> GetRandomQuestionsAsync(Guid languageId, Guid difficultyLevelId, int questionCount)
     {
-        var random = new Random();
         return await DbSet
+            .AsNoTracking()
             .Where(q => q.LanguageId == languageId && q.DifficultyLevelId == difficultyLevelId)
             .OrderBy(q => Guid.NewGuid())
             .Take(questionCount)
