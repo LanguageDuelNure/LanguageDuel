@@ -2,6 +2,7 @@
 using LanguageDuel.Application.Dtos.Results;
 using LanguageDuel.Application.Dtos.Users;
 using LanguageDuel.Application.Services.Languages;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LanguageDuel.WebApi.Controllers;
@@ -15,11 +16,12 @@ public class LanguagesController(ILanguageService languageService) : BaseControl
     /// - UNEXPECTED_ERROR
     /// </remarks>
     [HttpGet]
+    [Authorize]
     [ProducesResponseType(typeof(IEnumerable<LanguageDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(Result), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<UserDto>> GetLanguages()
+    public async Task<ActionResult<LanguageDto>> GetLanguages()
     {
-        var result = await languageService.GetLanguagesAsync();
+        var result = await languageService.GetLanguagesAsync(GetUserId());
         if (!result.IsSuccess)
         {
             return HandleErrors(result);

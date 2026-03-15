@@ -5,5 +5,5 @@ namespace LanguageDuel.Application.Services.Languages;
 
 public interface ILanguageService
 {
-    Task<Result<IEnumerable<LanguageDto>>> GetLanguagesAsync();
+    Task<Result<IEnumerable<LanguageDto>>> GetLanguagesAsync(Guid userId);
 }

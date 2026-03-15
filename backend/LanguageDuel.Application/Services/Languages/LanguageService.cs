@@ -7,11 +7,11 @@ using LanguageDuel.Domain.Entities;
 
 namespace LanguageDuel.Application.Services.Languages;
 
-public class LanguageService (IRepository<Language> languageRep, IMapper mapper) : ILanguageService
+public class LanguageService (ILanguageRepository languageRep, IMapper mapper) : ILanguageService
 {
-    public async Task<Result<IEnumerable<LanguageDto>>> GetLanguagesAsync()
+    public async Task<Result<IEnumerable<LanguageDto>>> GetLanguagesAsync(Guid userId)
     {
-        var languages = await languageRep.GetAllAsync();
+        var languages = await languageRep.GetLanguagesWithRatingAsync(userId);
         return new Result<IEnumerable<LanguageDto>>()
         {
             Value = mapper.Map<IEnumerable<LanguageDto>>(languages)
