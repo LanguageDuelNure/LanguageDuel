@@ -4,6 +4,7 @@ using LanguageDuel.Application.Dtos.Games;
 using LanguageDuel.Application.Dtos.Questions;
 using LanguageDuel.Application.Dtos.Results;
 using LanguageDuel.Application.Repositories;
+using LanguageDuel.Application.Services.ApplicationUserLanguages;
 using LanguageDuel.Application.Services.Questions;
 using LanguageDuel.Domain.Entities;
 using LanguageDuel.Infrastructure.Options;
@@ -92,7 +93,7 @@ public class GameService(INotificationService notificationService, IServiceScope
             return await MoveToNextQuestionAsync(gameSession);
         }
         
-        await SendGameStateChangeAsync(gameSession);
+        await HandleGameStateAsync(gameSession);
         
         return new Result();
     }
@@ -104,7 +105,7 @@ public class GameService(INotificationService notificationService, IServiceScope
         gameSession.Timer.Stop();
         gameSession.Timer.Start();
         
-        await SendQuestionRecursiveAsync(gameSession);
+        await HandleGameStateAsync(gameSession);
         
         return new Result();
     }
@@ -117,8 +118,17 @@ public class GameService(INotificationService notificationService, IServiceScope
             .Range(minimalRating < 0 ? 0 : minimalRating, rating + _gameLogicOptions.RatingRange)
             .Select(i => languageId + "-" + i);
     }
-    
-    
+
+    public async Task<Result> RemoveFromSearchGroupsAsync(Guid userId, Guid languageId)
+    {
+        var groups = await GetSearchGroupsAsync(userId, languageId);
+        foreach (var group in groups)
+        {
+            _searchGroups.Remove(group, out _);
+        }
+
+        return new Result();
+    }
     
     public async Task<Result> SendGameInvitationsAsync(Guid userId, Guid languageId)
     {
@@ -147,6 +157,10 @@ public class GameService(INotificationService notificationService, IServiceScope
 
         if (gameInvitationDto != null)
         {
+            foreach (var group in groupsList)
+            {
+                _searchGroups.Remove(group, out _);
+            }
             var difficultyRep = serviceProvider.GetRequiredService<IDifficultyRepository>();
             var difficultyLevel = await difficultyRep.GetDifficultyLevelByRatingAsync(applicationUserLanguage?.Rating ?? 0);
             var result = await CreateGameSessionAsync(languageId, difficultyLevel.Id);
@@ -190,7 +204,7 @@ public class GameService(INotificationService notificationService, IServiceScope
             
             gameSession.Timer.Start();
 
-            await SendQuestionRecursiveAsync(gameSession);
+            await HandleGameStateAsync(gameSession);
             
             return new Result();
         }
@@ -215,11 +229,42 @@ public class GameService(INotificationService notificationService, IServiceScope
         return new Result();
     }
 
-    private async Task SendQuestionRecursiveAsync(GameSessionDto gameSession)
+    private async Task<Result> ChangeUsersRatingAsync(GameSessionDto gameSession)
+    {
+        var isDraw = gameSession.Users.All(u => u.Hp == 0);
+        if (isDraw)
+        {
+            return new Result();
+        }
+        
+        var serviceProvider = serviceScopeFactory.CreateScope().ServiceProvider;
+        var applicationUserLanguageService = serviceProvider.GetRequiredService<IApplicationUserLanguageService>();
+
+        foreach (var user in gameSession.Users)
+        {
+            int ratingChange;
+            if (user.Hp == 0)
+            {
+                ratingChange = -_gameLogicOptions.RatingChangeAfterWinOrLoss;
+            }
+            else
+            {
+                ratingChange = _gameLogicOptions.RatingChangeAfterWinOrLoss;
+            }
+            await applicationUserLanguageService.ChangeUsersRatingAsync(user.Id, gameSession.LanguageId, ratingChange);
+        }
+
+        return new Result();
+    }
+
+    private async Task HandleGameStateAsync(GameSessionDto gameSession)
     {
         if (gameSession.Users.Any(u => u.Hp == 0))
         {
+            gameSession.Timer.Dispose();
+            await ChangeUsersRatingAsync(gameSession);
             await SendGameResultAsync(gameSession);
+            _games.Remove(gameSession.Id, out _);
             return;
         }
 
@@ -253,6 +298,7 @@ public class GameService(INotificationService notificationService, IServiceScope
                     Questions = gameSession.Questions.Take(gameSession.CurrentQuestionIndex).ToList(),
                     WinnerUserId = winner?.Id,
                     WinnerUserName = winner?.Name,
+                    RatingChangeAfterWinOrLoss = _gameLogicOptions.RatingChangeAfterWinOrLoss,
                 });
     }
 
@@ -274,6 +320,7 @@ public class GameService(INotificationService notificationService, IServiceScope
         var gameSession = new GameSessionDto
         {
             Id = Guid.NewGuid(),
+            LanguageId =  languageId,
             Questions = randomQuestions,
             Timer = new Timer(_gameLogicOptions.TimeForQuestionInSeconds * 1000),
         };
@@ -286,7 +333,7 @@ public class GameService(INotificationService notificationService, IServiceScope
             }
         
             gameSession.CurrentQuestionIndex++;
-            await SendQuestionRecursiveAsync(gameSession);
+            await HandleGameStateAsync(gameSession);
         };
 
         return new Result<GameSessionDto>
