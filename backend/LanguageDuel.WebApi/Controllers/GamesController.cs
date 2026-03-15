@@ -10,6 +10,10 @@ namespace LanguageDuel.WebApi.Controllers;
 [ApiController]
 public class GamesController(IGameService gameService) : BaseController
 {
+    /// <remarks>
+    /// Error keys:
+    /// - UNEXPECTED_ERROR
+    /// </remarks>
     [HttpPost]
     [Authorize]
     public async Task<ActionResult> SendGameInvitation(Guid languageId)
@@ -18,6 +22,10 @@ public class GamesController(IGameService gameService) : BaseController
         return !result.IsSuccess ? HandleErrors(result) : NoContent();
     }
     
+    /// <remarks>
+    /// Error keys:
+    /// - UNEXPECTED_ERROR
+    /// </remarks>
     [HttpDelete]
     [Authorize]
     public async Task<ActionResult> RemoveFromSearchGroupsAsync(Guid languageId)
@@ -26,6 +34,12 @@ public class GamesController(IGameService gameService) : BaseController
         return !result.IsSuccess ? HandleErrors(result) : NoContent();
     }
     
+    /// <remarks>
+    /// Error keys:
+    /// - ALREADY_CHOSEN (if opponent has already chosen this answer, and it is incorrect)
+    /// - ALREADY_EXISTS (if you have already chosen answer for this question)
+    /// - UNEXPECTED_ERROR
+    /// </remarks>
     [HttpPost("answer")]
     [Authorize]
     public async Task<ActionResult> ChooseAnswer(Guid gameId, Guid answerId)

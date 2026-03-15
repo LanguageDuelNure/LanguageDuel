@@ -8,6 +8,10 @@ namespace LanguageDuel.WebApi.Controllers;
 [ApiController]
 public class DifficultyLevelsController(IDifficultyLevelService difficultyLevelService) : BaseController
 {
+    /// <remarks>
+    /// Error keys:
+    /// - UNEXPECTED_ERROR
+    /// </remarks>
     [HttpGet]
     public async Task<ActionResult<DifficultyLevelDto>> GetDifficultyLevels()
     {
