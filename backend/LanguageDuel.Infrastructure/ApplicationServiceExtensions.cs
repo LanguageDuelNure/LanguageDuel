@@ -11,11 +11,11 @@ public static class ApplicationServiceExtensions
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
         services.AddScoped<IUserService, UserService>();
-        services.AddScoped<IGameService, GameService>();
+        services.AddSingleton<IGameService, GameService>();
         services.AddScoped<ILanguageService, LanguageService>();
         services.AddScoped<IQuestionService, QuestionService>();
         
-        services.AddScoped<INotificationService, NotificationService>();
+        services.AddSingleton<INotificationService, NotificationService>();
 
         return services;
     }
