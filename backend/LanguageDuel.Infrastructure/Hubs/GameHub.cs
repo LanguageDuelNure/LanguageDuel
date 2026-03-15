@@ -41,4 +41,10 @@ public class GameHub(IGameService gameService) : Hub
         
         return new Result();
     }
+    
+    public async Task<Result> LeaveGameAsync(Guid gameId)
+    {
+        await Groups.RemoveFromGroupAsync(Context.ConnectionId, gameService.GetGameGroupAsync(gameId));
+        return new Result();
+    }
 }

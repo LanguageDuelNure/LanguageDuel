@@ -18,6 +18,14 @@ public class GamesController(IGameService gameService) : BaseController
         return !result.IsSuccess ? HandleErrors(result) : NoContent();
     }
     
+    [HttpDelete]
+    [Authorize]
+    public async Task<ActionResult> RemoveFromSearchGroupsAsync(Guid languageId)
+    {
+        var result = await gameService.RemoveFromSearchGroupsAsync(GetUserId(), languageId);
+        return !result.IsSuccess ? HandleErrors(result) : NoContent();
+    }
+    
     [HttpPost("answer")]
     [Authorize]
     public async Task<ActionResult> ChooseAnswer(Guid gameId, Guid answerId)
