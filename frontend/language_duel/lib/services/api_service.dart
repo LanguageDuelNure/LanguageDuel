@@ -18,7 +18,8 @@ class ApiException implements Exception {
 }
 
 class ApiService {
-  static const String baseUrl = 'http://localhost:5092/api';
+  static const String serverUrl = 'http://localhost:5092'; // ⚠ change to your server
+  static const String baseUrl = '$serverUrl/api';
 
   final http.Client _client;
 
@@ -164,20 +165,20 @@ class LoginResult {
   final String userId;
   final bool emailConfirmed;
   final String role;
-  final String jwtToken;
+  final String? jwtToken; // nullable: server omits token when email unconfirmed
 
   const LoginResult({
     required this.userId,
     required this.emailConfirmed,
     required this.role,
-    required this.jwtToken,
+    this.jwtToken,
   });
 
   factory LoginResult.fromJson(Map<String, dynamic> json) => LoginResult(
         userId: json['userId'] as String,
         emailConfirmed: json['emailConfirmed'] as bool,
         role: json['role'] as String,
-        jwtToken: json['jwtToken'] as String,
+        jwtToken: json['jwtToken'] as String?,
       );
 }
 

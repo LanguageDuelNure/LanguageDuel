@@ -16,6 +16,7 @@ dependencies:
   pin_code_fields: ^9.1.0
   provider: ^6.1.5+1
   shared_preferences: ^2.5.4
+  signalr_netcore: ^1.4.4
 
 dev_dependencies:
   flutter_test:

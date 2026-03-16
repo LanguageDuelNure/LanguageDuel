@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'services/auth_provider.dart';
+import 'services/api_service.dart';
+import 'services/game_service.dart';
 import 'screens/login_screen.dart';
 import 'screens/register_screen.dart';
 import 'screens/email_confirm_screen.dart';
@@ -47,15 +49,53 @@ class _AppNavigatorState extends State<_AppNavigator> {
   String? _pendingUserId;
   String? _pendingEmail;
 
+  // GameService is created after login and disposed on logout
+  GameService? _gameService;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final auth = context.read<AuthProvider>();
       if (auth.isAuthenticated) {
+        _createGameService(auth);
         setState(() => _screen = _Screen.home);
       }
     });
+  }
+
+  void _createGameService(AuthProvider auth) {
+    _gameService?.dispose();
+    _gameService = GameService(
+      baseUrl: ApiService.serverUrl,
+      token: auth.token!,
+      userId: auth.userId!,
+    );
+    _gameService!.connect();
+  }
+
+  void _destroyGameService() {
+    _gameService?.dispose();
+    _gameService = null;
+  }
+
+  Widget _buildHome() {
+    return ChangeNotifierProvider.value(
+      value: _gameService!,
+      child: HomeScreen(
+        onLogout: () async {
+          _destroyGameService();
+          await context.read<AuthProvider>().logout();
+          setState(() => _screen = _Screen.login);
+        },
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _gameService?.dispose();
+    super.dispose();
   }
 
   @override
@@ -67,7 +107,10 @@ class _AppNavigatorState extends State<_AppNavigator> {
             _pendingUserId = userId;
             _screen = _Screen.emailConfirm;
           }),
-          onLoginSuccess: () => setState(() => _screen = _Screen.home),
+          onLoginSuccess: () {
+            _createGameService(context.read<AuthProvider>());
+            setState(() => _screen = _Screen.home);
+          },
         ),
 
       _Screen.register => RegisterScreen(
@@ -82,16 +125,14 @@ class _AppNavigatorState extends State<_AppNavigator> {
       _Screen.emailConfirm => EmailConfirmScreen(
           userId: _pendingUserId!,
           email: _pendingEmail,
-          onConfirmed: () => setState(() => _screen = _Screen.home),
+          onConfirmed: () {
+            _createGameService(context.read<AuthProvider>());
+            setState(() => _screen = _Screen.home);
+          },
           onGoBack: () => setState(() => _screen = _Screen.login),
         ),
 
-      _Screen.home => HomeScreen(
-          onLogout: () async {
-            await context.read<AuthProvider>().logout();
-            setState(() => _screen = _Screen.login);
-          },
-        ),
+      _Screen.home => _buildHome(),
     };
   }
 }

@@ -118,16 +118,18 @@ class AuthProvider extends ChangeNotifier {
         return result.userId;
       }
 
-      _token = result.jwtToken;
+      _token = result.jwtToken; // may be null if email unconfirmed (handled by caller)
       _userId = result.userId;
       _role = result.role;
 
-      // Fetch user name
-      try {
-        final user =
-            await _api.getUser(userId: result.userId, token: _token!);
-        _userName = user.name;
-      } catch (_) {}
+      // Fetch user name only when we actually have a token
+      if (_token != null) {
+        try {
+          final user =
+              await _api.getUser(userId: result.userId, token: _token!);
+          _userName = user.name;
+        } catch (_) {}
+      }
 
       await _saveToStorage();
       notifyListeners();

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
 import '../services/api_service.dart';
 import '../services/auth_provider.dart';
@@ -47,10 +47,8 @@ class _EmailConfirmScreenState extends State<EmailConfirmScreen> {
       widget.onConfirmed();
     } on ApiException catch (e) {
       setState(() => _error = e.message);
-      _codeCtrl.clear();
     } catch (_) {
       setState(() => _error = 'Could not reach server. Check your connection.');
-      _codeCtrl.clear();
     }
   }
 
@@ -67,8 +65,7 @@ class _EmailConfirmScreenState extends State<EmailConfirmScreen> {
     } on ApiException catch (e) {
       setState(() => _error = e.message);
     } catch (_) {
-      setState(
-          () => _error = 'Could not reach server. Check your connection.');
+      setState(() => _error = 'Could not reach server. Check your connection.');
     } finally {
       setState(() => _resendLoading = false);
     }
@@ -94,7 +91,6 @@ class _EmailConfirmScreenState extends State<EmailConfirmScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Back button
                     IconButton(
                       onPressed: widget.onGoBack,
                       icon: const Icon(Icons.arrow_back,
@@ -104,7 +100,6 @@ class _EmailConfirmScreenState extends State<EmailConfirmScreen> {
 
                     const SizedBox(height: 24),
 
-                    // Icon
                     Container(
                       width: 64,
                       height: 64,
@@ -130,14 +125,13 @@ class _EmailConfirmScreenState extends State<EmailConfirmScreen> {
                           ? 'We sent a 6-digit code to\n${widget.email}'
                           : 'We sent a 6-digit code to your email address.',
                       style: const TextStyle(
-                          color: AppTheme.textSecondary, fontSize: 15,
+                          color: AppTheme.textSecondary,
+                          fontSize: 15,
                           height: 1.5),
                     ).animate().fadeIn(delay: 200.ms),
 
                     const SizedBox(height: 40),
-                    // Change the controller declaration:
 
-                    // Replace the PinCodeTextField widget with:
                     MaterialPinField(
                       length: 6,
                       pinController: _codeCtrl,
@@ -202,7 +196,6 @@ class _EmailConfirmScreenState extends State<EmailConfirmScreen> {
 
                     const SizedBox(height: 24),
 
-                    // Resend
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
