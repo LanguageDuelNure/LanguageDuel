@@ -5,6 +5,7 @@ import '../services/api_service.dart';
 import '../services/auth_provider.dart';
 import '../utils/app_theme.dart';
 import '../widgets/shared_widgets.dart';
+import '../widgets/grid_background.dart';
 
 class RegisterScreen extends StatefulWidget {
   final VoidCallback onGoToLogin;
@@ -65,7 +66,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          Positioned.fill(child: _BgDecoration()),
+          Positioned.fill(
+            child: GridBackground(
+              glowAlignment: const Alignment(0.8, -0.6),
+              glowRadius: 0.7,
+              glowColor: AppTheme.accentDim,
+            ),
+          ),
           Center(
             child: SingleChildScrollView(
               padding: EdgeInsets.symmetric(
@@ -79,9 +86,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const BrandLogo(size: 52)
-                          .animate()
-                          .fadeIn(duration: 400.ms),
+                      const BrandLogo(size: 52).animate().fadeIn(duration: 400.ms),
                       const SizedBox(height: 32),
                       Text(
                         'Create account',
@@ -95,13 +100,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ).animate().fadeIn(delay: 150.ms),
                       const SizedBox(height: 40),
 
-                      // Name
                       DuelTextField(
                         hint: 'Your display name',
                         label: 'Name',
                         controller: _nameCtrl,
-                        prefixIcon:
-                            const Icon(Icons.person_outline, size: 18),
+                        prefixIcon: const Icon(Icons.person_outline, size: 18),
                         textInputAction: TextInputAction.next,
                         validator: (v) {
                           if (v == null || v.isEmpty) return 'Name is required';
@@ -112,14 +115,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ).animate().fadeIn(delay: 200.ms),
                       const SizedBox(height: 14),
 
-                      // Email
                       DuelTextField(
                         hint: 'you@example.com',
                         label: 'Email',
                         controller: _emailCtrl,
                         keyboardType: TextInputType.emailAddress,
-                        prefixIcon:
-                            const Icon(Icons.alternate_email, size: 18),
+                        prefixIcon: const Icon(Icons.alternate_email, size: 18),
                         textInputAction: TextInputAction.next,
                         validator: (v) {
                           if (v == null || v.isEmpty) return 'Email is required';
@@ -129,7 +130,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ).animate().fadeIn(delay: 250.ms),
                       const SizedBox(height: 14),
 
-                      // Password
                       DuelTextField(
                         hint: '••••••••',
                         label: 'Password',
@@ -138,8 +138,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         prefixIcon: const Icon(Icons.lock_outline, size: 18),
                         textInputAction: TextInputAction.next,
                         validator: (v) {
-                          if (v == null || v.isEmpty)
-                            return 'Password is required';
+                          if (v == null || v.isEmpty) return 'Password is required';
                           if (v.length < 8) return 'Minimum 8 characters';
                           if (!RegExp(r'(?=.*[a-z])(?=.*[A-Z])').hasMatch(v)) {
                             return 'Must have upper and lowercase letters';
@@ -149,7 +148,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ).animate().fadeIn(delay: 300.ms),
                       const SizedBox(height: 14),
 
-                      // Confirm password
                       DuelTextField(
                         hint: '••••••••',
                         label: 'Confirm password',
@@ -159,10 +157,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         textInputAction: TextInputAction.done,
                         onEditingComplete: _submit,
                         validator: (v) {
-                          if (v == null || v.isEmpty)
+                          if (v == null || v.isEmpty) {
                             return 'Please confirm your password';
-                          if (v != _passwordCtrl.text)
+                          }
+                          if (v != _passwordCtrl.text) {
                             return 'Passwords do not match';
+                          }
                           return null;
                         },
                       ).animate().fadeIn(delay: 320.ms),
@@ -206,47 +206,4 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
     );
   }
-}
-
-class _BgDecoration extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return CustomPaint(painter: _BgPainter());
-  }
-}
-
-class _BgPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = AppTheme.border.withOpacity(0.4)
-      ..strokeWidth = 0.5;
-
-    const spacing = 48.0;
-    for (double x = 0; x < size.width; x += spacing) {
-      canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
-    }
-    for (double y = 0; y < size.height; y += spacing) {
-      canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
-    }
-
-    // Top-right glow
-    final gradient = RadialGradient(
-      center: const Alignment(0.8, -0.6),
-      radius: 0.7,
-      colors: [
-        AppTheme.accentDim.withOpacity(0.08),
-        Colors.transparent,
-      ],
-    );
-    canvas.drawRect(
-      Rect.fromLTWH(0, 0, size.width, size.height),
-      Paint()
-        ..shader = gradient.createShader(
-            Rect.fromLTWH(0, 0, size.width, size.height)),
-    );
-  }
-
-  @override
-  bool shouldRepaint(_) => false;
 }

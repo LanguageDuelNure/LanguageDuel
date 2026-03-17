@@ -1,7 +1,8 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import '../utils/app_theme.dart';
 
-/// Glowing accent button
 class DuelButton extends StatelessWidget {
   final String label;
   final VoidCallback? onPressed;
@@ -38,11 +39,13 @@ class DuelButton extends StatelessWidget {
                   color: AppTheme.accent,
                 ),
               )
-            : Text(label,
+            : Text(
+                label,
                 style: const TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
-                )),
+                ),
+              ),
       );
     }
 
@@ -62,7 +65,6 @@ class DuelButton extends StatelessWidget {
   }
 }
 
-/// Styled text field
 class DuelTextField extends StatefulWidget {
   final String hint;
   final String? label;
@@ -132,7 +134,6 @@ class _DuelTextFieldState extends State<DuelTextField> {
   }
 }
 
-/// Error banner
 class ErrorBanner extends StatelessWidget {
   final String message;
 
@@ -149,14 +150,12 @@ class ErrorBanner extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const Icon(Icons.error_outline,
-              color: AppTheme.danger, size: 18),
+          const Icon(Icons.error_outline, color: AppTheme.danger, size: 18),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
               message,
-              style: const TextStyle(
-                  color: AppTheme.danger, fontSize: 13),
+              style: const TextStyle(color: AppTheme.danger, fontSize: 13),
             ),
           ),
         ],
@@ -165,7 +164,6 @@ class ErrorBanner extends StatelessWidget {
   }
 }
 
-/// Logo / brand mark
 class BrandLogo extends StatelessWidget {
   final double size;
 

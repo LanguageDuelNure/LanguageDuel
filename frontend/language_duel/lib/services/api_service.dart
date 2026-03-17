@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../utils/app_constants.dart';
 
 class ApiException implements Exception {
   final String message;
@@ -18,8 +19,8 @@ class ApiException implements Exception {
 }
 
 class ApiService {
-  static const String serverUrl = 'http://localhost:5092'; // ⚠ change to your server
-  static const String baseUrl = '$serverUrl/api';
+  static String get serverUrl => AppConstants.serverUrl;
+  static String get baseUrl => '${AppConstants.serverUrl}/api';
 
   final http.Client _client;
 
@@ -51,8 +52,7 @@ class ApiService {
         errorMessage = firstError['message'] as String? ?? errorMessage;
         field = firstError['field'] as String?;
       }
-    } catch (_) {
-    }
+    } catch (_) {}
 
     throw ApiException(
       message: errorMessage,
@@ -61,7 +61,6 @@ class ApiService {
     );
   }
 
-  /// POST /api/Users/register
   Future<RegisterResult> register({
     required String email,
     required String password,
@@ -83,7 +82,6 @@ class ApiService {
     return RegisterResult.fromJson(data);
   }
 
-  /// POST /api/Users/confirm-email
   Future<ConfirmEmailResult> confirmEmail({
     required String userId,
     required String code,
@@ -98,7 +96,6 @@ class ApiService {
     return ConfirmEmailResult.fromJson(data);
   }
 
-  /// POST /api/Users/resend-confirm-email
   Future<void> resendConfirmEmail({required String userId}) async {
     final response = await _client.post(
       Uri.parse('$baseUrl/Users/resend-confirm-email'),
@@ -109,7 +106,6 @@ class ApiService {
     await _parseResponse(response);
   }
 
-  /// POST /api/Users/login
   Future<LoginResult> login({
     required String email,
     required String password,
@@ -124,7 +120,6 @@ class ApiService {
     return LoginResult.fromJson(data);
   }
 
-  /// GET /api/Users/{userId}
   Future<UserDto> getUser({
     required String userId,
     required String token,
@@ -165,7 +160,7 @@ class LoginResult {
   final String userId;
   final bool emailConfirmed;
   final String role;
-  final String? jwtToken; // nullable: server omits token when email unconfirmed
+  final String? jwtToken;
 
   const LoginResult({
     required this.userId,
