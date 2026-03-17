@@ -14,6 +14,30 @@ public class GamesController(IGameService gameService) : BaseController
     /// Error keys:
     /// - UNEXPECTED_ERROR
     /// </remarks>
+    [HttpGet("current")]
+    [Authorize]
+    public ActionResult GetGame()
+    {
+        var result = gameService.GetGame(GetUserId());
+        return !result.IsSuccess ? HandleErrors(result) : Ok(result.Value);
+    }
+    
+    /// <remarks>
+    /// Error keys:
+    /// - UNEXPECTED_ERROR
+    /// </remarks>
+    [HttpGet("state")]
+    [Authorize]
+    public async Task<ActionResult> SendGameStateAsync(Guid gameId)
+    {
+        var result = await gameService.SendGameStateAsync(gameId);
+        return !result.IsSuccess ? HandleErrors(result) : NoContent();
+    }
+    
+    /// <remarks>
+    /// Error keys:
+    /// - UNEXPECTED_ERROR
+    /// </remarks>
     [HttpPost]
     [Authorize]
     public async Task<ActionResult> SendGameInvitation(Guid languageId)

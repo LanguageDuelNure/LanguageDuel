@@ -9,4 +9,6 @@ public interface IGameService
     string GetGameGroupAsync(Guid gameId);
     Task<Result> ChooseAnswerAsync(Guid userId, Guid gameId, Guid answerId);
     Task<Result> RemoveFromSearchGroupsAsync(Guid userId, Guid languageId);
+    Result<Guid> GetGame(Guid userId);
+    Task<Result> SendGameStateAsync(Guid gameId);
 }

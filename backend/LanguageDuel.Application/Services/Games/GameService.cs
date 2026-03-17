@@ -38,6 +38,17 @@ public class GameService(INotificationService notificationService, IServiceScope
         return "game-id" + gameId;
     }
 
+    public Result<Guid> GetGame(Guid userId)
+    {
+        var session = _games.Values
+            .FirstOrDefault(g => 
+                g.Users.Any(u => u.Id == userId));
+        return new Result<Guid>
+        {
+            Value = session.Id
+        };
+    }
+
     public async Task<Result> ChooseAnswerAsync(Guid userId, Guid gameId, Guid answerId)
     {
         _games.TryGetValue(gameId, out var gameSession);
@@ -267,14 +278,22 @@ public class GameService(INotificationService notificationService, IServiceScope
             _games.Remove(gameSession.Id, out _);
             return;
         }
-
+        gameSession.CurrentQuestionStartDateTime = DateTime.UtcNow;
+        
         await SendGameStateChangeAsync(gameSession);
+    }
+
+    public async Task<Result> SendGameStateAsync(Guid gameId)
+    {
+        await SendGameStateChangeAsync(_games[gameId]);
+        return new Result();
     }
 
     private async Task SendGameStateChangeAsync(GameSessionDto gameSession)
     {
         var serviceProvider = serviceScopeFactory.CreateScope().ServiceProvider;
         var mapper = serviceProvider.GetRequiredService<IMapper>();
+        var questionDuration = DateTime.UtcNow - gameSession.CurrentQuestionStartDateTime;
         await notificationService.SendNotificationAsync(
             GetGameGroupAsync(gameSession.Id),
             "GameStateChanged",
@@ -282,7 +301,7 @@ public class GameService(INotificationService notificationService, IServiceScope
             {
                 CurrentQuestion = mapper.Map<GameStateQuestionDto>(gameSession.Questions[gameSession.CurrentQuestionIndex]),
                 Users =  gameSession.Users,
-                TimeRemainingInSeconds = _gameLogicOptions.TimeForQuestionInSeconds,
+                TimeRemainingInSeconds = _gameLogicOptions.TimeForQuestionInSeconds - questionDuration.Seconds,
             });
     }
 
