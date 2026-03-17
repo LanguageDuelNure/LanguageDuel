@@ -7,4 +7,6 @@ public class GameSessionUserDto
     public string Name { get; set; } = string.Empty;
     
     public int Hp { get; set; }
+    
+    public int Rating { get; set; }
 }

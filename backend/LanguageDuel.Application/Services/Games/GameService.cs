@@ -196,20 +196,29 @@ public class GameService(INotificationService notificationService, IServiceScope
                         InviterUserId = userId,
                         GameId = gameSession.Id
                     });
-            var userRep = serviceProvider.GetRequiredService<IRepository<ApplicationUser>>();
-
+            var userService = serviceProvider.GetRequiredService<IUserService>();
+            var getFirstUserResult = await userService.GetUserDtoAsync(userId);
+            var getSecondUserResult = await userService.GetUserDtoAsync(gameInvitationDto.InviterUserId);
+            if (!getFirstUserResult.IsSuccess || !getSecondUserResult.IsSuccess)
+            {
+                return new Result();
+            }
+            var firstUser = getFirstUserResult.Value;
+            var secondUser = getSecondUserResult.Value;
             gameSession.Users.AddRange([
                 new GameSessionUserDto()
                 {
                     Id =  userId,
                     Hp = _gameLogicOptions.QuestionsCount /  PlayersInGame,
-                    Name = (await userRep.GetAsync(userId)).Name,
+                    Name = firstUser.Name,
+                    Rating = firstUser.LanguageRatings.FirstOrDefault(lr => lr.LanguageId == languageId)?.Rating ?? 0,
                 },
                 new GameSessionUserDto()
                 {
                     Id =  gameInvitationDto.InviterUserId,
                     Hp = _gameLogicOptions.QuestionsCount /  PlayersInGame,
-                    Name = (await userRep.GetAsync(gameInvitationDto.InviterUserId)).Name,
+                    Name = secondUser.Name,
+                    Rating = secondUser.LanguageRatings.FirstOrDefault(lr => lr.LanguageId == languageId)?.Rating ?? 0,
                 },
             ]);
             

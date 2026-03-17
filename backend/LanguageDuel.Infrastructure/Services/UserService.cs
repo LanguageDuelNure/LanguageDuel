@@ -1,4 +1,5 @@
 ﻿using LanguageDuel.Application.Dtos.Results;
+using LanguageDuel.Application.Dtos.UserLanguages;
 using LanguageDuel.Application.Dtos.Users;
 using LanguageDuel.Application.Services;
 using LanguageDuel.Domain;
@@ -229,7 +230,12 @@ public class UserService(UserManager<ApplicationUser> userManager, SignInManager
             .Select(u => new UserDto
             {
                 Id = u.Id,
-                Name = u.Name
+                Name = u.Name,
+                LanguageRatings = u.ApplicationUserLanguages.Select(ul => new UserLanguageDto()
+                {
+                    LanguageId = ul.LanguageId,
+                    Rating = ul.Rating
+                }).ToList()
             })
             .FirstOrDefaultAsync();
         return user == null
