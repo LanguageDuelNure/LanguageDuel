@@ -1,5 +1,6 @@
 using System.Reflection;
 using System.Text;
+using LanguageDuel.Application.Options;
 using LanguageDuel.Infrastructure;
 using LanguageDuel.Infrastructure.Hubs;
 using LanguageDuel.Infrastructure.Options;

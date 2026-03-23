@@ -3,11 +3,11 @@ using AutoMapper;
 using LanguageDuel.Application.Dtos.Games;
 using LanguageDuel.Application.Dtos.Questions;
 using LanguageDuel.Application.Dtos.Results;
+using LanguageDuel.Application.Options;
 using LanguageDuel.Application.Repositories;
 using LanguageDuel.Application.Services.ApplicationUserLanguages;
 using LanguageDuel.Application.Services.Questions;
 using LanguageDuel.Domain.Entities;
-using LanguageDuel.Infrastructure.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Timer = System.Timers.Timer;
@@ -19,6 +19,8 @@ public class GameService(INotificationService notificationService, IServiceScope
     private readonly GameLogicOptions _gameLogicOptions = gameLogicOptions.Value;
     
     private const int PlayersInGame = 2;
+    
+    private const int BeforeGameDelayMs = 1000;
     
     private readonly ConcurrentDictionary<Guid, GameSessionDto> _games = new();
     
@@ -111,10 +113,25 @@ public class GameService(INotificationService notificationService, IServiceScope
 
     private async Task<Result> MoveToNextQuestionAsync(GameSessionDto gameSession)
     {
-        gameSession.CurrentQuestionIndex++;
-
         gameSession.Timer.Stop();
+        Guid? correctAnswerId = null;
+        if (gameSession.CurrentQuestionIndex >= 0)
+        {
+            correctAnswerId = gameSession
+                .Questions[gameSession.CurrentQuestionIndex]
+                .Answers
+                .Where(a => a.IsCorrect)
+                .Select(a => a.Id)
+                .First();
+        }
+        
+        await SendGameStateChangeAsync(gameSession, correctAnswerId);
+        await Task.Delay(_gameLogicOptions.QuestionDelayMs);
+        
+        gameSession.CurrentQuestionIndex++;
+        
         gameSession.Timer.Start();
+        gameSession.CurrentQuestionStartDateTime = DateTime.UtcNow;
         
         await HandleGameStateAsync(gameSession);
         
@@ -187,15 +204,6 @@ public class GameService(INotificationService notificationService, IServiceScope
         
             _games.TryAdd(gameSession.Id, gameSession);
             
-            await notificationService
-                .SendNotificationAsync(
-                    existingGroup, 
-                    "ReceiveGameInvitation",
-                    new GameInvitationDto()
-                    {
-                        InviterUserId = userId,
-                        GameId = gameSession.Id
-                    });
             var userService = serviceProvider.GetRequiredService<IUserService>();
             var getFirstUserResult = await userService.GetUserDtoAsync(userId);
             var getSecondUserResult = await userService.GetUserDtoAsync(gameInvitationDto.InviterUserId);
@@ -221,10 +229,18 @@ public class GameService(INotificationService notificationService, IServiceScope
                     Rating = secondUser.LanguageRatings.FirstOrDefault(lr => lr.LanguageId == languageId)?.Rating ?? 0,
                 },
             ]);
-            
-            gameSession.Timer.Start();
+            await notificationService
+                .SendNotificationAsync(
+                    existingGroup,
+                    "ReceiveGameInvitation",
+                    new GameInvitationDto()
+                    {
+                        InviterUserId = userId,
+                        GameId = gameSession.Id
+                    });
+            await Task.Delay(BeforeGameDelayMs);
 
-            await HandleGameStateAsync(gameSession);
+            await MoveToNextQuestionAsync(gameSession);
             
             return new Result();
         }
@@ -287,7 +303,6 @@ public class GameService(INotificationService notificationService, IServiceScope
             _games.Remove(gameSession.Id, out _);
             return;
         }
-        gameSession.CurrentQuestionStartDateTime = DateTime.UtcNow;
         
         await SendGameStateChangeAsync(gameSession);
     }
@@ -298,7 +313,7 @@ public class GameService(INotificationService notificationService, IServiceScope
         return new Result();
     }
 
-    private async Task SendGameStateChangeAsync(GameSessionDto gameSession)
+    private async Task SendGameStateChangeAsync(GameSessionDto gameSession, Guid? correctAnswerId = null)
     {
         var serviceProvider = serviceScopeFactory.CreateScope().ServiceProvider;
         var mapper = serviceProvider.GetRequiredService<IMapper>();
@@ -308,9 +323,10 @@ public class GameService(INotificationService notificationService, IServiceScope
             "GameStateChanged",
             new GameStateDto
             {
-                CurrentQuestion = mapper.Map<GameStateQuestionDto>(gameSession.Questions[gameSession.CurrentQuestionIndex]),
+                CurrentQuestion = gameSession.CurrentQuestionIndex < 0 ? null : mapper.Map<GameStateQuestionDto>(gameSession.Questions[gameSession.CurrentQuestionIndex]),
                 Users =  gameSession.Users,
-                TimeRemainingInSeconds = _gameLogicOptions.TimeForQuestionInSeconds - questionDuration.Seconds,
+                TimeRemainingInSeconds = gameSession.CurrentQuestionIndex < 0 ? null : _gameLogicOptions.TimeForQuestionInSeconds - questionDuration.Seconds,
+                CorrectAnswerId = correctAnswerId
             });
     }
 
@@ -350,6 +366,7 @@ public class GameService(INotificationService notificationService, IServiceScope
             Id = Guid.NewGuid(),
             LanguageId =  languageId,
             Questions = randomQuestions,
+            CurrentQuestionIndex = -1,
             Timer = new Timer(_gameLogicOptions.TimeForQuestionInSeconds * 1000),
         };
 
@@ -359,10 +376,10 @@ public class GameService(INotificationService notificationService, IServiceScope
             {
                 user.Hp--;
             }
-        
-            gameSession.CurrentQuestionIndex++;
-            await HandleGameStateAsync(gameSession);
+            
+            await MoveToNextQuestionAsync(gameSession);
         };
+        gameSession.Timer.AutoReset = false;
 
         return new Result<GameSessionDto>
         {
