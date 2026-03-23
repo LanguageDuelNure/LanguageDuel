@@ -5,6 +5,7 @@ import '../services/api_service.dart';
 import '../services/auth_provider.dart';
 import '../utils/app_theme.dart';
 import '../widgets/shared_widgets.dart';
+import '../widgets/grid_background.dart';
 
 class LoginScreen extends StatefulWidget {
   final VoidCallback onGoToRegister;
@@ -70,9 +71,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          // Background grid pattern
-          Positioned.fill(child: _GridBackground()),
-          // Content
+          const Positioned.fill(child: GridBackground()),
           Center(
             child: SingleChildScrollView(
               padding: EdgeInsets.symmetric(
@@ -86,10 +85,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Brand
-                      const BrandLogo(size: 52)
-                          .animate()
-                          .fadeIn(duration: 400.ms),
+                      const BrandLogo(size: 52).animate().fadeIn(duration: 400.ms),
                       const SizedBox(height: 32),
                       Text(
                         'Welcome back',
@@ -103,7 +99,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       ).animate().fadeIn(delay: 150.ms, duration: 400.ms),
                       const SizedBox(height: 40),
 
-                      // Fields
                       DuelTextField(
                         hint: 'you@example.com',
                         label: 'Email',
@@ -176,49 +171,4 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
-}
-
-class _GridBackground extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return CustomPaint(
-      painter: _GridPainter(),
-    );
-  }
-}
-
-class _GridPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = AppTheme.border.withOpacity(0.5)
-      ..strokeWidth = 0.5;
-
-    const spacing = 48.0;
-    for (double x = 0; x < size.width; x += spacing) {
-      canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
-    }
-    for (double y = 0; y < size.height; y += spacing) {
-      canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
-    }
-
-    // Radial glow in the center
-    final gradient = RadialGradient(
-      center: Alignment.center,
-      radius: 0.8,
-      colors: [
-        AppTheme.accent.withOpacity(0.04),
-        Colors.transparent,
-      ],
-    );
-    canvas.drawRect(
-      Rect.fromLTWH(0, 0, size.width, size.height),
-      Paint()
-        ..shader = gradient.createShader(
-            Rect.fromLTWH(0, 0, size.width, size.height)),
-    );
-  }
-
-  @override
-  bool shouldRepaint(_) => false;
 }

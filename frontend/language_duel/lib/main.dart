@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'services/auth_provider.dart';
-import 'services/api_service.dart';
 import 'services/game_service.dart';
 import 'screens/login_screen.dart';
 import 'screens/register_screen.dart';
 import 'screens/email_confirm_screen.dart';
 import 'screens/home_screen.dart';
 import 'utils/app_theme.dart';
+import 'utils/app_constants.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -48,8 +48,6 @@ class _AppNavigatorState extends State<_AppNavigator> {
   _Screen _screen = _Screen.login;
   String? _pendingUserId;
   String? _pendingEmail;
-
-  // GameService is created after login and disposed on logout
   GameService? _gameService;
 
   @override
@@ -67,7 +65,7 @@ class _AppNavigatorState extends State<_AppNavigator> {
   void _createGameService(AuthProvider auth) {
     _gameService?.dispose();
     _gameService = GameService(
-      baseUrl: ApiService.serverUrl,
+      baseUrl: AppConstants.serverUrl,
       token: auth.token!,
       userId: auth.userId!,
     );
@@ -112,7 +110,6 @@ class _AppNavigatorState extends State<_AppNavigator> {
             setState(() => _screen = _Screen.home);
           },
         ),
-
       _Screen.register => RegisterScreen(
           onGoToLogin: () => setState(() => _screen = _Screen.login),
           onRegistered: (userId, email) => setState(() {
@@ -121,7 +118,6 @@ class _AppNavigatorState extends State<_AppNavigator> {
             _screen = _Screen.emailConfirm;
           }),
         ),
-
       _Screen.emailConfirm => EmailConfirmScreen(
           userId: _pendingUserId!,
           email: _pendingEmail,
@@ -131,7 +127,6 @@ class _AppNavigatorState extends State<_AppNavigator> {
           },
           onGoBack: () => setState(() => _screen = _Screen.login),
         ),
-
       _Screen.home => _buildHome(),
     };
   }

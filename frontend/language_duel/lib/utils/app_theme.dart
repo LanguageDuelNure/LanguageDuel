@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
-  // Colors
   static const Color bg = Color(0xFF0D0F14);
   static const Color surface = Color(0xFF161A23);
   static const Color surfaceElevated = Color(0xFF1E2330);
-  static const Color accent = Color(0xFF4FFFB0); // electric mint
+  static const Color accent = Color(0xFF4FFFB0);
   static const Color accentDim = Color(0xFF2A8F63);
   static const Color danger = Color(0xFFFF4D6A);
   static const Color textPrimary = Color(0xFFF0F2F5);

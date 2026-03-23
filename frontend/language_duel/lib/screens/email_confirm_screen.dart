@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -6,6 +8,7 @@ import '../services/api_service.dart';
 import '../services/auth_provider.dart';
 import '../utils/app_theme.dart';
 import '../widgets/shared_widgets.dart';
+import '../widgets/grid_background.dart';
 
 class EmailConfirmScreen extends StatefulWidget {
   final String userId;
@@ -79,7 +82,12 @@ class _EmailConfirmScreenState extends State<EmailConfirmScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          Positioned.fill(child: _ConfirmBg()),
+          Positioned.fill(
+            child: GridBackground(
+              glowAlignment: const Alignment(-0.5, 0.5),
+              glowRadius: 0.8,
+            ),
+          ),
           Center(
             child: SingleChildScrollView(
               padding: EdgeInsets.symmetric(
@@ -227,46 +235,4 @@ class _EmailConfirmScreenState extends State<EmailConfirmScreen> {
       ),
     );
   }
-}
-
-class _ConfirmBg extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return CustomPaint(painter: _ConfirmBgPainter());
-  }
-}
-
-class _ConfirmBgPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = AppTheme.border.withOpacity(0.4)
-      ..strokeWidth = 0.5;
-
-    const spacing = 48.0;
-    for (double x = 0; x < size.width; x += spacing) {
-      canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
-    }
-    for (double y = 0; y < size.height; y += spacing) {
-      canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
-    }
-
-    final gradient = RadialGradient(
-      center: const Alignment(-0.5, 0.5),
-      radius: 0.8,
-      colors: [
-        AppTheme.accent.withOpacity(0.05),
-        Colors.transparent,
-      ],
-    );
-    canvas.drawRect(
-      Rect.fromLTWH(0, 0, size.width, size.height),
-      Paint()
-        ..shader = gradient.createShader(
-            Rect.fromLTWH(0, 0, size.width, size.height)),
-    );
-  }
-
-  @override
-  bool shouldRepaint(_) => false;
 }

@@ -1,5 +1,3 @@
-// ─── DTOs mirroring the .NET backend ─────────────────────────────────────────
-
 class LanguageDto {
   final String id;
   final String name;
@@ -54,18 +52,26 @@ class GameStateQuestionDto {
   }
 }
 
+// Now includes rating from server (GameSessionUserDto.Rating)
 class GameSessionUserDto {
   final String id;
   final String name;
   final int hp;
+  final int rating;
 
-  GameSessionUserDto({required this.id, required this.name, required this.hp});
+  GameSessionUserDto({
+    required this.id,
+    required this.name,
+    required this.hp,
+    required this.rating,
+  });
 
   factory GameSessionUserDto.fromJson(Map<String, dynamic> j) =>
       GameSessionUserDto(
         id: j['id'] as String,
         name: j['name'] as String,
         hp: j['hp'] as int? ?? 100,
+        rating: j['rating'] as int? ?? 0,
       );
 }
 

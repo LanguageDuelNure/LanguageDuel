@@ -49,7 +49,6 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  /// Returns userId on success (needed for email confirmation step)
   Future<String> register({
     required String email,
     required String password,
@@ -70,7 +69,6 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  /// Confirms email and signs the user in
   Future<void> confirmEmail({
     required String userId,
     required String code,
@@ -82,7 +80,6 @@ class AuthProvider extends ChangeNotifier {
       _userId = userId;
       _role = result.role;
 
-      // Fetch user name
       try {
         final user = await _api.getUser(userId: userId, token: _token!);
         _userName = user.name;
@@ -104,7 +101,6 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  /// Returns null if email is confirmed, or userId if email confirmation needed
   Future<String?> login({
     required String email,
     required String password,
@@ -114,19 +110,16 @@ class AuthProvider extends ChangeNotifier {
       final result = await _api.login(email: email, password: password);
 
       if (!result.emailConfirmed) {
-        // Need email confirmation
         return result.userId;
       }
 
-      _token = result.jwtToken; // may be null if email unconfirmed (handled by caller)
+      _token = result.jwtToken;
       _userId = result.userId;
       _role = result.role;
 
-      // Fetch user name only when we actually have a token
       if (_token != null) {
         try {
-          final user =
-              await _api.getUser(userId: result.userId, token: _token!);
+          final user = await _api.getUser(userId: result.userId, token: _token!);
           _userName = user.name;
         } catch (_) {}
       }
