@@ -326,7 +326,8 @@ public class GameService(INotificationService notificationService, IServiceScope
                 CurrentQuestion = gameSession.CurrentQuestionIndex < 0 ? null : mapper.Map<GameStateQuestionDto>(gameSession.Questions[gameSession.CurrentQuestionIndex]),
                 Users =  gameSession.Users,
                 TimeRemainingInSeconds = gameSession.CurrentQuestionIndex < 0 ? null : _gameLogicOptions.TimeForQuestionInSeconds - questionDuration.Seconds,
-                CorrectAnswerId = correctAnswerId
+                CorrectAnswerId = correctAnswerId,
+                LanguageName = gameSession.LanguageName,
             });
     }
 
@@ -350,6 +351,7 @@ public class GameService(INotificationService notificationService, IServiceScope
     {
         var serviceProvider = serviceScopeFactory.CreateScope().ServiceProvider;
         var questionService = serviceProvider.GetRequiredService<IQuestionService>();
+        var languageRep = serviceProvider.GetRequiredService<IRepository<Language>>();
         
         var getQuestionsResult =
             await questionService.GetRandomQuestionsAsync(languageId, difficultyLevelId, _gameLogicOptions.QuestionsCount);
@@ -365,6 +367,7 @@ public class GameService(INotificationService notificationService, IServiceScope
         {
             Id = Guid.NewGuid(),
             LanguageId =  languageId,
+            LanguageName = (await languageRep.GetAsync(languageId)).Name,
             Questions = randomQuestions,
             CurrentQuestionIndex = -1,
             Timer = new Timer(_gameLogicOptions.TimeForQuestionInSeconds * 1000),

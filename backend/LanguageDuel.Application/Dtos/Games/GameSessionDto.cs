@@ -9,6 +9,8 @@ public class GameSessionDto
     public Guid Id { get; set; }
     
     public Guid LanguageId { get; set; }
+    
+    public string LanguageName { get; set; } = string.Empty;
 
     public List<QuestionDto> Questions { get; set; } = [];
     

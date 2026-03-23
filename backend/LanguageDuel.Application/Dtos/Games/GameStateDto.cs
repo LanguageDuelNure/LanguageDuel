@@ -12,4 +12,6 @@ public class GameStateDto
     public int? TimeRemainingInSeconds { get; set; }
     
     public Guid? CorrectAnswerId { get; set; }
+    
+    public string LanguageName { get; set; } = string.Empty;
 }
