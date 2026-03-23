@@ -76,23 +76,28 @@ class GameSessionUserDto {
 }
 
 class GameStateDto {
-  final GameStateQuestionDto currentQuestion;
+  final GameStateQuestionDto? currentQuestion;
   final List<GameSessionUserDto> users;
-  final int timeRemainingInSeconds;
+  final int? timeRemainingInSeconds;
+  final String? correctAnswerId;
 
   GameStateDto({
-    required this.currentQuestion,
+    this.currentQuestion,
     required this.users,
-    required this.timeRemainingInSeconds,
+    this.timeRemainingInSeconds,
+    this.correctAnswerId,
   });
 
   factory GameStateDto.fromJson(Map<String, dynamic> j) => GameStateDto(
-        currentQuestion: GameStateQuestionDto.fromJson(
-            j['currentQuestion'] as Map<String, dynamic>),
+        currentQuestion: j['currentQuestion'] == null
+            ? null
+            : GameStateQuestionDto.fromJson(
+                j['currentQuestion'] as Map<String, dynamic>),
         users: (j['users'] as List<dynamic>? ?? [])
             .map((u) => GameSessionUserDto.fromJson(u as Map<String, dynamic>))
             .toList(),
-        timeRemainingInSeconds: j['timeRemainingInSeconds'] as int? ?? 0,
+        timeRemainingInSeconds: j['timeRemainingInSeconds'] as int?,
+        correctAnswerId: j['correctAnswerId'] as String?,
       );
 }
 

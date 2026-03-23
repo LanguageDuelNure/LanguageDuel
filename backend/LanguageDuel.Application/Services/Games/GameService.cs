@@ -40,11 +40,27 @@ public class GameService(INotificationService notificationService, IServiceScope
         return "game-id" + gameId;
     }
 
+    // FIX 2: Guard against null session when user has no active game.
+    // Previously this crashed with NullReferenceException, causing GET /api/games/current
+    // to return 500 instead of a clean 204/404.
     public Result<Guid> GetGame(Guid userId)
     {
         var session = _games.Values
             .FirstOrDefault(g => 
                 g.Users.Any(u => u.Id == userId));
+
+        if (session == null)
+        {
+            return new Result<Guid>
+            {
+                Errors = [new Error
+                {
+                    Key = ErrorKey.NotFound,
+                    Message = "No active game found for this user.",
+                }]
+            };
+        }
+
         return new Result<Guid>
         {
             Value = session.Id
@@ -137,13 +153,17 @@ public class GameService(INotificationService notificationService, IServiceScope
         
         return new Result();
     }
-    
+
+    // FIX 3: Enumerable.Range second argument is a COUNT not an end value.
+    // Old code: Range(start, rating + RatingRange) produced wrong number of groups,
+    // meaning the two players could generate non-matching group key sets.
     private IEnumerable<string> GetGameGroups(Guid languageId, ApplicationUserLanguage? applicationUserLanguage)
     {
         var rating = applicationUserLanguage?.Rating ?? 0;
-        var minimalRating = rating - _gameLogicOptions.RatingRange;
+        var start = Math.Max(0, rating - _gameLogicOptions.RatingRange);
+        var end = rating + _gameLogicOptions.RatingRange;
         return Enumerable
-            .Range(minimalRating < 0 ? 0 : minimalRating, rating + _gameLogicOptions.RatingRange)
+            .Range(start, end - start + 1)
             .Select(i => languageId + "-" + i);
     }
 
@@ -189,6 +209,13 @@ public class GameService(INotificationService notificationService, IServiceScope
             {
                 _searchGroups.Remove(group, out _);
             }
+
+            var opponentGroups = await GetSearchGroupsAsync(gameInvitationDto.InviterUserId, languageId);
+            foreach (var group in opponentGroups)
+            {
+                _searchGroups.Remove(group, out _);
+            }
+
             var difficultyRep = serviceProvider.GetRequiredService<IDifficultyRepository>();
             var difficultyLevel = await difficultyRep.GetDifficultyLevelByRatingAsync(applicationUserLanguage?.Rating ?? 0);
             var result = await CreateGameSessionAsync(languageId, difficultyLevel.Id);
