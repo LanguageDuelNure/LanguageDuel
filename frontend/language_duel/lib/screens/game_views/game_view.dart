@@ -21,36 +21,48 @@ class GameView extends StatefulWidget {
 
 class _GameViewState extends State<GameView> {
   String? _selectedAnswerId;
-  late int _displaySeconds;
+  int _displaySeconds = 0;
   Timer? _countdownTimer;
   final Map<String, int> _maxHp = {};
 
   @override
   void initState() {
     super.initState();
-    _displaySeconds = widget.state.timeRemainingInSeconds;
+    _displaySeconds = widget.state.timeRemainingInSeconds ?? 0;
     _updateMaxHp(widget.state);
-    _startCountdown();
+    if (widget.state.currentQuestion != null &&
+        widget.state.correctAnswerId == null) {
+      _startCountdown();
+    }
   }
 
   @override
   void didUpdateWidget(GameView old) {
     super.didUpdateWidget(old);
-    final q = widget.state.currentQuestion;
-    final oldQ = old.state.currentQuestion;
-    final questionChanged = oldQ.id != q.id;
+    final state = widget.state;
+    final oldState = old.state;
 
+    final q = state.currentQuestion;
+    final oldQ = oldState.currentQuestion;
+
+    // A fresh question arrived (first or subsequent)
+    final questionChanged = q != null && (oldQ == null || oldQ.id != q.id);
     if (questionChanged) {
       _selectedAnswerId = null;
-      _displaySeconds = widget.state.timeRemainingInSeconds;
+      _displaySeconds = state.timeRemainingInSeconds ?? 0;
       _restartCountdown();
-    } else if (widget.state.timeRemainingInSeconds !=
-        old.state.timeRemainingInSeconds) {
-      _displaySeconds = widget.state.timeRemainingInSeconds;
+    } else if (state.correctAnswerId != null &&
+        oldState.correctAnswerId == null) {
+      // Server revealed the correct answer — freeze the countdown
+      _countdownTimer?.cancel();
+    } else if (q != null &&
+        state.timeRemainingInSeconds != null &&
+        state.timeRemainingInSeconds != oldState.timeRemainingInSeconds) {
+      _displaySeconds = state.timeRemainingInSeconds!;
       _restartCountdown();
     }
 
-    _updateMaxHp(widget.state);
+    _updateMaxHp(state);
   }
 
   void _updateMaxHp(GameStateDto state) {
@@ -87,15 +99,108 @@ class _GameViewState extends State<GameView> {
     context.read<GameService>().submitAnswer(answerId);
   }
 
+  // ── Match-found / opponent intro screen ─────────────────────────────────
+  Widget _buildMatchFoundScreen(
+    GameSessionUserDto? me,
+    GameSessionUserDto? opponent,
+  ) {
+    return Scaffold(
+      backgroundColor: AppTheme.bg,
+      body: Stack(
+        children: [
+          const Positioned.fill(
+            child: GridBackground(
+              glowAlignment: Alignment.center,
+              glowRadius: 0.7,
+            ),
+          ),
+          SafeArea(
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 32),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      'MATCH FOUND',
+                      style: TextStyle(
+                        color: AppTheme.accent,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 2,
+                      ),
+                    ).animate().fadeIn(),
+                    const SizedBox(height: 32),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        _PlayerChip(
+                          name: me?.name ?? 'You',
+                          rating: me?.rating ?? 0,
+                          isMe: true,
+                        ).animate().fadeIn(delay: 100.ms).slideX(begin: -0.2),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Text(
+                            'VS',
+                            style: TextStyle(
+                              color: AppTheme.textSecondary.withOpacity(0.6),
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ).animate().fadeIn(delay: 200.ms),
+                        _PlayerChip(
+                          name: opponent?.name ?? '...',
+                          rating: opponent?.rating ?? 0,
+                          isMe: false,
+                        ).animate().fadeIn(delay: 100.ms).slideX(begin: 0.2),
+                      ],
+                    ),
+                    const SizedBox(height: 40),
+                    const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: AppTheme.accent,
+                      ),
+                    ).animate().fadeIn(delay: 300.ms),
+                    const SizedBox(height: 14),
+                    const Text(
+                      'Preparing first question...',
+                      style: TextStyle(
+                        color: AppTheme.textSecondary,
+                        fontSize: 13,
+                      ),
+                    ).animate().fadeIn(delay: 350.ms),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final game = context.watch<GameService>();
     final state = game.gameState ?? widget.state;
-    final q = state.currentQuestion;
     final myUserId = game.userId;
 
     final me = state.users.where((u) => u.id == myUserId).firstOrNull;
     final opponent = state.users.where((u) => u.id != myUserId).firstOrNull;
+
+    // ── No question yet: show match-found / opponent intro ───────────────
+    if (state.currentQuestion == null) {
+      return _buildMatchFoundScreen(me, opponent);
+    }
+
+    final q = state.currentQuestion!;
+    final correctAnswerId = state.correctAnswerId;
+    final isRevealPhase = correctAnswerId != null;
 
     final myMaxHp = _maxHp[myUserId] ?? me?.hp ?? 100;
     final opponentMaxHp =
@@ -120,13 +225,12 @@ class _GameViewState extends State<GameView> {
           SafeArea(
             child: Column(
               children: [
-                // ── Header: ★ myRating · Language · opponentName ★ oppRating
+                // ── Header ───────────────────────────────────────────────
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // My rating
                       const Icon(Icons.star, color: AppTheme.accent, size: 14),
                       const SizedBox(width: 3),
                       Text(
@@ -137,8 +241,6 @@ class _GameViewState extends State<GameView> {
                           fontSize: 13,
                         ),
                       ),
-
-                      // Language name separator
                       if (game.selectedLanguageName.isNotEmpty) ...[
                         const SizedBox(width: 8),
                         Container(
@@ -158,8 +260,6 @@ class _GameViewState extends State<GameView> {
                           ),
                         ),
                       ],
-
-                      // Opponent rating
                       if (opponent != null) ...[
                         const SizedBox(width: 8),
                         Container(
@@ -189,7 +289,7 @@ class _GameViewState extends State<GameView> {
 
                 const SizedBox(height: 8),
 
-                // ── HP bars + timer ───────────────────────────────────────
+                // ── HP bars + timer ──────────────────────────────────────
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
                   child: Row(
@@ -202,7 +302,9 @@ class _GameViewState extends State<GameView> {
                           isMe: true,
                         ),
                       ),
-                      TimerBadge(seconds: _displaySeconds),
+                      TimerBadge(
+                        seconds: isRevealPhase ? 0 : _displaySeconds,
+                      ),
                       Expanded(
                         child: HpBar(
                           name: opponent?.name ?? 'Opponent',
@@ -217,7 +319,7 @@ class _GameViewState extends State<GameView> {
 
                 const SizedBox(height: 16),
 
-                // ── Question card ─────────────────────────────────────────
+                // ── Question card ────────────────────────────────────────
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Container(
@@ -246,8 +348,8 @@ class _GameViewState extends State<GameView> {
 
                 const SizedBox(height: 12),
 
-                // ── Opponent answered indicator ───────────────────────────
-                if (opponentAnswerId != null)
+                // ── Status row (opponent answered / next question banner) ─
+                if (!isRevealPhase && opponentAnswerId != null)
                   Padding(
                     padding: const EdgeInsets.only(bottom: 6),
                     child: Row(
@@ -273,23 +375,49 @@ class _GameViewState extends State<GameView> {
                     ).animate().fadeIn(),
                   ),
 
+                if (isRevealPhase)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 6),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const SizedBox(
+                          width: 12,
+                          height: 12,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 1.5,
+                            color: AppTheme.accent,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        const Text(
+                          'Next question incoming...',
+                          style: TextStyle(
+                            color: AppTheme.textSecondary,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ).animate().fadeIn(),
+                  ),
+
                 // ── Answer choices ────────────────────────────────────────
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: ListView.separated(
                       itemCount: q.answers.length,
-                      separatorBuilder: (_, _) => const SizedBox(height: 10),
+                      separatorBuilder: (_, __) => const SizedBox(height: 10),
                       itemBuilder: (context, i) {
                         final answer = q.answers[i];
                         final isMyAnswer = effectiveMyAnswer == answer.id;
                         final isOpponentAnswer = opponentAnswerId == answer.id;
-                        final isBlocked = iAnswered;
+                        final isCorrect =
+                            isRevealPhase && answer.id == correctAnswerId;
+                        final isWrong = isRevealPhase &&
+                            answer.id != correctAnswerId &&
+                            (isMyAnswer || isOpponentAnswer);
 
-                        // We don't know correctness during the round, so we
-                        // style our own pick the same as the opponent's pick:
-                        // red — "you committed, awaiting result". This avoids
-                        // ever showing a false green checkmark.
                         Color borderColor;
                         Color bgColor;
                         Color textColor;
@@ -297,8 +425,43 @@ class _GameViewState extends State<GameView> {
                         Color letterTextColor;
                         Widget? trailingIcon;
 
-                        if (isMyAnswer && isOpponentAnswer) {
-                          // Both picked the same answer
+                        if (isCorrect) {
+                          // ── Correct answer revealed (green) ──────────
+                          bgColor = AppTheme.accent.withOpacity(0.1);
+                          borderColor = AppTheme.accent.withOpacity(0.7);
+                          textColor = AppTheme.accent;
+                          letterBgColor = AppTheme.accent.withOpacity(0.2);
+                          letterTextColor = AppTheme.accent;
+                          trailingIcon = const Icon(
+                              Icons.check_circle_outline,
+                              color: AppTheme.accent,
+                              size: 20);
+                        } else if (isWrong) {
+                          // ── Wrong chosen answer (red) ─────────────────
+                          bgColor = AppTheme.danger.withOpacity(0.08);
+                          borderColor = AppTheme.danger.withOpacity(0.5);
+                          textColor = AppTheme.danger;
+                          letterBgColor = AppTheme.danger.withOpacity(0.15);
+                          letterTextColor = AppTheme.danger;
+                          trailingIcon = Icon(
+                            isMyAnswer && isOpponentAnswer
+                                ? Icons.people
+                                : isMyAnswer
+                                    ? Icons.cancel_outlined
+                                    : Icons.person,
+                            color: AppTheme.danger,
+                            size: 18,
+                          );
+                        } else if (isRevealPhase) {
+                          // ── Unchosen answer during reveal (dimmed) ────
+                          bgColor = AppTheme.surface;
+                          borderColor = AppTheme.border;
+                          textColor = AppTheme.textSecondary.withOpacity(0.4);
+                          letterBgColor = AppTheme.surfaceElevated;
+                          letterTextColor =
+                              AppTheme.textSecondary.withOpacity(0.3);
+                          trailingIcon = null;
+                        } else if (isMyAnswer && isOpponentAnswer) {
                           bgColor = AppTheme.danger.withOpacity(0.08);
                           borderColor = AppTheme.danger.withOpacity(0.5);
                           textColor = AppTheme.danger;
@@ -307,8 +470,6 @@ class _GameViewState extends State<GameView> {
                           trailingIcon = const Icon(Icons.people,
                               color: AppTheme.danger, size: 16);
                         } else if (isMyAnswer) {
-                          // My pick — same red style as opponent's so we
-                          // never show a misleading green checkmark
                           bgColor = AppTheme.danger.withOpacity(0.08);
                           borderColor = AppTheme.danger.withOpacity(0.5);
                           textColor = AppTheme.danger;
@@ -317,7 +478,6 @@ class _GameViewState extends State<GameView> {
                           trailingIcon = const Icon(Icons.cancel_outlined,
                               color: AppTheme.danger, size: 18);
                         } else if (isOpponentAnswer) {
-                          // Opponent's pick
                           bgColor = AppTheme.danger.withOpacity(0.08);
                           borderColor = AppTheme.danger.withOpacity(0.5);
                           textColor = AppTheme.danger;
@@ -328,15 +488,17 @@ class _GameViewState extends State<GameView> {
                         } else {
                           bgColor = AppTheme.surface;
                           borderColor = AppTheme.border;
-                          textColor = isBlocked
+                          textColor = iAnswered
                               ? AppTheme.textSecondary.withOpacity(0.5)
                               : AppTheme.textSecondary;
                           letterBgColor = AppTheme.surfaceElevated;
-                          letterTextColor = isBlocked
+                          letterTextColor = iAnswered
                               ? AppTheme.textSecondary.withOpacity(0.4)
                               : AppTheme.textSecondary;
                           trailingIcon = null;
                         }
+
+                        final isBlocked = iAnswered || isRevealPhase;
 
                         return GestureDetector(
                           onTap: (isBlocked || isOpponentAnswer)
@@ -351,7 +513,9 @@ class _GameViewState extends State<GameView> {
                               borderRadius: BorderRadius.circular(14),
                               border: Border.all(
                                 color: borderColor,
-                                width: (isMyAnswer || isOpponentAnswer)
+                                width: (isMyAnswer ||
+                                        isOpponentAnswer ||
+                                        isCorrect)
                                     ? 1.5
                                     : 1,
                               ),
@@ -388,41 +552,44 @@ class _GameViewState extends State<GameView> {
                                           color: textColor,
                                           fontSize: 15,
                                           fontWeight: (isMyAnswer ||
-                                                  isOpponentAnswer)
+                                                  isOpponentAnswer ||
+                                                  isCorrect)
                                               ? FontWeight.w600
                                               : FontWeight.w400,
                                         ),
                                       ),
-                                      if (isOpponentAnswer && !isMyAnswer)
-                                        Padding(
-                                          padding:
-                                              const EdgeInsets.only(top: 2),
-                                          child: Text(
-                                            '${opponent?.name ?? 'Opponent'}\'s answer',
-                                            style: TextStyle(
-                                              color: AppTheme.danger
-                                                  .withOpacity(0.7),
-                                              fontSize: 11,
+                                      if (!isRevealPhase) ...[
+                                        if (isOpponentAnswer && !isMyAnswer)
+                                          Padding(
+                                            padding:
+                                                const EdgeInsets.only(top: 2),
+                                            child: Text(
+                                              '${opponent?.name ?? 'Opponent'}\'s answer',
+                                              style: TextStyle(
+                                                color: AppTheme.danger
+                                                    .withOpacity(0.7),
+                                                fontSize: 11,
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                      if (isMyAnswer && isOpponentAnswer)
-                                        Padding(
-                                          padding:
-                                              const EdgeInsets.only(top: 2),
-                                          child: Text(
-                                            'Both picked this',
-                                            style: TextStyle(
-                                              color: AppTheme.danger
-                                                  .withOpacity(0.7),
-                                              fontSize: 11,
+                                        if (isMyAnswer && isOpponentAnswer)
+                                          Padding(
+                                            padding:
+                                                const EdgeInsets.only(top: 2),
+                                            child: Text(
+                                              'Both picked this',
+                                              style: TextStyle(
+                                                color: AppTheme.danger
+                                                    .withOpacity(0.7),
+                                                fontSize: 11,
+                                              ),
                                             ),
                                           ),
-                                        ),
+                                      ],
                                     ],
                                   ),
                                 ),
-                                ?trailingIcon,
+                                if (trailingIcon != null) trailingIcon,
                               ],
                             ),
                           ).animate(key: ValueKey('${q.id}_$i')).fadeIn(
@@ -439,6 +606,87 @@ class _GameViewState extends State<GameView> {
           ),
         ],
       ),
+    );
+  }
+}
+
+// ── Player chip for the match-found screen ─────────────────────────────────
+class _PlayerChip extends StatelessWidget {
+  final String name;
+  final int rating;
+  final bool isMe;
+
+  const _PlayerChip({
+    required this.name,
+    required this.rating,
+    required this.isMe,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 56,
+          height: 56,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: isMe
+                  ? [
+                      AppTheme.accent.withOpacity(0.3),
+                      AppTheme.accentDim.withOpacity(0.2),
+                    ]
+                  : [
+                      AppTheme.surfaceElevated,
+                      AppTheme.surface,
+                    ],
+            ),
+            shape: BoxShape.circle,
+            border: Border.all(
+              color: isMe
+                  ? AppTheme.accent.withOpacity(0.5)
+                  : AppTheme.border,
+              width: 1.5,
+            ),
+          ),
+          child: Center(
+            child: Text(
+              name.isNotEmpty ? name[0].toUpperCase() : '?',
+              style: TextStyle(
+                color: isMe ? AppTheme.accent : AppTheme.textSecondary,
+                fontSize: 22,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          name,
+          style: TextStyle(
+            color: isMe ? AppTheme.textPrimary : AppTheme.textSecondary,
+            fontWeight: FontWeight.w600,
+            fontSize: 13,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.star,
+                color: AppTheme.accent.withOpacity(0.7), size: 11),
+            const SizedBox(width: 3),
+            Text(
+              '$rating',
+              style: TextStyle(
+                color: AppTheme.textSecondary.withOpacity(0.8),
+                fontSize: 11,
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

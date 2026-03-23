@@ -125,7 +125,18 @@ class GameService extends ChangeNotifier {
 
       // 204 No Content or 404 means no active game
       if (currentRes.statusCode == 204 || currentRes.statusCode == 404) return;
-      if (currentRes.statusCode != 200) return;
+
+      // FIX: Log unexpected non-200 responses in debug mode instead of silently
+      // swallowing them. Previously a 500 from the backend NullReferenceException
+      // in GetGame() was invisible here, making the ghost-session bug very hard
+      // to diagnose.
+      if (currentRes.statusCode != 200) {
+        debugPrint(
+          '[GameService] _rejoinActiveGameIfAny: unexpected status '
+          '${currentRes.statusCode} — ${currentRes.body}',
+        );
+        return;
+      }
 
       final body = currentRes.body.trim();
       if (body.isEmpty || body == 'null') return;
@@ -149,8 +160,11 @@ class GameService extends ChangeNotifier {
         _status = GameStatus.inGame;
         notifyListeners();
       }
-    } catch (_) {
-      // Silently ignore — user simply has no active game
+    } catch (e) {
+      // FIX: Log the error in debug mode so rejoin failures are visible during
+      // development. In production this remains a silent no-op since the user
+      // simply has no active game to rejoin.
+      debugPrint('[GameService] _rejoinActiveGameIfAny error: $e');
     }
   }
 
