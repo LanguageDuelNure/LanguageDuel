@@ -6,6 +6,7 @@ using LanguageDuel.Application.Dtos.Results;
 using LanguageDuel.Application.Options;
 using LanguageDuel.Application.Repositories;
 using LanguageDuel.Application.Services.ApplicationUserLanguages;
+using LanguageDuel.Application.Services.ApplicationUserOpponents;
 using LanguageDuel.Application.Services.Questions;
 using LanguageDuel.Domain.Entities;
 using Microsoft.Extensions.DependencyInjection;
@@ -65,6 +66,43 @@ public class GameService(INotificationService notificationService, IServiceScope
         {
             Value = session.Id
         };
+    }
+    
+    public async Task<Result> GiveUpAsync(Guid userId, Guid gameId)
+    {
+        var isFound = _games.TryGetValue(gameId, out var gameSession);
+
+        if (!isFound)
+        {
+            return new Result<Guid>
+            {
+                Errors = [new Error
+                {
+                    Key = ErrorKey.NotFound,
+                    Message = "Game not found",
+                }]
+            };
+        }
+
+        var user = gameSession.Users.FirstOrDefault(u => u.Id == userId);
+        if (user == null)
+        {
+            return new Result<Guid>
+            {
+                Errors = [new Error
+                {
+                    Key = ErrorKey.Forbidden,
+                    Message = "User not belong to this game",
+                }]
+            };
+        }
+
+        user.IsGiveUp = true;
+        
+        gameSession.Timer.Stop();
+        await FinishGameAsync(gameSession);
+
+        return new Result();
     }
 
     public async Task<Result> ChooseAnswerAsync(Guid userId, Guid gameId, Guid answerId)
@@ -205,6 +243,21 @@ public class GameService(INotificationService notificationService, IServiceScope
 
         if (gameInvitationDto != null)
         {
+            if (gameInvitationDto.InviterUserId == userId)
+            {
+                return new Result
+                {
+                    Errors =
+                    [
+                        new Error
+                        {
+                            Message = "You can't play with yourself",
+                            Field = nameof(existingGroup),
+                            Key = ErrorKey.AlreadyExists,
+                        }
+                    ]
+                };
+            }
             foreach (var group in groupsList)
             {
                 _searchGroups.Remove(group, out _);
@@ -294,29 +347,37 @@ public class GameService(INotificationService notificationService, IServiceScope
 
     private async Task<Result> ChangeUsersRatingAsync(GameSessionDto gameSession)
     {
-        var isDraw = gameSession.Users.All(u => u.Hp == 0);
-        if (isDraw)
-        {
-            return new Result();
-        }
-        
         var serviceProvider = serviceScopeFactory.CreateScope().ServiceProvider;
+        var unitOfWork = serviceProvider.GetRequiredService<IUnitOfWork>();
+        var userService = serviceProvider.GetRequiredService<IUserService>();
         var applicationUserLanguageService = serviceProvider.GetRequiredService<IApplicationUserLanguageService>();
-
+        var applicationUserOpponentService = serviceProvider.GetRequiredService<IApplicationUserOpponentService>();
+        
+        var isDraw = gameSession.Users.All(u => u.Hp == 0);
         foreach (var user in gameSession.Users)
         {
             int ratingChange;
-            if (user.Hp == 0)
-            {
-                ratingChange = -_gameLogicOptions.RatingChangeAfterWinOrLoss;
-            }
-            else
+            var isWin = !isDraw && user is { Hp: > 0, IsGiveUp: false };
+            if (isWin)
             {
                 ratingChange = _gameLogicOptions.RatingChangeAfterWinOrLoss;
             }
-            await applicationUserLanguageService.ChangeUsersRatingAsync(user.Id, gameSession.LanguageId, ratingChange);
+            else if (isDraw)
+            {
+                ratingChange = 0;
+            }
+            else
+            {
+                ratingChange = -_gameLogicOptions.RatingChangeAfterWinOrLoss;
+            }
+            await userService.UpdateUserStatisticAsync(user.Id, isWin);
+            await applicationUserLanguageService.UpdateStatisticsAsync(user.Id, gameSession.LanguageId, ratingChange);
         }
+        
+        await applicationUserOpponentService.UpdateStatisticsAsync(gameSession.Users[0].Id, gameSession.Users[1].Id);
 
+        await unitOfWork.CommitAsync();
+        
         return new Result();
     }
 
@@ -324,14 +385,19 @@ public class GameService(INotificationService notificationService, IServiceScope
     {
         if (gameSession.Users.Any(u => u.Hp == 0))
         {
-            gameSession.Timer.Dispose();
-            await ChangeUsersRatingAsync(gameSession);
-            await SendGameResultAsync(gameSession);
-            _games.Remove(gameSession.Id, out _);
+            await FinishGameAsync(gameSession);
             return;
         }
         
         await SendGameStateChangeAsync(gameSession);
+    }
+
+    private async Task FinishGameAsync(GameSessionDto gameSession)
+    {
+        gameSession.Timer.Dispose();
+        await ChangeUsersRatingAsync(gameSession);
+        await SendGameResultAsync(gameSession);
+        _games.Remove(gameSession.Id, out _);
     }
 
     public async Task<Result> SendGameStateAsync(Guid gameId)
@@ -371,6 +437,7 @@ public class GameService(INotificationService notificationService, IServiceScope
                     WinnerUserId = winner?.Id,
                     WinnerUserName = winner?.Name,
                     RatingChangeAfterWinOrLoss = _gameLogicOptions.RatingChangeAfterWinOrLoss,
+                    IsGiveUp = gameSession.Users.Any(u => u.IsGiveUp),
                 });
     }
 

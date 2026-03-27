@@ -11,4 +11,10 @@ public class ApplicationUserLanguage
     public Language Language { get; set; } = null!;
     
     public int Rating { get; set; }
+    
+    public int MaxRating { get; set; }
+    
+    public int TotalGames { get; set; }
+    
+    public int TotalWins { get; set; }
 }

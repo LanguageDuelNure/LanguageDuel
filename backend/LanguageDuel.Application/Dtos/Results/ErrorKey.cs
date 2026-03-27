@@ -46,5 +46,8 @@ public enum ErrorKey
     DoNotMatch,
     
     [EnumMember(Value = "ALREADY_CHOSEN")]
-    AlreadyChosen
+    AlreadyChosen,
+    
+    [EnumMember(Value = "FORBIDDEN")]
+    Forbidden,
 }

@@ -1,4 +1,5 @@
-﻿using LanguageDuel.Application.Dtos.Results;
+﻿using AutoMapper;
+using LanguageDuel.Application.Dtos.Results;
 using LanguageDuel.Application.Dtos.UserLanguages;
 using LanguageDuel.Application.Dtos.Users;
 using LanguageDuel.Application.Services;
@@ -11,8 +12,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LanguageDuel.Infrastructure.Services;
 
-public class UserService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IEmailSender emailSender, ApplicationDbContext dbContext, IJwtTokenService jwtTokenService) : IUserService
+public class UserService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IEmailSender emailSender, ApplicationDbContext dbContext, IJwtTokenService jwtTokenService, IMapper mapper) : IUserService
 {
+    private const int UserOpponentCount = 10;
     public async Task<Result<RegisterResultDto>> RegisterUserAsync(RegisterUserDto dto)
     {
         string code = GenerateVerificationCode();
@@ -227,34 +229,70 @@ public class UserService(UserManager<ApplicationUser> userManager, SignInManager
     {
         var user = await dbContext.Users
             .Where(u => u.Id == userId)
-            .Select(u => new UserDto
-            {
-                Id = u.Id,
-                Name = u.Name,
-                LanguageRatings = u.ApplicationUserLanguages.Select(ul => new UserLanguageDto()
-                {
-                    LanguageId = ul.LanguageId,
-                    Rating = ul.Rating
-                }).ToList()
-            })
+            .Include(u => u.ApplicationUserLanguages)
+            .Include(u => u.ApplicationUserOpponents)
+            .ThenInclude(uo => uo.Opponent)
+            .Include(u => u.OpponentApplicationUsers)
+            .ThenInclude(uo => uo.ApplicationUser)
             .FirstOrDefaultAsync();
-        return user == null
-            ? new Result<UserDto>
+
+        if (user == null)
+        {
+            return new Result<UserDto>
             {
-                Errors =
-                [
-                    new Error
-                    {
-                        Message = "User not found",
-                        Field = string.Empty,
-                        Key = ErrorKey.NotFound,
-                    }
-                ]
-            }
-            : new Result<UserDto>
-            {
-                Value = user
+                Errors = [new Error { Message = "User not found", Key = ErrorKey.NotFound }]
             };
+        }
+        
+        var userDto = mapper.Map<UserDto>(user);
+        
+        var opponentsFromInitiator = user.ApplicationUserOpponents
+            .Select(uo => new UserOpponentDto
+            {
+                LastPlayedAt = uo.LastPlayedAt,
+                MatchesPlayed = uo.MatchesPlayed,
+                UserId = uo.OpponentId,
+                Name = uo.Opponent.Name
+            });
+
+        var opponentsFromTarget = user.OpponentApplicationUsers
+            .Select(uo => new UserOpponentDto
+            {
+                LastPlayedAt = uo.LastPlayedAt,
+                MatchesPlayed = uo.MatchesPlayed,
+                UserId = uo.ApplicationUserId,
+                Name = uo.ApplicationUser.Name
+            });
+
+        userDto.UserOpponents = opponentsFromInitiator
+            .Concat(opponentsFromTarget)
+            .OrderByDescending(uo => uo.MatchesPlayed)
+            .Take(UserOpponentCount)
+            .ToList();
+    
+        return new Result<UserDto> { Value = userDto };
+    }
+
+    public async Task<Result> UpdateUserStatisticAsync(Guid userId, bool isWin)
+    {
+        var getUserResult = await GetUserAsync(userId);
+        if (!getUserResult.IsSuccess)
+        {
+            return new Result<UserDto>
+            {
+                Errors = getUserResult.Errors
+            };
+        }
+
+        var user = getUserResult.Value;
+
+        user.TotalGames++;
+        if (isWin)
+        {
+            user.TotalWins++;
+        }
+        
+        return new Result();
     }
 
     private async Task<Result<ApplicationUser>> GetUserAsync(Guid userId)

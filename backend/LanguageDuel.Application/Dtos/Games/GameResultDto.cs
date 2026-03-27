@@ -8,6 +8,8 @@ public class GameResultDto
     
     public string? WinnerUserName { get; set; }
     
+    public bool IsGiveUp { get; set; }
+    
     public int RatingChangeAfterWinOrLoss { get; set; }
     
     public List<QuestionDto> Questions { get; set; }

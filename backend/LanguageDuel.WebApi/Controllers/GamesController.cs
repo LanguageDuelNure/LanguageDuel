@@ -71,4 +71,18 @@ public class GamesController(IGameService gameService) : BaseController
         var result = await gameService.ChooseAnswerAsync(GetUserId(), gameId, answerId);
         return !result.IsSuccess ? HandleErrors(result) : NoContent();
     }
+    
+    /// <remarks>
+    /// Error keys:
+    /// - NOT_FOUND (game not found)
+    /// - FORBIDDEN (give up in game where you are not participate)
+    /// - UNEXPECTED_ERROR
+    /// </remarks>
+    [HttpPost("give-up")]
+    [Authorize]
+    public async Task<ActionResult> GiveUp(Guid gameId)
+    {
+        var result = await gameService.GiveUpAsync(GetUserId(), gameId);
+        return !result.IsSuccess ? HandleErrors(result) : NoContent();
+    }
 }

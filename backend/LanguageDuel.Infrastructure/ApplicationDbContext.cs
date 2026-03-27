@@ -3,6 +3,7 @@ using LanguageDuel.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace LanguageDuel.Infrastructure;
 
@@ -18,21 +19,34 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     
     public DbSet<ApplicationUserLanguage> ApplicationUserLanguages { get; set; }
     
+    public DbSet<ApplicationUserOpponent> ApplicationUserOpponents { get; set; }
+    
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        base.OnConfiguring(optionsBuilder);
+        
+        optionsBuilder.ConfigureWarnings(w => 
+            w.Ignore(CoreEventId.NavigationBaseIncludeIgnored));
+    }
+    
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-
-        builder.Entity<ApplicationUserLanguage>()
-            .HasOne(aul => aul.ApplicationUser)
-            .WithMany(au => au.ApplicationUserLanguages)
-            .HasForeignKey(aul => aul.ApplicationUserId);
-        
-        builder.Entity<ApplicationUserLanguage>()
-            .HasOne(aul => aul.Language)
-            .WithMany(l => l.ApplicationUserLanguages)
-            .HasForeignKey(aul => aul.LanguageId);
         
         builder.Entity<ApplicationUserLanguage>()
             .HasKey(aul => new { aul.ApplicationUserId, aul.LanguageId });
+        
+        builder.Entity<ApplicationUserOpponent>()
+            .HasOne(aul => aul.ApplicationUser)
+            .WithMany(l => l.ApplicationUserOpponents)
+            .HasForeignKey(aul => aul.ApplicationUserId);
+        
+        builder.Entity<ApplicationUserOpponent>()
+            .HasOne(aul => aul.Opponent)
+            .WithMany(l => l.OpponentApplicationUsers)
+            .HasForeignKey(aul => aul.OpponentId);
+        
+        builder.Entity<ApplicationUserOpponent>()
+            .HasKey(auo => new { auo.ApplicationUserId, auo.OpponentId });
     }
 }

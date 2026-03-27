@@ -1,5 +1,6 @@
 ﻿using LanguageDuel.Application.Services;
 using LanguageDuel.Application.Services.ApplicationUserLanguages;
+using LanguageDuel.Application.Services.ApplicationUserOpponents;
 using LanguageDuel.Application.Services.DifficultyLevels;
 using LanguageDuel.Application.Services.Games;
 using LanguageDuel.Application.Services.Languages;
@@ -18,6 +19,7 @@ public static class ApplicationServiceExtensions
         services.AddScoped<IQuestionService, QuestionService>();
         services.AddScoped<IDifficultyLevelService, DifficultyLevelService>();
         services.AddScoped<IApplicationUserLanguageService, ApplicationUserLanguageService>();
+        services.AddScoped<IApplicationUserOpponentService, ApplicationUserOpponentService>();
         
         services.AddSingleton<INotificationService, NotificationService>();
 

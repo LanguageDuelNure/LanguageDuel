@@ -9,4 +9,6 @@ public class GameSessionUserDto
     public int Hp { get; set; }
     
     public int Rating { get; set; }
+    
+    public bool IsGiveUp { get; set; }
 }

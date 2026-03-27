@@ -9,4 +9,10 @@ public class UserDto
     public string Name { get; set; } = string.Empty;
     
     public List<UserLanguageDto> LanguageRatings { get; set; }
+    
+    public int TotalGames { get; set; }
+    
+    public int TotalWins { get; set; }
+    
+    public List<UserOpponentDto> UserOpponents { get; set; }
 }
