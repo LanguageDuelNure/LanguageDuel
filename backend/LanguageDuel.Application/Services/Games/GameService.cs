@@ -18,24 +18,24 @@ namespace LanguageDuel.Application.Services.Games;
 public class GameService(INotificationService notificationService, IServiceScopeFactory serviceScopeFactory, IOptions<GameLogicOptions> gameLogicOptions) : IGameService
 {
     private readonly GameLogicOptions _gameLogicOptions = gameLogicOptions.Value;
-    
+
     private const int PlayersInGame = 2;
-    
+
     private const int BeforeGameDelayMs = 1000;
-    
+
     private readonly ConcurrentDictionary<Guid, GameSessionDto> _games = new();
-    
+
     private readonly ConcurrentDictionary<string, GameInvitationDto> _searchGroups = [];
 
     public async Task<IEnumerable<string>> GetSearchGroupsAsync(Guid userId, Guid languageId)
     {
         var serviceProvider = serviceScopeFactory.CreateScope().ServiceProvider;
         var applicationUserLanguageRep = serviceProvider.GetRequiredService<IRepository<ApplicationUserLanguage>>();
-        
+
         var applicationUserLanguage = await applicationUserLanguageRep.GetAsync(userId, languageId);
         return GetGameGroups(languageId, applicationUserLanguage);
     }
-    
+
     public string GetGameGroupAsync(Guid gameId)
     {
         return "game-id" + gameId;
@@ -47,27 +47,24 @@ public class GameService(INotificationService notificationService, IServiceScope
     public Result<Guid> GetGame(Guid userId)
     {
         var session = _games.Values
-            .FirstOrDefault(g => 
+            .FirstOrDefault(g =>
                 g.Users.Any(u => u.Id == userId));
 
-        if (session == null)
-        {
-            return new Result<Guid>
+        return session == null
+            ? new Result<Guid>
             {
                 Errors = [new Error
                 {
                     Key = ErrorKey.NotFound,
                     Message = "No active game found for this user.",
                 }]
-            };
-        }
-
-        return new Result<Guid>
+            }
+            : new Result<Guid>
         {
             Value = session.Id
         };
     }
-    
+
     public async Task<Result> GiveUpAsync(Guid userId, Guid gameId)
     {
         var isFound = _games.TryGetValue(gameId, out var gameSession);
@@ -98,7 +95,7 @@ public class GameService(INotificationService notificationService, IServiceScope
         }
 
         user.IsGiveUp = true;
-        
+
         gameSession.Timer.Stop();
         await FinishGameAsync(gameSession);
 
@@ -110,7 +107,7 @@ public class GameService(INotificationService notificationService, IServiceScope
         _games.TryGetValue(gameId, out var gameSession);
         var currentQuestion = gameSession.Questions[gameSession.CurrentQuestionIndex];
         var chosenAnswer = currentQuestion.Answers.FirstOrDefault(a => a.Id == answerId);
-        
+
         var isOpponentSelectedThisAnswer = currentQuestion.UserAnswers.ContainsValue(answerId);
         if (isOpponentSelectedThisAnswer)
         {
@@ -124,7 +121,7 @@ public class GameService(INotificationService notificationService, IServiceScope
                 }]
             };
         }
-        
+
         var isAnswerSelected = !currentQuestion.UserAnswers.TryAdd(userId, answerId);
         if (isAnswerSelected)
         {
@@ -138,7 +135,7 @@ public class GameService(INotificationService notificationService, IServiceScope
                 }]
             };
         }
-        
+
         if (chosenAnswer.IsCorrect)
         {
             foreach (var user in gameSession.Users.Where(user => user.Id != userId))
@@ -159,9 +156,9 @@ public class GameService(INotificationService notificationService, IServiceScope
 
             return await MoveToNextQuestionAsync(gameSession);
         }
-        
+
         await HandleGameStateAsync(gameSession);
-        
+
         return new Result();
     }
 
@@ -178,17 +175,17 @@ public class GameService(INotificationService notificationService, IServiceScope
                 .Select(a => a.Id)
                 .First();
         }
-        
+
         await SendGameStateChangeAsync(gameSession, correctAnswerId);
         await Task.Delay(_gameLogicOptions.QuestionDelayMs);
-        
+
         gameSession.CurrentQuestionIndex++;
-        
+
         gameSession.Timer.Start();
         gameSession.CurrentQuestionStartDateTime = DateTime.UtcNow;
-        
+
         await HandleGameStateAsync(gameSession);
-        
+
         return new Result();
     }
 
@@ -215,12 +212,12 @@ public class GameService(INotificationService notificationService, IServiceScope
 
         return new Result();
     }
-    
+
     public async Task<Result> SendGameInvitationsAsync(Guid userId, Guid languageId)
     {
         var serviceProvider = serviceScopeFactory.CreateScope().ServiceProvider;
         var applicationUserLanguageRep = serviceProvider.GetRequiredService<IRepository<ApplicationUserLanguage>>();
-        
+
         var applicationUserLanguage = await applicationUserLanguageRep.GetAsync(userId, languageId);
 
         var groups = await GetSearchGroupsAsync(userId, languageId);
@@ -276,14 +273,14 @@ public class GameService(INotificationService notificationService, IServiceScope
             {
                 return new Result
                 {
-                    Errors =  result.Errors
+                    Errors = result.Errors
                 };
             }
-        
+
             var gameSession = result.Value;
-        
+
             _games.TryAdd(gameSession.Id, gameSession);
-            
+
             var userService = serviceProvider.GetRequiredService<IUserService>();
             var getFirstUserResult = await userService.GetUserDtoAsync(userId);
             var getSecondUserResult = await userService.GetUserDtoAsync(gameInvitationDto.InviterUserId);
@@ -300,6 +297,7 @@ public class GameService(INotificationService notificationService, IServiceScope
                     Hp = _gameLogicOptions.QuestionsCount /  PlayersInGame,
                     Name = firstUser.Name,
                     Rating = firstUser.LanguageRatings.FirstOrDefault(lr => lr.LanguageId == languageId)?.Rating ?? 0,
+                    ImageUrl = firstUser.ImageUrl,
                 },
                 new GameSessionUserDto()
                 {
@@ -307,6 +305,7 @@ public class GameService(INotificationService notificationService, IServiceScope
                     Hp = _gameLogicOptions.QuestionsCount /  PlayersInGame,
                     Name = secondUser.Name,
                     Rating = secondUser.LanguageRatings.FirstOrDefault(lr => lr.LanguageId == languageId)?.Rating ?? 0,
+                    ImageUrl = firstUser.ImageUrl,
                 },
             ]);
             await notificationService
@@ -321,10 +320,10 @@ public class GameService(INotificationService notificationService, IServiceScope
             await Task.Delay(BeforeGameDelayMs);
 
             await MoveToNextQuestionAsync(gameSession);
-            
+
             return new Result();
         }
-        
+
         var tasks = groupsList
             .Select(g =>
             {
@@ -352,7 +351,7 @@ public class GameService(INotificationService notificationService, IServiceScope
         var userService = serviceProvider.GetRequiredService<IUserService>();
         var applicationUserLanguageService = serviceProvider.GetRequiredService<IApplicationUserLanguageService>();
         var applicationUserOpponentService = serviceProvider.GetRequiredService<IApplicationUserOpponentService>();
-        
+
         var isDraw = gameSession.Users.All(u => u.Hp == 0);
         foreach (var user in gameSession.Users)
         {
@@ -362,22 +361,18 @@ public class GameService(INotificationService notificationService, IServiceScope
             {
                 ratingChange = _gameLogicOptions.RatingChangeAfterWinOrLoss;
             }
-            else if (isDraw)
-            {
-                ratingChange = 0;
-            }
             else
             {
-                ratingChange = -_gameLogicOptions.RatingChangeAfterWinOrLoss;
+                ratingChange = isDraw ? 0 : -_gameLogicOptions.RatingChangeAfterWinOrLoss;
             }
             await userService.UpdateUserStatisticAsync(user.Id, isWin);
             await applicationUserLanguageService.UpdateStatisticsAsync(user.Id, gameSession.LanguageId, ratingChange);
         }
-        
+
         await applicationUserOpponentService.UpdateStatisticsAsync(gameSession.Users[0].Id, gameSession.Users[1].Id);
 
         await unitOfWork.CommitAsync();
-        
+
         return new Result();
     }
 
@@ -388,7 +383,7 @@ public class GameService(INotificationService notificationService, IServiceScope
             await FinishGameAsync(gameSession);
             return;
         }
-        
+
         await SendGameStateChangeAsync(gameSession);
     }
 
@@ -417,7 +412,7 @@ public class GameService(INotificationService notificationService, IServiceScope
             new GameStateDto
             {
                 CurrentQuestion = gameSession.CurrentQuestionIndex < 0 ? null : mapper.Map<GameStateQuestionDto>(gameSession.Questions[gameSession.CurrentQuestionIndex]),
-                Users =  gameSession.Users,
+                Users = gameSession.Users,
                 TimeRemainingInSeconds = gameSession.CurrentQuestionIndex < 0 ? null : _gameLogicOptions.TimeForQuestionInSeconds - questionDuration.Seconds,
                 CorrectAnswerId = correctAnswerId,
                 LanguageName = gameSession.LanguageName,
@@ -433,7 +428,7 @@ public class GameService(INotificationService notificationService, IServiceScope
                 "ReceiveGameResult",
                 new GameResultDto()
                 {
-                    Questions = gameSession.Questions.Take(gameSession.CurrentQuestionIndex).ToList(),
+                    Questions = [.. gameSession.Questions.Take(gameSession.CurrentQuestionIndex)],
                     WinnerUserId = winner?.Id,
                     WinnerUserName = winner?.Name,
                     RatingChangeAfterWinOrLoss = _gameLogicOptions.RatingChangeAfterWinOrLoss,
@@ -446,7 +441,7 @@ public class GameService(INotificationService notificationService, IServiceScope
         var serviceProvider = serviceScopeFactory.CreateScope().ServiceProvider;
         var questionService = serviceProvider.GetRequiredService<IQuestionService>();
         var languageRep = serviceProvider.GetRequiredService<IRepository<Language>>();
-        
+
         var getQuestionsResult =
             await questionService.GetRandomQuestionsAsync(languageId, difficultyLevelId, _gameLogicOptions.QuestionsCount);
         if (!getQuestionsResult.IsSuccess)
@@ -460,7 +455,7 @@ public class GameService(INotificationService notificationService, IServiceScope
         var gameSession = new GameSessionDto
         {
             Id = Guid.NewGuid(),
-            LanguageId =  languageId,
+            LanguageId = languageId,
             LanguageName = (await languageRep.GetAsync(languageId)).Name,
             Questions = randomQuestions,
             CurrentQuestionIndex = -1,
@@ -473,14 +468,14 @@ public class GameService(INotificationService notificationService, IServiceScope
             {
                 user.Hp--;
             }
-            
+
             await MoveToNextQuestionAsync(gameSession);
         };
         gameSession.Timer.AutoReset = false;
 
         return new Result<GameSessionDto>
         {
-            Value =  gameSession
+            Value = gameSession
         };
     }
 }

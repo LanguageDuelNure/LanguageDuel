@@ -2,12 +2,10 @@
 using LanguageDuel.Application.Dtos.Languages;
 using LanguageDuel.Application.Dtos.Results;
 using LanguageDuel.Application.Repositories;
-using LanguageDuel.Domain;
-using LanguageDuel.Domain.Entities;
 
 namespace LanguageDuel.Application.Services.Languages;
 
-public class LanguageService (ILanguageRepository languageRep, IMapper mapper) : ILanguageService
+public class LanguageService(ILanguageRepository languageRep, IMapper mapper) : ILanguageService
 {
     public async Task<Result<IEnumerable<LanguageDto>>> GetLanguagesAsync(Guid userId)
     {

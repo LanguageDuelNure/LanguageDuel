@@ -1,6 +1,5 @@
 ﻿using System.Reflection;
 using System.Text.Json;
-using LanguageDuel.Domain;
 using LanguageDuel.Domain.Common;
 using LanguageDuel.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -19,23 +18,32 @@ public static class DbInitializer
 
     private static async Task InitializeDefaultRolesAsync(ApplicationDbContext context)
     {
-        if (await context.Roles.AnyAsync()) return;
+        if (await context.Roles.AnyAsync())
+        {
+            return;
+        }
 
         await context.Roles.AddAsync(DefaultRoles.UserRole);
         await context.Roles.AddAsync(DefaultRoles.AdminRole);
     }
-    
+
     private static async Task InitializeDefaultLanguagesAsync(ApplicationDbContext context)
     {
-        if (await context.Languages.AnyAsync()) return;
+        if (await context.Languages.AnyAsync())
+        {
+            return;
+        }
 
         await context.Languages.AddAsync(DefaultLanguages.EnglishLanguage);
         await context.Languages.AddAsync(DefaultLanguages.SpanishLanguage);
     }
-    
+
     private static async Task InitializeDefaultDifficultyLevelAsync(ApplicationDbContext context)
     {
-        if (await context.Roles.AnyAsync()) return;
+        if (await context.Roles.AnyAsync())
+        {
+            return;
+        }
 
         await context.DifficultyLevels.AddAsync(DefaultDifficultyLevels.EasyDifficulty);
         await context.DifficultyLevels.AddAsync(DefaultDifficultyLevels.MediumDifficulty);
@@ -51,7 +59,7 @@ public static class DbInitializer
 
         var englishQuestionsJson = await GetResourceAsync(englishQuestionsResource);
         var englishQuestions = JsonSerializer.Deserialize<Question[]>(englishQuestionsJson);
-        
+
         if (englishQuestions != null)
         {
             foreach (var englishQuestion in englishQuestions)
@@ -62,13 +70,13 @@ public static class DbInitializer
                     context.Questions.Add(englishQuestion);
                 }
             }
-            
+
             await context.SaveChangesAsync();
         }
-        
+
         var spanishQuestionsJson = await GetResourceAsync(spanishQuestionsResource);
         var spanishQuestions = JsonSerializer.Deserialize<Question[]>(spanishQuestionsJson);
-        
+
         if (spanishQuestions != null)
         {
             foreach (var spanishQuestion in spanishQuestions)
@@ -88,7 +96,7 @@ public static class DbInitializer
     {
         var assembly = Assembly.GetExecutingAssembly();
         await using Stream stream = assembly.GetManifestResourceStream(resourceName)!;
-        using StreamReader reader = new StreamReader(stream);
+        using StreamReader reader = new(stream);
         return await reader.ReadToEndAsync();
     }
 }

@@ -13,11 +13,11 @@ public class GameHub(IGameService gameService) : Hub
         var tasks = groups
             .Select(g => Groups
                 .AddToGroupAsync(
-                    Context.ConnectionId, 
+                    Context.ConnectionId,
                     g));
 
         await Task.WhenAll(tasks);
-        
+
         return new Result();
     }
 
@@ -27,21 +27,21 @@ public class GameHub(IGameService gameService) : Hub
 
         var tasks = groups
             .Select(g => Groups.RemoveFromGroupAsync(
-                Context.ConnectionId, 
+                Context.ConnectionId,
                 g));
 
         await Task.WhenAll(tasks);
-        
+
         return new Result();
     }
-    
+
     public async Task<Result> AddToGameAsync(Guid gameId)
     {
         await Groups.AddToGroupAsync(Context.ConnectionId, gameService.GetGameGroupAsync(gameId));
-        
+
         return new Result();
     }
-    
+
     public async Task<Result> LeaveGameAsync(Guid gameId)
     {
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, gameService.GetGameGroupAsync(gameId));

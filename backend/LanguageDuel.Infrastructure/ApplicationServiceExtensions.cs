@@ -20,7 +20,7 @@ public static class ApplicationServiceExtensions
         services.AddScoped<IDifficultyLevelService, DifficultyLevelService>();
         services.AddScoped<IApplicationUserLanguageService, ApplicationUserLanguageService>();
         services.AddScoped<IApplicationUserOpponentService, ApplicationUserOpponentService>();
-        
+
         services.AddSingleton<INotificationService, NotificationService>();
 
         return services;

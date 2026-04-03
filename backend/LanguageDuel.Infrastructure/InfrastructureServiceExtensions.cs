@@ -1,6 +1,5 @@
 ﻿using LanguageDuel.Application.Repositories;
 using LanguageDuel.Application.Services;
-using LanguageDuel.Domain;
 using LanguageDuel.Domain.Entities;
 using LanguageDuel.Infrastructure.Options;
 using LanguageDuel.Infrastructure.Repositories;
@@ -17,7 +16,7 @@ public static class InfrastructureServiceExtensions
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfigurationManager configuration)
     {
         var connectionString = configuration.GetConnectionString("LinuxConnection") ?? throw new InvalidOperationException("Connection string 'LinuxConnection' not found.");
-        
+
         services.AddDbContextFactory<ApplicationDbContext>(options =>
             options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
@@ -31,7 +30,7 @@ public static class InfrastructureServiceExtensions
         })
             .AddRoles<IdentityRole<Guid>>()
             .AddEntityFrameworkStores<ApplicationDbContext>();
-        
+
         services.AddSignalR(options =>
         {
             options.EnableDetailedErrors = true;
@@ -39,6 +38,7 @@ public static class InfrastructureServiceExtensions
 
         services.AddScoped<IEmailSender, SmtpEmailSender>();
         services.AddScoped<IJwtTokenService, JwtTokenService>();
+        services.AddScoped<IFileService, FileService>();
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));

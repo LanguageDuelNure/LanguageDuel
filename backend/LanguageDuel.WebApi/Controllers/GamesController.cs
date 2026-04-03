@@ -1,7 +1,5 @@
-﻿using LanguageDuel.Application.Services;
-using LanguageDuel.Application.Services.Games;
+﻿using LanguageDuel.Application.Services.Games;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LanguageDuel.WebApi.Controllers;
@@ -21,7 +19,7 @@ public class GamesController(IGameService gameService) : BaseController
         var result = gameService.GetGame(GetUserId());
         return !result.IsSuccess ? HandleErrors(result) : Ok(result.Value);
     }
-    
+
     /// <remarks>
     /// Error keys:
     /// - UNEXPECTED_ERROR
@@ -33,7 +31,7 @@ public class GamesController(IGameService gameService) : BaseController
         var result = await gameService.SendGameStateAsync(gameId);
         return !result.IsSuccess ? HandleErrors(result) : NoContent();
     }
-    
+
     /// <remarks>
     /// Error keys:
     /// - UNEXPECTED_ERROR
@@ -45,7 +43,7 @@ public class GamesController(IGameService gameService) : BaseController
         var result = await gameService.SendGameInvitationsAsync(GetUserId(), languageId);
         return !result.IsSuccess ? HandleErrors(result) : NoContent();
     }
-    
+
     /// <remarks>
     /// Error keys:
     /// - UNEXPECTED_ERROR
@@ -57,7 +55,7 @@ public class GamesController(IGameService gameService) : BaseController
         var result = await gameService.RemoveFromSearchGroupsAsync(GetUserId(), languageId);
         return !result.IsSuccess ? HandleErrors(result) : NoContent();
     }
-    
+
     /// <remarks>
     /// Error keys:
     /// - ALREADY_CHOSEN (if opponent has already chosen this answer, and it is incorrect)
@@ -71,7 +69,7 @@ public class GamesController(IGameService gameService) : BaseController
         var result = await gameService.ChooseAnswerAsync(GetUserId(), gameId, answerId);
         return !result.IsSuccess ? HandleErrors(result) : NoContent();
     }
-    
+
     /// <remarks>
     /// Error keys:
     /// - NOT_FOUND (game not found)

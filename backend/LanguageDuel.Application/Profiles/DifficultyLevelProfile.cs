@@ -6,7 +6,7 @@ namespace LanguageDuel.Application.Profiles;
 
 public class DifficultyLevelProfile : Profile
 {
-    public  DifficultyLevelProfile()
+    public DifficultyLevelProfile()
     {
         CreateMap<DifficultyLevel, DifficultyLevelDto>();
     }

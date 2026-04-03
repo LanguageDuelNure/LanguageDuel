@@ -11,4 +11,6 @@ public interface IUserService
     Task<Result<RegisterResultDto>> RegisterUserAsync(RegisterUserDto dto);
     Task<Result> ResendRegistrationEmailAsync(Guid userId);
     Task<Result> UpdateUserStatisticAsync(Guid userId, bool isWin);
+    Task<Result<LoginResultDto>> HandleGoogleLoginAsync(string idToken);
+    Task<Result> UpdateUserProfileAsync(Guid userId, UpdateUserProfileDto dto);
 }

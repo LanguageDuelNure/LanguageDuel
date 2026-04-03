@@ -107,6 +107,29 @@ public class UsersController(IUserService userService, IMapper mapper) : BaseCon
 
     /// <remarks>
     /// Error keys:
+    /// - BAD_REQUEST (invalid Google token)
+    /// - UNEXPECTED_ERROR
+    /// </remarks>
+    [HttpPost("google-login")]
+    [ProducesResponseType(typeof(LoginResultDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Result), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(Result), StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<LoginResultDto>> GoogleLogin(GoogleLoginRequestModel requestModel)
+    {
+        var result = await userService.HandleGoogleLoginAsync(requestModel.IdToken);
+
+        if (!result.IsSuccess)
+        {
+            return HandleErrors(result);
+        }
+
+        var loginResultDto = result.Value;
+
+        return Ok(loginResultDto);
+    }
+
+    /// <remarks>
+    /// Error keys:
     /// - NOT_FOUND
     /// - UNEXPECTED_ERROR
     /// </remarks>
@@ -125,5 +148,32 @@ public class UsersController(IUserService userService, IMapper mapper) : BaseCon
         var userDto = result.Value;
 
         return Ok(userDto);
+    }
+    
+    /// <remarks>
+    /// Error keys:
+    /// - NOT_FOUND
+    /// - UNEXPECTED_ERROR
+    /// </remarks>
+    [HttpPut]
+    [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Result), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(Result), StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<UserDto>> UpdateUserProfile(UpdateUserProfileRequestModel request)
+    {
+        await using var stream = request.Icon?.OpenReadStream();
+        var dto = new UpdateUserProfileDto
+        {
+            Icon = stream,
+            Name = request.Name,
+            IconName = request.Icon?.FileName
+        };
+        var result = await userService.UpdateUserProfileAsync(GetUserId(), dto);
+        if (!result.IsSuccess)
+        {
+            return HandleErrors(result);
+        }
+
+        return NoContent();
     }
 }

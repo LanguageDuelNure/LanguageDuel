@@ -22,4 +22,9 @@
     <ProjectReference Include="..\LanguageDuel.Infrastructure\LanguageDuel.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\uploads\" />
+    <Folder Include="wwwroot\uploads\icons\" />
+  </ItemGroup>
+
 </Project>

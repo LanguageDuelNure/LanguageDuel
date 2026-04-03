@@ -10,14 +10,14 @@ public class ApplicationUser : IdentityUser<Guid>
 
     [MaxLength(50)]
     public string Name { get; set; } = string.Empty;
-    
+
     public int TotalGames { get; set; }
-    
+
     public int TotalWins { get; set; }
-    
+
     public ICollection<ApplicationUserLanguage> ApplicationUserLanguages { get; set; } = [];
-    
+
     public ICollection<ApplicationUserOpponent> ApplicationUserOpponents { get; set; } = [];
-    
+
     public ICollection<ApplicationUserOpponent> OpponentApplicationUsers { get; set; } = [];
 }

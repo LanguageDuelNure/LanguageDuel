@@ -1,5 +1,4 @@
 ﻿using LanguageDuel.Application.Repositories;
-using LanguageDuel.Domain;
 using LanguageDuel.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 

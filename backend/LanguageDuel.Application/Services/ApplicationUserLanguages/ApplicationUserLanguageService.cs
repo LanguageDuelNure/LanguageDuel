@@ -9,7 +9,7 @@ public class ApplicationUserLanguageService(IUnitOfWork unitOfWork, IRepository<
     public async Task<Result> UpdateStatisticsAsync(Guid userId, Guid languageId, int ratingChange)
     {
         var isWin = ratingChange > 0;
-        
+
         var applicationUserLanguage = await applicationUserLanguageRep.GetAsync(userId, languageId);
 
         if (applicationUserLanguage == null)
@@ -21,7 +21,7 @@ public class ApplicationUserLanguageService(IUnitOfWork unitOfWork, IRepository<
                 Rating = isWin ? ratingChange : 0,
                 TotalGames = 1,
                 TotalWins = isWin ? 1 : 0,
-                MaxRating =  isWin ? ratingChange : 0
+                MaxRating = isWin ? ratingChange : 0
             });
         }
         else
@@ -51,9 +51,9 @@ public class ApplicationUserLanguageService(IUnitOfWork unitOfWork, IRepository<
     public async Task<Result> UpdateTotalGamesAsync(Guid userId, Guid languageId)
     {
         var applicationUserLanguage = await applicationUserLanguageRep.GetAsync(userId, languageId);
-        
+
         applicationUserLanguage.TotalGames++;
-        
+
         return new Result();
     }
 }

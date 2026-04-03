@@ -1,5 +1,4 @@
-﻿using LanguageDuel.Application.Dtos.Games;
-using LanguageDuel.Application.Dtos.Results;
+﻿using LanguageDuel.Application.Dtos.Results;
 
 namespace LanguageDuel.Application.Services.ApplicationUserLanguages;
 

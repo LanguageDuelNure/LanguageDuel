@@ -44,10 +44,13 @@ public enum ErrorKey
 
     [EnumMember(Value = "DO_NOT_MATCH")]
     DoNotMatch,
-    
+
     [EnumMember(Value = "ALREADY_CHOSEN")]
     AlreadyChosen,
-    
+
     [EnumMember(Value = "FORBIDDEN")]
     Forbidden,
+
+    [EnumMember(Value = "BAD_REQUEST")]
+    BadRequest,
 }

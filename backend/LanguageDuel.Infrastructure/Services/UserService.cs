@@ -1,20 +1,21 @@
 ﻿using AutoMapper;
+using Google.Apis.Auth;
 using LanguageDuel.Application.Dtos.Results;
-using LanguageDuel.Application.Dtos.UserLanguages;
 using LanguageDuel.Application.Dtos.Users;
 using LanguageDuel.Application.Services;
-using LanguageDuel.Domain;
 using LanguageDuel.Domain.Common;
 using LanguageDuel.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
+using SixLabors.ImageSharp;
 
 namespace LanguageDuel.Infrastructure.Services;
 
-public class UserService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IEmailSender emailSender, ApplicationDbContext dbContext, IJwtTokenService jwtTokenService, IMapper mapper) : IUserService
+public class UserService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IEmailSender emailSender, ApplicationDbContext dbContext, IJwtTokenService jwtTokenService, IMapper mapper, IFileService fileService) : IUserService
 {
     private const int UserOpponentCount = 10;
+    private const string IconFolderName = "icons";
     public async Task<Result<RegisterResultDto>> RegisterUserAsync(RegisterUserDto dto)
     {
         string code = GenerateVerificationCode();
@@ -225,6 +226,69 @@ public class UserService(UserManager<ApplicationUser> userManager, SignInManager
         };
     }
 
+    public async Task<Result<LoginResultDto>> HandleGoogleLoginAsync(string idToken)
+    {
+        GoogleJsonWebSignature.Payload payload;
+        try
+        {
+            payload = await GoogleJsonWebSignature.ValidateAsync(idToken);
+        }
+        catch (InvalidJwtException)
+        {
+            return new Result<LoginResultDto>()
+            {
+                Errors =
+                [
+                    new Error
+                    {
+                        Message = "Invalid Google token",
+                        Field = nameof(idToken),
+                        Key = ErrorKey.BadRequest,
+                    }
+                ]
+            };
+        }
+
+        var user = await userManager.FindByLoginAsync("Google", payload.Subject);
+        var isNewUser = false;
+        if (user == null)
+        {
+            user = await userManager.FindByEmailAsync(payload.Email);
+            if (user == null)
+            {
+                isNewUser = true;
+                user = new ApplicationUser
+                {
+                    UserName = payload.Email,
+                    Email = payload.Email,
+                    EmailConfirmed = true,
+                    Name = payload.Name
+                };
+                await userManager.CreateAsync(user);
+                _ = await userManager.AddToRoleAsync(user, DefaultRoles.UserRole.Name!);
+            }
+            var info = new UserLoginInfo("Google", payload.Subject, "Google");
+
+            await userManager.AddLoginAsync(user, info);
+        }
+
+        await signInManager.SignInAsync(user, true);
+
+        var role = (await userManager.GetRolesAsync(user)).First();
+
+        return new Result<LoginResultDto>
+        {
+            Value = new LoginResultDto
+            {
+                UserId = user.Id,
+                Role = role,
+                JwtToken = jwtTokenService.GenerateToken(user.Id, role),
+                EmailConfirmed = user.EmailConfirmed,
+                IsNewUser = isNewUser,
+            }
+        };
+    }
+
     public async Task<Result<UserDto>> GetUserDtoAsync(Guid userId)
     {
         var user = await dbContext.Users
@@ -243,9 +307,9 @@ public class UserService(UserManager<ApplicationUser> userManager, SignInManager
                 Errors = [new Error { Message = "User not found", Key = ErrorKey.NotFound }]
             };
         }
-        
+
         var userDto = mapper.Map<UserDto>(user);
-        
+
         var opponentsFromInitiator = user.ApplicationUserOpponents
             .Select(uo => new UserOpponentDto
             {
@@ -264,13 +328,52 @@ public class UserService(UserManager<ApplicationUser> userManager, SignInManager
                 Name = uo.ApplicationUser.Name
             });
 
-        userDto.UserOpponents = opponentsFromInitiator
+        userDto.UserOpponents = [.. opponentsFromInitiator
             .Concat(opponentsFromTarget)
             .OrderByDescending(uo => uo.MatchesPlayed)
-            .Take(UserOpponentCount)
-            .ToList();
-    
+            .Take(UserOpponentCount)];
+        
+        userDto.ImageUrl = fileService.GetFileUrl(Path.Combine(IconFolderName, user.Id.ToString()));
+
         return new Result<UserDto> { Value = userDto };
+    }
+
+    public async Task<Result> UpdateUserProfileAsync(Guid userId, UpdateUserProfileDto dto)
+    {
+        var getUserResult = await GetUserAsync(userId);
+        if (!getUserResult.IsSuccess)
+        {
+            return getUserResult;
+        }
+        
+        var user = getUserResult.Value;
+        
+        user.Name = dto.Name;
+        await userManager.UpdateAsync(user);
+        if (dto.Icon != null)
+        {
+            var isValid = fileService.IsValidSize(dto.Icon);
+            if (!isValid)
+            {
+                return new Result
+                {
+                    Errors =
+                    [
+                        new Error
+                        {
+                            Message = "File size exceeds the limit",
+                            Field = "Icon",
+                            Key = ErrorKey.BadRequest,
+                        }
+                    ]
+                };
+            }
+            var fileName = user.Id + Path.GetExtension(dto.IconName);
+            var path = Path.Combine(IconFolderName, fileName);
+            await fileService.SaveFile(dto.Icon, path);
+        }
+
+        return new Result();
     }
 
     public async Task<Result> UpdateUserStatisticAsync(Guid userId, bool isWin)
@@ -291,7 +394,7 @@ public class UserService(UserManager<ApplicationUser> userManager, SignInManager
         {
             user.TotalWins++;
         }
-        
+
         return new Result();
     }
 

@@ -26,7 +26,9 @@ public class BaseController : ControllerBase
             ErrorKey.Required or ErrorKey.AnsestorAsASubEntitie or
             ErrorKey.InvalidStringLength or ErrorKey.IncorrectLoginOrPassword or
             ErrorKey.AlreadyConfirmed or ErrorKey.InvalidType or
-            ErrorKey.Incorrect => BadRequest(result),
+            ErrorKey.Incorrect or ErrorKey.BadRequest
+            or ErrorKey.Forbidden or ErrorKey.AlreadyChosen or 
+            ErrorKey.DoNotMatch => BadRequest(result),
             ErrorKey.AlreadyExists => Conflict(result),
             ErrorKey.NotFound => NotFound(result),
             ErrorKey.UnexpectedError or _ => StatusCode(500, result),

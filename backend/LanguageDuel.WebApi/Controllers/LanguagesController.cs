@@ -1,6 +1,5 @@
 ﻿using LanguageDuel.Application.Dtos.Languages;
 using LanguageDuel.Application.Dtos.Results;
-using LanguageDuel.Application.Dtos.Users;
 using LanguageDuel.Application.Services.Languages;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -26,9 +25,9 @@ public class LanguagesController(ILanguageService languageService) : BaseControl
         {
             return HandleErrors(result);
         }
-        
+
         var languages = result.Value;
-        
+
         return Ok(languages);
     }
 }
