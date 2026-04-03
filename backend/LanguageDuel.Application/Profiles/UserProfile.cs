@@ -16,5 +16,11 @@ public class UserProfile : Profile
                     src.ApplicationUserOpponents
                     .Concat(src.OpponentApplicationUsers)
                     .ToList()));
+
+        CreateMap<ApplicationUser, UserListItemDto>()
+            .ForMember(dest => dest.RemainingBanDuration, opt => opt.MapFrom(src => 
+                src.LockoutEnd.HasValue && src.LockoutEnd.Value > DateTimeOffset.UtcNow 
+                    ? src.LockoutEnd.Value - DateTimeOffset.UtcNow 
+                    : (TimeSpan?)null));
     }
 }

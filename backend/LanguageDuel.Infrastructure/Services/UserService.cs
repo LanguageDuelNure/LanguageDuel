@@ -337,6 +337,70 @@ public class UserService(UserManager<ApplicationUser> userManager, SignInManager
 
         return new Result<UserDto> { Value = userDto };
     }
+    
+    public async Task<Result<IEnumerable<UserListItemDto>>> GetAllUsersAsync()
+    {
+        var users = await dbContext.Users
+            .Include(u => u.ApplicationUserLanguages)
+            .ToListAsync();
+
+        var userDtos = mapper.Map<IEnumerable<UserListItemDto>>(users).ToList();
+
+        foreach (var dto in userDtos)
+        {
+            dto.ImageUrl = fileService.GetFileUrl(Path.Combine(IconFolderName, dto.Id.ToString()));
+            dto.Role = (await userManager.GetRolesAsync(users.First(u => u.Id == dto.Id))).First();
+        }
+
+        return new Result<IEnumerable<UserListItemDto>> { Value = userDtos };
+    }
+
+    public async Task<Result> BanUserAsync(Guid userId, int days)
+    {
+        var getUserResult = await GetUserAsync(userId);
+        if (!getUserResult.IsSuccess)
+        {
+            return getUserResult;
+        }
+
+        var user = getUserResult.Value;
+        var lockoutEndDate = DateTimeOffset.UtcNow.AddDays(days);
+
+        var result = await userManager.SetLockoutEndDateAsync(user, lockoutEndDate);
+        
+        if (!result.Succeeded)
+        {
+            return new Result
+            {
+                Errors = [new Error { Message = "Failed to ban user", Key = ErrorKey.UnexpectedError }]
+            };
+        }
+
+        return new Result();
+    }
+
+    public async Task<Result> UnbanUserAsync(Guid userId)
+    {
+        var getUserResult = await GetUserAsync(userId);
+        if (!getUserResult.IsSuccess)
+        {
+            return getUserResult;
+        }
+
+        var user = getUserResult.Value;
+
+        var result = await userManager.SetLockoutEndDateAsync(user, null);
+
+        if (!result.Succeeded)
+        {
+            return new Result
+            {
+                Errors = [new Error { Message = "Failed to unban user", Key = ErrorKey.UnexpectedError }]
+            };
+        }
+
+        return new Result();
+    }
 
     public async Task<Result> UpdateUserProfileAsync(Guid userId, UpdateUserProfileDto dto)
     {

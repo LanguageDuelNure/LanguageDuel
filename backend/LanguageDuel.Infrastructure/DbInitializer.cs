@@ -2,18 +2,24 @@
 using System.Text.Json;
 using LanguageDuel.Domain.Common;
 using LanguageDuel.Domain.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace LanguageDuel.Infrastructure;
 
 public static class DbInitializer
 {
+    private const string DefaultPassword = "77228Glnik!";
+    
+    private static readonly PasswordHasher<ApplicationUser> PasswordHasher = new();
+
     public static async Task InitializeAsync(ApplicationDbContext context)
     {
         await InitializeDefaultRolesAsync(context);
         await InitializeDefaultLanguagesAsync(context);
         await InitializeDefaultDifficultyLevelAsync(context);
         await InitializeDefaultQuestionsAsync(context);
+        await InitializeDefaultUsersAsync(context);
     }
 
     private static async Task InitializeDefaultRolesAsync(ApplicationDbContext context)
@@ -25,6 +31,7 @@ public static class DbInitializer
 
         await context.Roles.AddAsync(DefaultRoles.UserRole);
         await context.Roles.AddAsync(DefaultRoles.AdminRole);
+        await context.SaveChangesAsync();
     }
 
     private static async Task InitializeDefaultLanguagesAsync(ApplicationDbContext context)
@@ -36,11 +43,12 @@ public static class DbInitializer
 
         await context.Languages.AddAsync(DefaultLanguages.EnglishLanguage);
         await context.Languages.AddAsync(DefaultLanguages.SpanishLanguage);
+        await context.SaveChangesAsync();
     }
 
     private static async Task InitializeDefaultDifficultyLevelAsync(ApplicationDbContext context)
     {
-        if (await context.Roles.AnyAsync())
+        if (await context.DifficultyLevels.AnyAsync())
         {
             return;
         }
@@ -49,47 +57,74 @@ public static class DbInitializer
         await context.DifficultyLevels.AddAsync(DefaultDifficultyLevels.MediumDifficulty);
         await context.DifficultyLevels.AddAsync(DefaultDifficultyLevels.HardDifficulty);
         await context.DifficultyLevels.AddAsync(DefaultDifficultyLevels.VeryHardDifficulty);
+        await context.SaveChangesAsync();
     }
 
     private static async Task InitializeDefaultQuestionsAsync(ApplicationDbContext context)
     {
+        if (await context.Questions.AnyAsync())
+        {
+            return;
+        }
+
         const string resourceTemplate = "LanguageDuel.Infrastructure.InitialData.{}-questions.json";
-        var englishQuestionsResource = resourceTemplate.Replace("{}", "english");
-        var spanishQuestionsResource = resourceTemplate.Replace("{}", "spanish");
+        
+        await ImportQuestionsAsync(context, resourceTemplate.Replace("{}", "english"), DefaultLanguages.EnglishLanguage.Id);
+        await ImportQuestionsAsync(context, resourceTemplate.Replace("{}", "spanish"), DefaultLanguages.SpanishLanguage.Id);
+    }
 
-        var englishQuestionsJson = await GetResourceAsync(englishQuestionsResource);
-        var englishQuestions = JsonSerializer.Deserialize<Question[]>(englishQuestionsJson);
+    private static async Task ImportQuestionsAsync(ApplicationDbContext context, string resourceName, Guid languageId)
+    {
+        var json = await GetResourceAsync(resourceName);
+        var questions = JsonSerializer.Deserialize<Question[]>(json);
 
-        if (englishQuestions != null)
+        if (questions != null)
         {
-            foreach (var englishQuestion in englishQuestions)
+            foreach (var question in questions)
             {
-                englishQuestion.LanguageId = DefaultLanguages.EnglishLanguage.Id;
-                if (!await context.Questions.AnyAsync(q => q.Name == englishQuestion.Name))
-                {
-                    context.Questions.Add(englishQuestion);
-                }
+                question.LanguageId = languageId;
+                context.Questions.Add(question);
             }
 
             await context.SaveChangesAsync();
         }
+    }
 
-        var spanishQuestionsJson = await GetResourceAsync(spanishQuestionsResource);
-        var spanishQuestions = JsonSerializer.Deserialize<Question[]>(spanishQuestionsJson);
-
-        if (spanishQuestions != null)
+    private static async Task InitializeDefaultUsersAsync(ApplicationDbContext context)
+    {
+        foreach (var user in DefaultUsers.Users)
         {
-            foreach (var spanishQuestion in spanishQuestions)
+            if (!await context.Users.AnyAsync(u => u.Email == user.Email))
             {
-                spanishQuestion.LanguageId = DefaultLanguages.SpanishLanguage.Id;
-                if (!await context.Questions.AnyAsync(q => q.Name == spanishQuestion.Name))
+                user.PasswordHash = PasswordHasher.HashPassword(user, DefaultPassword);
+                
+                await context.Users.AddAsync(user);
+                
+                await context.UserRoles.AddAsync(new IdentityUserRole<Guid>
                 {
-                    context.Questions.Add(spanishQuestion);
-                }
+                    UserId = user.Id,
+                    RoleId = DefaultRoles.UserRole.Id
+                });
             }
-
-            await context.SaveChangesAsync();
         }
+        
+        foreach (var admin in DefaultUsers.AdminUsers)
+        {
+            if (!await context.Users.AnyAsync(u => u.Email == admin.Email))
+            {
+                admin.PasswordHash = PasswordHasher.HashPassword(admin, DefaultPassword);
+                
+                await context.Users.AddAsync(admin);
+                
+                await context.UserRoles.AddAsync(new IdentityUserRole<Guid>
+                {
+                    UserId = admin.Id,
+                    RoleId = DefaultRoles.AdminRole.Id
+                });
+            }
+        }
+
+        await context.SaveChangesAsync();
     }
 
     private static async Task<string> GetResourceAsync(string resourceName)

@@ -3,6 +3,7 @@ using LanguageDuel.Application.Dtos.Results;
 using LanguageDuel.Application.Dtos.Users;
 using LanguageDuel.Application.Services;
 using LanguageDuel.WebApi.Requests.Users;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LanguageDuel.WebApi.Controllers;
@@ -148,6 +149,67 @@ public class UsersController(IUserService userService, IMapper mapper) : BaseCon
         var userDto = result.Value;
 
         return Ok(userDto);
+    }
+    
+    /// <remarks>
+    /// Error keys:
+    /// - UNEXPECTED_ERROR
+    /// </remarks>
+    [HttpGet]
+    [Authorize(Roles = "Admin")]
+    [ProducesResponseType(typeof(IEnumerable<UserDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Result), StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<IEnumerable<UserDto>>> GetAllUsers()
+    {
+        var result = await userService.GetAllUsersAsync();
+        if (!result.IsSuccess)
+        {
+            return HandleErrors(result);
+        }
+
+        return Ok(result.Value);
+    }
+
+    /// <remarks>
+    /// Error keys:
+    /// - NOT_FOUND
+    /// - BAD_REQUEST
+    /// - UNEXPECTED_ERROR
+    /// </remarks>
+    [HttpPost("{userId}/ban")]
+    [Authorize(Roles = "Admin")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(Result), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(Result), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult> BanUser(Guid userId, [FromBody] BanUserRequestModel request)
+    {
+        var result = await userService.BanUserAsync(userId, request.Days);
+        if (!result.IsSuccess)
+        {
+            return HandleErrors(result);
+        }
+
+        return NoContent();
+    }
+
+    /// <remarks>
+    /// Error keys:
+    /// - NOT_FOUND
+    /// - UNEXPECTED_ERROR
+    /// </remarks>
+    [HttpPost("{userId}/unban")]
+    [Authorize(Roles = "Admin")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(Result), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult> UnbanUser(Guid userId)
+    {
+        var result = await userService.UnbanUserAsync(userId);
+        if (!result.IsSuccess)
+        {
+            return HandleErrors(result);
+        }
+
+        return NoContent();
     }
     
     /// <remarks>
