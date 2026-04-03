@@ -69,7 +69,7 @@ public class UsersController(IUserService userService, IMapper mapper) : BaseCon
     /// - UNEXPECTED_ERROR
     /// </remarks>
     [HttpPost("resend-confirm-email")]
-    [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(Result), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(Result), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> ResendConfirmEmail(ResendEmailConfirmationRequestModel request)
@@ -157,7 +157,7 @@ public class UsersController(IUserService userService, IMapper mapper) : BaseCon
     /// </remarks>
     [HttpGet]
     [Authorize(Roles = "Admin")]
-    [ProducesResponseType(typeof(IEnumerable<UserDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IEnumerable<UserAdminListItemDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(Result), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<IEnumerable<UserDto>>> GetAllUsers()
     {
@@ -239,7 +239,7 @@ public class UsersController(IUserService userService, IMapper mapper) : BaseCon
     /// - UNEXPECTED_ERROR
     /// </remarks>
     [HttpPut]
-    [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(Result), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(Result), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<UserDto>> UpdateUserProfile(UpdateUserProfileRequestModel request)
