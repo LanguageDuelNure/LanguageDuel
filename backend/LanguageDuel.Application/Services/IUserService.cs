@@ -13,7 +13,8 @@ public interface IUserService
     Task<Result> UpdateUserStatisticAsync(Guid userId, bool isWin);
     Task<Result<LoginResultDto>> HandleGoogleLoginAsync(string idToken);
     Task<Result> UpdateUserProfileAsync(Guid userId, UpdateUserProfileDto dto);
-    Task<Result<IEnumerable<UserListItemDto>>> GetAllUsersAsync();
+    Task<Result<IEnumerable<UserAdminListItemDto>>> GetAllUsersAsync();
     Task<Result> BanUserAsync(Guid userId, int days);
     Task<Result> UnbanUserAsync(Guid userId);
+    Task<Result<IEnumerable<LeaderboardItemDto>>> GetLeaderboardAsync(Guid? languageId);
 }

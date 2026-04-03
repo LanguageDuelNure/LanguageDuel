@@ -16,6 +16,7 @@ public class UserService(UserManager<ApplicationUser> userManager, SignInManager
 {
     private const int UserOpponentCount = 10;
     private const string IconFolderName = "icons";
+    private const int LeaderboardUsersLimit = 100;
     public async Task<Result<RegisterResultDto>> RegisterUserAsync(RegisterUserDto dto)
     {
         string code = GenerateVerificationCode();
@@ -338,13 +339,39 @@ public class UserService(UserManager<ApplicationUser> userManager, SignInManager
         return new Result<UserDto> { Value = userDto };
     }
     
-    public async Task<Result<IEnumerable<UserListItemDto>>> GetAllUsersAsync()
+    public async Task<Result<IEnumerable<LeaderboardItemDto>>> GetLeaderboardAsync(Guid? languageId)
+    {
+        var users = await dbContext.Users
+            .Include(u => u.ApplicationUserLanguages)
+            .ThenInclude(ul => ul.Language)
+            .Where(u => u.ApplicationUserLanguages.Any(l => languageId == null || l.LanguageId == languageId))
+            .OrderByDescending(u => u.ApplicationUserLanguages
+                .Where(ul => languageId == null || ul.LanguageId == languageId)
+                .Max(l => l.Rating))
+            .ThenByDescending(u => u.TotalGames)
+            .Take(LeaderboardUsersLimit)
+            .ToListAsync();
+
+        var leaderboardItems = mapper.Map<IEnumerable<LeaderboardItemDto>>(users).ToList();
+
+        foreach (var item in leaderboardItems)
+        {
+            item.ImageUrl = fileService.GetFileUrl(Path.Combine(IconFolderName, item.Id.ToString()));
+        }
+
+        return new Result<IEnumerable<LeaderboardItemDto>>()
+        {
+            Value = leaderboardItems,
+        };
+    }
+    
+    public async Task<Result<IEnumerable<UserAdminListItemDto>>> GetAllUsersAsync()
     {
         var users = await dbContext.Users
             .Include(u => u.ApplicationUserLanguages)
             .ToListAsync();
 
-        var userDtos = mapper.Map<IEnumerable<UserListItemDto>>(users).ToList();
+        var userDtos = mapper.Map<IEnumerable<UserAdminListItemDto>>(users).ToList();
 
         foreach (var dto in userDtos)
         {
@@ -352,7 +379,7 @@ public class UserService(UserManager<ApplicationUser> userManager, SignInManager
             dto.Role = (await userManager.GetRolesAsync(users.First(u => u.Id == dto.Id))).First();
         }
 
-        return new Result<IEnumerable<UserListItemDto>> { Value = userDtos };
+        return new Result<IEnumerable<UserAdminListItemDto>> { Value = userDtos };
     }
 
     public async Task<Result> BanUserAsync(Guid userId, int days)

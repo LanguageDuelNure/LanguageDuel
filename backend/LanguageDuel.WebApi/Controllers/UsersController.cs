@@ -169,6 +169,27 @@ public class UsersController(IUserService userService, IMapper mapper) : BaseCon
 
         return Ok(result.Value);
     }
+    
+    /// <remarks>
+    /// Error keys:
+    /// - NOT_FOUND (if language not found)
+    /// - UNEXPECTED_ERROR
+    /// </remarks>
+    [HttpGet("leaderboard")]
+    [ProducesResponseType(typeof(IEnumerable<LeaderboardItemDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Result), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(Result), StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<IEnumerable<LeaderboardItemDto>>> GetLeaderboard(Guid? languageId)
+    {
+        var result = await userService.GetLeaderboardAsync(languageId);
+        
+        if (!result.IsSuccess)
+        {
+            return HandleErrors(result);
+        }
+
+        return Ok(result.Value);
+    }
 
     /// <remarks>
     /// Error keys:

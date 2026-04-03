@@ -1,6 +1,6 @@
 ﻿namespace LanguageDuel.Application.Dtos.Users;
 
-public class UserListItemDto
+public class UserAdminListItemDto
 {
     public Guid Id { get; set; }
 
