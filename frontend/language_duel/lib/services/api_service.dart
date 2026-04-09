@@ -132,6 +132,33 @@ class ApiService {
     final data = await _parseResponse(response);
     return UserDto.fromJson(data);
   }
+
+  Future<void> updateProfile({
+    required String token,
+    required String name,
+  }) async {
+    final request = http.MultipartRequest('PUT', Uri.parse('$baseUrl/Users'));
+    request.headers['Authorization'] = 'Bearer $token';
+    request.fields['Name'] = name;
+
+    final streamedResponse = await _client.send(request);
+    final response = await http.Response.fromStream(streamedResponse);
+
+    if (response.statusCode >= 400) {
+      throw const ApiException(message: 'Failed to save name. Please try again.');
+    }
+  }
+
+  Future<LoginResult> googleLogin(String idToken) async {
+    final response = await _client.post(
+      Uri.parse('$baseUrl/Users/google-login'),
+      headers: _buildHeaders(),
+      body: json.encode({'idToken': idToken}),
+    );
+
+    final data = await _parseResponse(response);
+    return LoginResult.fromJson(data);
+  }
 }
 
 class RegisterResult {
@@ -161,12 +188,14 @@ class LoginResult {
   final bool emailConfirmed;
   final String role;
   final String? jwtToken;
+  final bool isNewUser; 
 
   const LoginResult({
     required this.userId,
     required this.emailConfirmed,
     required this.role,
     this.jwtToken,
+    this.isNewUser = false, 
   });
 
   factory LoginResult.fromJson(Map<String, dynamic> json) => LoginResult(
@@ -174,6 +203,7 @@ class LoginResult {
         emailConfirmed: json['emailConfirmed'] as bool,
         role: json['role'] as String,
         jwtToken: json['jwtToken'] as String?,
+        isNewUser: json['isNewUser'] as bool? ?? false, 
       );
 }
 

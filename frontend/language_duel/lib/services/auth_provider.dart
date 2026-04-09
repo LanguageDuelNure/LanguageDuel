@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'api_service.dart';
 
@@ -11,6 +12,9 @@ class AuthProvider extends ChangeNotifier {
   String? _role;
   bool _isLoading = false;
 
+  // Called after web Google sign-in completes so the navigator can react
+  void Function(bool isNewUser)? onWebSignInComplete;
+
   AuthProvider({ApiService? api}) : _api = api ?? ApiService();
 
   String? get token => _token;
@@ -20,18 +24,103 @@ class AuthProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   bool get isAuthenticated => _token != null;
 
+  final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
+  bool _isGoogleInitialized = false;
+
   void _setLoading(bool v) {
     _isLoading = v;
     notifyListeners();
   }
 
   Future<void> loadFromStorage() async {
+    if (!_isGoogleInitialized) {
+      _googleSignIn.initialize(
+        clientId: '15098027871-it0qhm553ev8kgle0qrsnh42303m1ks2.apps.googleusercontent.com',
+      );
+
+      if (kIsWeb) {
+        _googleSignIn.authenticationEvents
+            .handleError((e) {
+              // Sign-in failed or was dismissed — nothing to do
+            })
+            .listen((event) async {
+          if (event is GoogleSignInAuthenticationEventSignIn) {
+            try {
+              final auth = await event.user.authentication;
+              final idToken = auth.idToken;
+              if (idToken == null) return;
+
+              final result = await _api.googleLogin(idToken);
+              _token = result.jwtToken;
+              _userId = result.userId;
+              _role = result.role;
+
+              if (_token != null) {
+                try {
+                  final user = await _api.getUser(
+                      userId: result.userId, token: _token!);
+                  _userName = user.name;
+                } catch (_) {}
+              }
+
+              await _saveToStorage();
+              notifyListeners();
+
+              // Trigger navigation
+              onWebSignInComplete?.call(result.isNewUser);
+            } catch (_) {}
+          }
+        });
+      }
+
+      _isGoogleInitialized = true;
+    }
+
     final prefs = await SharedPreferences.getInstance();
     _token = prefs.getString('jwt_token');
     _userId = prefs.getString('user_id');
     _userName = prefs.getString('user_name');
     _role = prefs.getString('user_role');
     notifyListeners();
+  }
+
+  // Mobile only
+  Future<bool?> signInWithGoogle() async {
+    _setLoading(true);
+    try {
+      final googleUser = await _googleSignIn.authenticate();
+      final googleAuth = googleUser.authentication;
+      final idToken = googleAuth.idToken;
+
+      if (idToken == null) {
+        throw const ApiException(message: 'Failed to get Google Token');
+      }
+
+      final result = await _api.googleLogin(idToken);
+      _token = result.jwtToken;
+      _userId = result.userId;
+      _role = result.role;
+
+      if (_token != null) {
+        try {
+          final user = await _api.getUser(
+              userId: result.userId, token: _token!);
+          _userName = user.name;
+        } catch (_) {}
+      }
+
+      await _saveToStorage();
+      notifyListeners();
+      return result.isNewUser;
+    } catch (e) {
+      if (e.toString().contains('canceled') ||
+          e.toString().contains('CANCELED')) {
+        return null;
+      }
+      rethrow;
+    } finally {
+      _setLoading(false);
+    }
   }
 
   Future<void> _saveToStorage() async {
@@ -119,7 +208,8 @@ class AuthProvider extends ChangeNotifier {
 
       if (_token != null) {
         try {
-          final user = await _api.getUser(userId: result.userId, token: _token!);
+          final user = await _api.getUser(
+              userId: result.userId, token: _token!);
           _userName = user.name;
         } catch (_) {}
       }
@@ -139,5 +229,17 @@ class AuthProvider extends ChangeNotifier {
     _role = null;
     await _saveToStorage();
     notifyListeners();
+  }
+
+  Future<void> updateName(String name) async {
+    _setLoading(true);
+    try {
+      await _api.updateProfile(token: _token!, name: name);
+      _userName = name;
+      await _saveToStorage();
+      notifyListeners();
+    } finally {
+      _setLoading(false);
+    }
   }
 }

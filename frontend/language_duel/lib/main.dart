@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:language_duel/screens/setup_name_screen.dart';
 import 'package:provider/provider.dart';
 import 'services/auth_provider.dart';
 import 'services/game_service.dart';
@@ -35,7 +36,7 @@ class LanguageDuelApp extends StatelessWidget {
   }
 }
 
-enum _Screen { login, register, emailConfirm, home }
+enum _Screen { login, register, emailConfirm, setupName, home }
 
 class _AppNavigator extends StatefulWidget {
   const _AppNavigator();
@@ -52,15 +53,25 @@ class _AppNavigatorState extends State<_AppNavigator> {
 
   @override
   void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final auth = context.read<AuthProvider>();
-      if (auth.isAuthenticated) {
+  super.initState();
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    final auth = context.read<AuthProvider>();
+
+    auth.onWebSignInComplete = (isNewUser) {
+      if (isNewUser) {
+        setState(() => _screen = _Screen.setupName);
+      } else {
         _createGameService(auth);
         setState(() => _screen = _Screen.home);
       }
-    });
-  }
+    };
+
+    if (auth.isAuthenticated) {
+      _createGameService(auth);
+      setState(() => _screen = _Screen.home);
+    }
+  });
+}
 
   void _createGameService(AuthProvider auth) {
     _gameService?.dispose();
@@ -105,6 +116,7 @@ class _AppNavigatorState extends State<_AppNavigator> {
             _pendingUserId = userId;
             _screen = _Screen.emailConfirm;
           }),
+          onNeedsNameSetup: () => setState(() => _screen = _Screen.setupName), 
           onLoginSuccess: () {
             _createGameService(context.read<AuthProvider>());
             setState(() => _screen = _Screen.home);
@@ -126,6 +138,12 @@ class _AppNavigatorState extends State<_AppNavigator> {
             setState(() => _screen = _Screen.home);
           },
           onGoBack: () => setState(() => _screen = _Screen.login),
+        ),
+      _Screen.setupName => SetupNameScreen(
+          onSetupComplete: () {
+            _createGameService(context.read<AuthProvider>());
+            setState(() => _screen = _Screen.home);
+          },
         ),
       _Screen.home => _buildHome(),
     };

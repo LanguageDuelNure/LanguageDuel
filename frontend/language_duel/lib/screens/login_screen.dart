@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
@@ -6,17 +7,20 @@ import '../services/auth_provider.dart';
 import '../utils/app_theme.dart';
 import '../widgets/shared_widgets.dart';
 import '../widgets/grid_background.dart';
+import '../widgets/google_sign_in_button.dart' as gsi;
 
 class LoginScreen extends StatefulWidget {
   final VoidCallback onGoToRegister;
   final void Function(String userId) onNeedsEmailConfirmation;
   final VoidCallback onLoginSuccess;
+  final VoidCallback onNeedsNameSetup;
 
   const LoginScreen({
     super.key,
     required this.onGoToRegister,
     required this.onNeedsEmailConfirmation,
     required this.onLoginSuccess,
+    required this.onNeedsNameSetup,
   });
 
   @override
@@ -40,6 +44,22 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
+  Future<void> _googleSignIn() async {
+    setState(() => _error = null);
+    final auth = context.read<AuthProvider>();
+    try {
+      final isNewUser = await auth.signInWithGoogle();
+      if (isNewUser == null) return;
+      if (isNewUser) {
+        widget.onNeedsNameSetup();
+      } else {
+        widget.onLoginSuccess();
+      }
+    } catch (ex) {
+      setState(() => _error = ex.toString());
+    }
+  }
+
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _error = null);
@@ -50,7 +70,6 @@ class _LoginScreenState extends State<LoginScreen> {
         email: _emailCtrl.text.trim(),
         password: _passwordCtrl.text,
       );
-
       if (pendingUserId != null) {
         widget.onNeedsEmailConfirmation(pendingUserId);
       } else {
@@ -94,8 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(height: 8),
                       const Text(
                         'Sign in to continue your duels',
-                        style: TextStyle(
-                            color: AppTheme.textSecondary, fontSize: 15),
+                        style: TextStyle(color: AppTheme.textSecondary, fontSize: 15),
                       ).animate().fadeIn(delay: 150.ms, duration: 400.ms),
                       const SizedBox(height: 40),
 
@@ -116,6 +134,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         },
                       ).animate().fadeIn(delay: 200.ms, duration: 400.ms),
                       const SizedBox(height: 14),
+
                       DuelTextField(
                         hint: '••••••••',
                         label: 'Password',
@@ -146,7 +165,30 @@ class _LoginScreenState extends State<LoginScreen> {
                         onPressed: _submit,
                         isLoading: isLoading,
                       ).animate().fadeIn(delay: 300.ms, duration: 400.ms),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 16),
+
+                      // Web uses renderButton from google_sign_in_web (via conditional export)
+                      // Mobile uses a normal OutlinedButton
+                      if (kIsWeb)
+                        Center(
+                          child: SizedBox(
+                            width: 250,
+                            child: gsi.renderButton(),
+                          ),
+                        )
+                      else
+                        OutlinedButton.icon(
+                          onPressed: isLoading ? null : _googleSignIn,
+                          icon: const Icon(Icons.g_mobiledata, size: 28),
+                          label: const Text('Continue with Google'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: AppTheme.textPrimary,
+                            side: const BorderSide(color: AppTheme.border),
+                            minimumSize: const Size(double.infinity, 52),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12)),
+                          ),
+                        ),
 
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
