@@ -34,14 +34,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
     final pages = [
       PlayPage(userName: auth.userName ?? 'Duelist'),
-      const LeaderboardPage(),
-      ProfilePage(
-        userName: auth.userName ?? 'Duelist',
-        role: auth.role ?? 'User',
-        languageRatings: game.allLanguageRatings,
-        languageNames: game.allLanguageNames,
-        onLogout: widget.onLogout,
+      LeaderboardPage(
+        languages: game.allLanguageNames.entries
+            .map((e) => LanguageOption(id: e.key, name: e.value))
+            .toList(),
       ),
+      ProfilePage(onLogout: widget.onLogout),
     ];
 
     if (isMobile) {

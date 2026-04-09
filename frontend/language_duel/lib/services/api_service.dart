@@ -158,7 +158,24 @@ class ApiService {
     final data = await _parseResponse(response);
     return LoginResult.fromJson(data);
   }
+
+  /// Fetch leaderboard. Pass [languageId] to filter by language, or null for global.
+  Future<List<LeaderboardItemDto>> getLeaderboard({String? languageId}) async {
+    final uri = Uri.parse('$baseUrl/Users/leaderboard').replace(
+      queryParameters: languageId != null ? {'languageId': languageId} : null,
+    );
+
+    final response = await _client.get(uri, headers: _buildHeaders());
+    final data = json.decode(response.body) as List<dynamic>;
+    return data
+        .map((e) => LeaderboardItemDto.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
 }
+
+// ---------------------------------------------------------------------------
+// Result / DTO models
+// ---------------------------------------------------------------------------
 
 class RegisterResult {
   final String userId;
@@ -206,12 +223,87 @@ class LoginResult {
   );
 }
 
+class UserLanguageDto {
+  final String languageId;
+  final int rating;
+  final int maxRating;
+  final int totalGames;
+  final int totalWins;
+
+  const UserLanguageDto({
+    required this.languageId,
+    required this.rating,
+    required this.maxRating,
+    required this.totalGames,
+    required this.totalWins,
+  });
+
+  factory UserLanguageDto.fromJson(Map<String, dynamic> json) =>
+      UserLanguageDto(
+        languageId: (json['languageId'] as String?) ?? '',
+        rating: (json['rating'] as num?)?.toInt() ?? 0,
+        maxRating: (json['maxRating'] as num?)?.toInt() ?? 0,
+        totalGames: (json['totalGames'] as num?)?.toInt() ?? 0,
+        totalWins: (json['totalWins'] as num?)?.toInt() ?? 0,
+      );
+}
+
 class UserDto {
   final String id;
   final String name;
+  final String? imageUrl;
+  final int totalGames;
+  final int totalWins;
+  final List<UserLanguageDto> languageRatings;
 
-  const UserDto({required this.id, required this.name});
+  const UserDto({
+    required this.id,
+    required this.name,
+    this.imageUrl,
+    this.totalGames = 0,
+    this.totalWins = 0,
+    this.languageRatings = const [],
+  });
 
-  factory UserDto.fromJson(Map<String, dynamic> json) =>
-      UserDto(id: json['id'] as String, name: json['name'] as String);
+  factory UserDto.fromJson(Map<String, dynamic> json) => UserDto(
+    id: json['id'] as String,
+    name: json['name'] as String,
+    imageUrl: json['imageUrl'] as String?,
+    totalGames: (json['totalGames'] as num?)?.toInt() ?? 0,
+    totalWins: (json['totalWins'] as num?)?.toInt() ?? 0,
+    languageRatings: (json['languageRatings'] as List<dynamic>? ?? [])
+        .map((e) => UserLanguageDto.fromJson(e as Map<String, dynamic>))
+        .toList(),
+  );
+}
+
+class LeaderboardItemDto {
+  final String id;
+  final String name;
+  final String language;
+  final String? imageUrl;
+  final int totalWins;
+  final int totalGames;
+  final int rank;
+
+  const LeaderboardItemDto({
+    required this.id,
+    required this.name,
+    required this.language,
+    this.imageUrl,
+    required this.totalWins,
+    required this.totalGames,
+    required this.rank,
+  });
+
+  factory LeaderboardItemDto.fromJson(Map<String, dynamic> json) =>
+      LeaderboardItemDto(
+        id: json['id'] as String,
+        name: json['name'] as String,
+        language: json['language'] as String? ?? '',
+        imageUrl: json['imageUrl'] as String?,
+        totalWins: (json['totalWins'] as num?)?.toInt() ?? 0,
+        totalGames: (json['totalGames'] as num?)?.toInt() ?? 0,
+        rank: (json['rank'] as num?)?.toInt() ?? 0,
+      );
 }

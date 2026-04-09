@@ -6,6 +6,8 @@ import 'package:provider/provider.dart';
 import '../models/game_models.dart';
 import '../services/game_service.dart';
 import '../utils/app_theme.dart';
+import '../services/api_service.dart';
+import '../services/auth_provider.dart';
 
 class PlayPage extends StatefulWidget {
   final String userName;
@@ -20,11 +22,14 @@ class _PlayPageState extends State<PlayPage> {
   List<LanguageDto> _languages = [];
   LanguageDto? _selectedLanguage;
   bool _loadingLanguages = true;
+  
+  UserDto? _user;
 
   @override
   void initState() {
     super.initState();
     _loadLanguages();
+    _loadUserStats();
   }
 
   Future<void> _loadLanguages() async {
@@ -36,6 +41,26 @@ class _PlayPageState extends State<PlayPage> {
         if (langs.isNotEmpty) _selectedLanguage = langs.first;
         _loadingLanguages = false;
       });
+    }
+  }
+
+  Future<void> _loadUserStats() async {
+    final auth = context.read<AuthProvider>();
+    final userId = auth.userId;
+    final token = auth.token;
+
+    if (userId == null || token == null) return;
+
+    try {
+      final user = await ApiService().getUser(userId: userId, token: token);
+      if (mounted) {
+        setState(() {
+          _user = user;
+        });
+      }
+    } catch (e) {
+      // Silently fail or log error; stats will default to 0 if they can't be loaded
+      debugPrint('Could not load user stats: $e');
     }
   }
 
@@ -52,6 +77,21 @@ class _PlayPageState extends State<PlayPage> {
   @override
   Widget build(BuildContext context) {
     final game = context.watch<GameService>();
+
+    // Extract dynamic statistics based on the selected language
+    int currentWins = 0;
+    int currentPlayed = 0;
+
+    if (_user != null && _selectedLanguage != null) {
+      final langStat = _user!.languageRatings
+          .where((l) => l.languageId == _selectedLanguage!.id)
+          .firstOrNull;
+          
+      if (langStat != null) {
+        currentWins = langStat.totalWins;
+        currentPlayed = langStat.totalGames;
+      }
+    }
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
@@ -113,12 +153,18 @@ class _PlayPageState extends State<PlayPage> {
               const SizedBox(width: 12),
               Expanded(
                 child: StatCard(
-                    label: 'Wins', value: '0', icon: Icons.emoji_events_outlined),
+                  label: 'Wins', 
+                  value: '$currentWins', 
+                  icon: Icons.emoji_events_outlined
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
-                child:
-                    StatCard(label: 'Played', value: '0', icon: Icons.history),
+                child: StatCard(
+                  label: 'Played', 
+                  value: '$currentPlayed', 
+                  icon: Icons.history
+                ),
               ),
             ],
           ).animate().fadeIn(delay: 300.ms),
