@@ -69,24 +69,26 @@ class GameService extends ChangeNotifier {
         .withAutomaticReconnect()
         .build();
 
-    _hub!.on('ReceiveGameInvitation', (args) async {
-      if (args == null || args.isEmpty) return;
-      final dto = GameInvitationDto.fromJson(args[0] as Map<String, dynamic>);
+      _hub!.on('ReceiveGameInvitation', (args) async {
+  if (args == null || args.isEmpty) return;
+  final dto = GameInvitationDto.fromJson(args[0] as Map<String, dynamic>);
 
-      if (_inviteHandled ||
-          (dto.inviterUserId == userId && dto.gameId == null)) {
-        return;
-      }
-      _inviteHandled = true;
+  debugPrint('[GameService] ReceiveGameInvitation: gameId=${dto.gameId}, '
+      'inviter=${dto.inviterUserId}, me=$userId, handled=$_inviteHandled');
 
-      _gameId = dto.gameId;
-      await _hub!.invoke('StopSearchGameAsync',
-          args: [userId, _selectedLanguageId!]);
-      await _hub!.invoke('AddToGameAsync', args: [_gameId!]);
+  // Wait for the invitation that actually has a gameId
+  if (dto.gameId == null) return;  // ← ADD THIS
 
-      _status = GameStatus.inGame;
-      notifyListeners();
-    });
+  if (_inviteHandled) return;
+  _inviteHandled = true;
+
+  _gameId = dto.gameId;
+  await _hub!.invoke('StopSearchGameAsync', args: [userId, _selectedLanguageId!]);
+  await _hub!.invoke('AddToGameAsync', args: [_gameId!]);
+
+  _status = GameStatus.inGame;
+  notifyListeners();
+});
 
     _hub!.on('GameStateChanged', (args) {
       if (args == null || args.isEmpty) return;
@@ -95,13 +97,19 @@ class GameService extends ChangeNotifier {
       notifyListeners();
     });
 
-    _hub!.on('ReceiveGameResult', (args) async {
-      if (args == null || args.isEmpty) return;
-      _gameResult = GameResultDto.fromJson(args[0] as Map<String, dynamic>);
-      _status = GameStatus.finished;
-      await fetchLanguages();
-      notifyListeners();
-    });
+_hub!.on('ReceiveGameResult', (args) async {
+  if (args == null || args.isEmpty) return;
+  _gameResult = GameResultDto.fromJson(args[0] as Map<String, dynamic>);
+  _status = GameStatus.finished;
+  // Make sure we leave the SignalR group cleanly
+  if (_gameId != null) {
+    try {
+      await _hub!.invoke('LeaveGameAsync', args: [_gameId!]);
+    } catch (_) {}
+  }
+  await fetchLanguages();
+  notifyListeners();
+});
 
     try {
       await _hub!.start();
@@ -268,6 +276,24 @@ class GameService extends ChangeNotifier {
       return [];
     }
   }
+
+Future<void> giveUp() async {
+  if (_gameId == null) return;
+  try {
+    await _http.post(
+      Uri.parse('$baseUrl/api/games/give-up?gameId=$_gameId'),
+      headers: _headers,
+      body: '{}',
+    );
+    // Give the backend a moment to broadcast ReceiveGameResult to the group
+    // before we invoke LeaveGameAsync
+    await Future.delayed(const Duration(milliseconds: 300));
+    await _hub!.invoke('LeaveGameAsync', args: [_gameId!]);
+  } catch (e) {
+    _error = e.toString();
+    notifyListeners();
+  }
+}
 
   @override
   void dispose() {

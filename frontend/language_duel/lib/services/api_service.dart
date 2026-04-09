@@ -7,14 +7,11 @@ class ApiException implements Exception {
   final int? statusCode;
   final String? field;
 
-  const ApiException({
-    required this.message,
-    this.statusCode,
-    this.field,
-  });
+  const ApiException({required this.message, this.statusCode, this.field});
 
   @override
-  String toString() => 'ApiException($statusCode): $message'
+  String toString() =>
+      'ApiException($statusCode): $message'
       '${field != null ? ' [field: $field]' : ''}';
 }
 
@@ -27,9 +24,9 @@ class ApiService {
   ApiService({http.Client? client}) : _client = client ?? http.Client();
 
   Map<String, String> _buildHeaders({String? token}) => {
-        'Content-Type': 'application/json',
-        if (token != null) 'Authorization': 'Bearer $token',
-      };
+    'Content-Type': 'application/json',
+    if (token != null) 'Authorization': 'Bearer $token',
+  };
 
   Future<Map<String, dynamic>> _parseResponse(http.Response response) async {
     final statusCode = response.statusCode;
@@ -145,7 +142,9 @@ class ApiService {
     final response = await http.Response.fromStream(streamedResponse);
 
     if (response.statusCode >= 400) {
-      throw const ApiException(message: 'Failed to save name. Please try again.');
+      throw const ApiException(
+        message: 'Failed to save name. Please try again.',
+      );
     }
   }
 
@@ -188,23 +187,23 @@ class LoginResult {
   final bool emailConfirmed;
   final String role;
   final String? jwtToken;
-  final bool isNewUser; 
+  final bool isNewUser;
 
   const LoginResult({
     required this.userId,
     required this.emailConfirmed,
     required this.role,
     this.jwtToken,
-    this.isNewUser = false, 
+    this.isNewUser = false,
   });
 
   factory LoginResult.fromJson(Map<String, dynamic> json) => LoginResult(
-        userId: json['userId'] as String,
-        emailConfirmed: json['emailConfirmed'] as bool,
-        role: json['role'] as String,
-        jwtToken: json['jwtToken'] as String?,
-        isNewUser: json['isNewUser'] as bool? ?? false, 
-      );
+    userId: json['userId'] as String,
+    emailConfirmed: json['emailConfirmed'] as bool,
+    role: json['role'] as String,
+    jwtToken: json['jwtToken'] as String?,
+    isNewUser: json['isNewUser'] as bool? ?? false,
+  );
 }
 
 class UserDto {
@@ -213,8 +212,6 @@ class UserDto {
 
   const UserDto({required this.id, required this.name});
 
-  factory UserDto.fromJson(Map<String, dynamic> json) => UserDto(
-        id: json['id'] as String,
-        name: json['name'] as String,
-      );
+  factory UserDto.fromJson(Map<String, dynamic> json) =>
+      UserDto(id: json['id'] as String, name: json['name'] as String);
 }

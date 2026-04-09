@@ -12,4 +12,11 @@ public class NotificationService(IHubContext<GameHub> hubContext) : INotificatio
             .Group(groupName)
             .SendAsync(message, args);
     }
+
+    public async Task SendNotificationToUserAsync(string userId, string message, object? args)
+    {
+        await hubContext.Clients
+            .User(userId)
+            .SendAsync(message, args);
+    }
 }

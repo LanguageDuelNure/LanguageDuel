@@ -15,23 +15,21 @@ using Timer = System.Timers.Timer;
 
 namespace LanguageDuel.Application.Services.Games;
 
-public class GameService(INotificationService notificationService, IServiceScopeFactory serviceScopeFactory, IOptions<GameLogicOptions> gameLogicOptions) : IGameService
+public class GameService(INotificationService notificationService, IServiceScopeFactory serviceScopeFactory, IOptions<GameLogicOptions> gameLogicOptions) : IGameService, IDisposable
 {
     private readonly GameLogicOptions _gameLogicOptions = gameLogicOptions.Value;
 
     private const int PlayersInGame = 2;
-
     private const int BeforeGameDelayMs = 1000;
 
     private readonly ConcurrentDictionary<Guid, GameSessionDto> _games = new();
-
     private readonly ConcurrentDictionary<string, GameInvitationDto> _searchGroups = [];
+    private readonly SemaphoreSlim _matchmakingLock = new(1, 1);
 
     public async Task<IEnumerable<string>> GetSearchGroupsAsync(Guid userId, Guid languageId)
     {
         var serviceProvider = serviceScopeFactory.CreateScope().ServiceProvider;
         var applicationUserLanguageRep = serviceProvider.GetRequiredService<IRepository<ApplicationUserLanguage>>();
-
         var applicationUserLanguage = await applicationUserLanguageRep.GetAsync(userId, languageId);
         return GetGameGroups(languageId, applicationUserLanguage);
     }
@@ -41,14 +39,10 @@ public class GameService(INotificationService notificationService, IServiceScope
         return "game-id" + gameId;
     }
 
-    // FIX 2: Guard against null session when user has no active game.
-    // Previously this crashed with NullReferenceException, causing GET /api/games/current
-    // to return 500 instead of a clean 204/404.
     public Result<Guid> GetGame(Guid userId)
     {
         var session = _games.Values
-            .FirstOrDefault(g =>
-                g.Users.Any(u => u.Id == userId));
+            .FirstOrDefault(g => g.Users.Any(u => u.Id == userId));
 
         return session == null
             ? new Result<Guid>
@@ -60,9 +54,9 @@ public class GameService(INotificationService notificationService, IServiceScope
                 }]
             }
             : new Result<Guid>
-        {
-            Value = session.Id
-        };
+            {
+                Value = session.Id
+            };
     }
 
     public async Task<Result> GiveUpAsync(Guid userId, Guid gameId)
@@ -71,7 +65,7 @@ public class GameService(INotificationService notificationService, IServiceScope
 
         if (!isFound)
         {
-            return new Result<Guid>
+            return new Result
             {
                 Errors = [new Error
                 {
@@ -81,10 +75,10 @@ public class GameService(INotificationService notificationService, IServiceScope
             };
         }
 
-        var user = gameSession.Users.FirstOrDefault(u => u.Id == userId);
+        var user = gameSession!.Users.FirstOrDefault(u => u.Id == userId);
         if (user == null)
         {
-            return new Result<Guid>
+            return new Result
             {
                 Errors = [new Error
                 {
@@ -95,7 +89,6 @@ public class GameService(INotificationService notificationService, IServiceScope
         }
 
         user.IsGiveUp = true;
-
         gameSession.Timer.Stop();
         await FinishGameAsync(gameSession);
 
@@ -105,13 +98,13 @@ public class GameService(INotificationService notificationService, IServiceScope
     public async Task<Result> ChooseAnswerAsync(Guid userId, Guid gameId, Guid answerId)
     {
         _games.TryGetValue(gameId, out var gameSession);
-        var currentQuestion = gameSession.Questions[gameSession.CurrentQuestionIndex];
+        var currentQuestion = gameSession!.Questions[gameSession.CurrentQuestionIndex];
         var chosenAnswer = currentQuestion.Answers.FirstOrDefault(a => a.Id == answerId);
 
         var isOpponentSelectedThisAnswer = currentQuestion.UserAnswers.ContainsValue(answerId);
         if (isOpponentSelectedThisAnswer)
         {
-            return new Result()
+            return new Result
             {
                 Errors = [new Error
                 {
@@ -125,7 +118,7 @@ public class GameService(INotificationService notificationService, IServiceScope
         var isAnswerSelected = !currentQuestion.UserAnswers.TryAdd(userId, answerId);
         if (isAnswerSelected)
         {
-            return new Result()
+            return new Result
             {
                 Errors = [new Error
                 {
@@ -136,7 +129,7 @@ public class GameService(INotificationService notificationService, IServiceScope
             };
         }
 
-        if (chosenAnswer.IsCorrect)
+        if (chosenAnswer!.IsCorrect)
         {
             foreach (var user in gameSession.Users.Where(user => user.Id != userId))
             {
@@ -158,7 +151,6 @@ public class GameService(INotificationService notificationService, IServiceScope
         }
 
         await HandleGameStateAsync(gameSession);
-
         return new Result();
     }
 
@@ -180,18 +172,13 @@ public class GameService(INotificationService notificationService, IServiceScope
         await Task.Delay(_gameLogicOptions.QuestionDelayMs);
 
         gameSession.CurrentQuestionIndex++;
-
         gameSession.Timer.Start();
         gameSession.CurrentQuestionStartDateTime = DateTime.UtcNow;
 
         await HandleGameStateAsync(gameSession);
-
         return new Result();
     }
 
-    // FIX 3: Enumerable.Range second argument is a COUNT not an end value.
-    // Old code: Range(start, rating + RatingRange) produced wrong number of groups,
-    // meaning the two players could generate non-matching group key sets.
     private IEnumerable<string> GetGameGroups(Guid languageId, ApplicationUserLanguage? applicationUserLanguage)
     {
         var rating = applicationUserLanguage?.Rating ?? 0;
@@ -209,7 +196,6 @@ public class GameService(INotificationService notificationService, IServiceScope
         {
             _searchGroups.Remove(group, out _);
         }
-
         return new Result();
     }
 
@@ -217,134 +203,127 @@ public class GameService(INotificationService notificationService, IServiceScope
     {
         var serviceProvider = serviceScopeFactory.CreateScope().ServiceProvider;
         var applicationUserLanguageRep = serviceProvider.GetRequiredService<IRepository<ApplicationUserLanguage>>();
-
         var applicationUserLanguage = await applicationUserLanguageRep.GetAsync(userId, languageId);
-
         var groups = await GetSearchGroupsAsync(userId, languageId);
-
-        string existingGroup = string.Empty;
-        GameInvitationDto? gameInvitationDto = null;
-
         var groupsList = groups.ToList();
-        foreach (var group in groupsList)
-        {
-            _searchGroups.TryGetValue(group, out gameInvitationDto);
-            if (gameInvitationDto == null)
-            {
-                continue;
-            }
 
-            existingGroup = group;
-            break;
-        }
-
-        if (gameInvitationDto != null)
+        await _matchmakingLock.WaitAsync();
+        try
         {
-            if (gameInvitationDto.InviterUserId == userId)
-            {
-                return new Result
-                {
-                    Errors =
-                    [
-                        new Error
-                        {
-                            Message = "You can't play with yourself",
-                            Field = nameof(existingGroup),
-                            Key = ErrorKey.AlreadyExists,
-                        }
-                    ]
-                };
-            }
+            GameInvitationDto? gameInvitationDto = null;
+
             foreach (var group in groupsList)
             {
-                _searchGroups.Remove(group, out _);
+                _searchGroups.TryGetValue(group, out gameInvitationDto);
+                if (gameInvitationDto == null) continue;
+                break;
             }
 
-            var opponentGroups = await GetSearchGroupsAsync(gameInvitationDto.InviterUserId, languageId);
-            foreach (var group in opponentGroups)
+            if (gameInvitationDto != null)
             {
-                _searchGroups.Remove(group, out _);
-            }
-
-            var difficultyRep = serviceProvider.GetRequiredService<IDifficultyRepository>();
-            var difficultyLevel = await difficultyRep.GetDifficultyLevelByRatingAsync(applicationUserLanguage?.Rating ?? 0);
-            var result = await CreateGameSessionAsync(languageId, difficultyLevel.Id);
-            if (!result.IsSuccess)
-            {
-                return new Result
+                if (gameInvitationDto.InviterUserId == userId)
                 {
-                    Errors = result.Errors
+                    return new Result
+                    {
+                        Errors = [new Error
+                        {
+                            Message = "You can't play with yourself",
+                            Key = ErrorKey.AlreadyExists,
+                        }]
+                    };
+                }
+
+                // Remove both players from all search groups
+                foreach (var group in groupsList)
+                    _searchGroups.Remove(group, out _);
+
+                var opponentGroups = await GetSearchGroupsAsync(gameInvitationDto.InviterUserId, languageId);
+                var opponentGroupsList = opponentGroups.ToList();
+                foreach (var group in opponentGroupsList)
+                    _searchGroups.Remove(group, out _);
+
+                var difficultyRep = serviceProvider.GetRequiredService<IDifficultyRepository>();
+                var difficultyLevel = await difficultyRep.GetDifficultyLevelByRatingAsync(applicationUserLanguage?.Rating ?? 0);
+                var result = await CreateGameSessionAsync(languageId, difficultyLevel.Id);
+                if (!result.IsSuccess)
+                    return new Result { Errors = result.Errors };
+
+                var gameSession = result.Value;
+                _games.TryAdd(gameSession.Id, gameSession);
+
+                var userService = serviceProvider.GetRequiredService<IUserService>();
+                var getFirstUserResult = await userService.GetUserDtoAsync(userId);
+                var getSecondUserResult = await userService.GetUserDtoAsync(gameInvitationDto.InviterUserId);
+                if (!getFirstUserResult.IsSuccess || !getSecondUserResult.IsSuccess)
+                    return new Result();
+
+                var firstUser = getFirstUserResult.Value;
+                var secondUser = getSecondUserResult.Value;
+                gameSession.Users.AddRange([
+                    new GameSessionUserDto
+                    {
+                        Id = userId,
+                        Hp = _gameLogicOptions.QuestionsCount / PlayersInGame,
+                        Name = firstUser.Name,
+                        Rating = firstUser.LanguageRatings.FirstOrDefault(lr => lr.LanguageId == languageId)?.Rating ?? 0,
+                        ImageUrl = firstUser.ImageUrl,
+                    },
+                    new GameSessionUserDto
+                    {
+                        Id = gameInvitationDto.InviterUserId,
+                        Hp = _gameLogicOptions.QuestionsCount / PlayersInGame,
+                        Name = secondUser.Name,
+                        Rating = secondUser.LanguageRatings.FirstOrDefault(lr => lr.LanguageId == languageId)?.Rating ?? 0,
+                        ImageUrl = secondUser.ImageUrl,
+                    },
+                ]);
+
+                var invitation = new GameInvitationDto
+                {
+                    InviterUserId = userId,
+                    GameId = gameSession.Id
                 };
-            }
 
-            var gameSession = result.Value;
+                // Send to player 2 (current user) via one of their search groups
+                await notificationService.SendNotificationAsync(
+                    groupsList.First(),
+                    "ReceiveGameInvitation",
+                    invitation);
 
-            _games.TryAdd(gameSession.Id, gameSession);
+                // Send to player 1 (original searcher) via one of their search groups
+                await notificationService.SendNotificationAsync(
+                    opponentGroupsList.First(),
+                    "ReceiveGameInvitation",
+                    invitation);
 
-            var userService = serviceProvider.GetRequiredService<IUserService>();
-            var getFirstUserResult = await userService.GetUserDtoAsync(userId);
-            var getSecondUserResult = await userService.GetUserDtoAsync(gameInvitationDto.InviterUserId);
-            if (!getFirstUserResult.IsSuccess || !getSecondUserResult.IsSuccess)
-            {
+                await Task.Delay(BeforeGameDelayMs);
+                await MoveToNextQuestionAsync(gameSession);
+
                 return new Result();
             }
-            var firstUser = getFirstUserResult.Value;
-            var secondUser = getSecondUserResult.Value;
-            gameSession.Users.AddRange([
-                new GameSessionUserDto()
-                {
-                    Id =  userId,
-                    Hp = _gameLogicOptions.QuestionsCount /  PlayersInGame,
-                    Name = firstUser.Name,
-                    Rating = firstUser.LanguageRatings.FirstOrDefault(lr => lr.LanguageId == languageId)?.Rating ?? 0,
-                    ImageUrl = firstUser.ImageUrl,
-                },
-                new GameSessionUserDto()
-                {
-                    Id =  gameInvitationDto.InviterUserId,
-                    Hp = _gameLogicOptions.QuestionsCount /  PlayersInGame,
-                    Name = secondUser.Name,
-                    Rating = secondUser.LanguageRatings.FirstOrDefault(lr => lr.LanguageId == languageId)?.Rating ?? 0,
-                    ImageUrl = firstUser.ImageUrl,
-                },
-            ]);
-            await notificationService
-                .SendNotificationAsync(
-                    existingGroup,
-                    "ReceiveGameInvitation",
-                    new GameInvitationDto()
-                    {
-                        InviterUserId = userId,
-                        GameId = gameSession.Id
-                    });
-            await Task.Delay(BeforeGameDelayMs);
 
-            await MoveToNextQuestionAsync(gameSession);
-
-            return new Result();
-        }
-
-        var tasks = groupsList
-            .Select(g =>
+            // No match found — add self to search groups and broadcast null-gameId invite
+            var searchTasks = groupsList.Select(g =>
             {
-                var gameInvitation = new GameInvitationDto()
+                var gameInvitation = new GameInvitationDto
                 {
                     InviterUserId = userId,
                     GameId = null,
                 };
                 _searchGroups.TryAdd(g, gameInvitation);
-                return notificationService
-                    .SendNotificationAsync(
-                        g,
-                        "ReceiveGameInvitation",
-                        gameInvitation);
+                return notificationService.SendNotificationAsync(g, "ReceiveGameInvitation", gameInvitation);
             });
-        await Task.WhenAll(tasks);
+            await Task.WhenAll(searchTasks);
+        }
+        finally
+        {
+            _matchmakingLock.Release();
+        }
 
         return new Result();
     }
 
-    private async Task<Result> ChangeUsersRatingAsync(GameSessionDto gameSession)
+    private async Task ChangeUsersRatingAsync(GameSessionDto gameSession)
     {
         var serviceProvider = serviceScopeFactory.CreateScope().ServiceProvider;
         var unitOfWork = serviceProvider.GetRequiredService<IUnitOfWork>();
@@ -370,10 +349,7 @@ public class GameService(INotificationService notificationService, IServiceScope
         }
 
         await applicationUserOpponentService.UpdateStatisticsAsync(gameSession.Users[0].Id, gameSession.Users[1].Id);
-
         await unitOfWork.CommitAsync();
-
-        return new Result();
     }
 
     private async Task HandleGameStateAsync(GameSessionDto gameSession)
@@ -411,9 +387,13 @@ public class GameService(INotificationService notificationService, IServiceScope
             "GameStateChanged",
             new GameStateDto
             {
-                CurrentQuestion = gameSession.CurrentQuestionIndex < 0 ? null : mapper.Map<GameStateQuestionDto>(gameSession.Questions[gameSession.CurrentQuestionIndex]),
+                CurrentQuestion = gameSession.CurrentQuestionIndex < 0
+                    ? null
+                    : mapper.Map<GameStateQuestionDto>(gameSession.Questions[gameSession.CurrentQuestionIndex]),
                 Users = gameSession.Users,
-                TimeRemainingInSeconds = gameSession.CurrentQuestionIndex < 0 ? null : _gameLogicOptions.TimeForQuestionInSeconds - questionDuration.Seconds,
+                TimeRemainingInSeconds = gameSession.CurrentQuestionIndex < 0
+                    ? null
+                    : _gameLogicOptions.TimeForQuestionInSeconds - questionDuration.Seconds,
                 CorrectAnswerId = correctAnswerId,
                 LanguageName = gameSession.LanguageName,
             });
@@ -421,19 +401,18 @@ public class GameService(INotificationService notificationService, IServiceScope
 
     private async Task SendGameResultAsync(GameSessionDto gameSession)
     {
-        var winner = gameSession.Users.FirstOrDefault(u => u.Hp != 0);
-        await notificationService
-            .SendNotificationAsync(
-                GetGameGroupAsync(gameSession.Id),
-                "ReceiveGameResult",
-                new GameResultDto()
-                {
-                    Questions = [.. gameSession.Questions.Take(gameSession.CurrentQuestionIndex)],
-                    WinnerUserId = winner?.Id,
-                    WinnerUserName = winner?.Name,
-                    RatingChangeAfterWinOrLoss = _gameLogicOptions.RatingChangeAfterWinOrLoss,
-                    IsGiveUp = gameSession.Users.Any(u => u.IsGiveUp),
-                });
+        var winner = gameSession.Users.FirstOrDefault(u => u.Hp != 0 && !u.IsGiveUp);
+        await notificationService.SendNotificationAsync(
+            GetGameGroupAsync(gameSession.Id),
+            "ReceiveGameResult",
+            new GameResultDto
+            {
+                Questions = [.. gameSession.Questions.Take(gameSession.CurrentQuestionIndex)],
+                WinnerUserId = winner?.Id,
+                WinnerUserName = winner?.Name,
+                RatingChangeAfterWinOrLoss = _gameLogicOptions.RatingChangeAfterWinOrLoss,
+                IsGiveUp = gameSession.Users.Any(u => u.IsGiveUp),
+            });
     }
 
     private async Task<Result<GameSessionDto>> CreateGameSessionAsync(Guid languageId, Guid difficultyLevelId)
@@ -442,8 +421,7 @@ public class GameService(INotificationService notificationService, IServiceScope
         var questionService = serviceProvider.GetRequiredService<IQuestionService>();
         var languageRep = serviceProvider.GetRequiredService<IRepository<Language>>();
 
-        var getQuestionsResult =
-            await questionService.GetRandomQuestionsAsync(languageId, difficultyLevelId, _gameLogicOptions.QuestionsCount);
+        var getQuestionsResult = await questionService.GetRandomQuestionsAsync(languageId, difficultyLevelId, _gameLogicOptions.QuestionsCount);
         if (!getQuestionsResult.IsSuccess)
         {
             return new Result<GameSessionDto>
@@ -451,6 +429,7 @@ public class GameService(INotificationService notificationService, IServiceScope
                 Errors = getQuestionsResult.Errors
             };
         }
+
         var randomQuestions = (List<QuestionDto>)getQuestionsResult.Value;
         var gameSession = new GameSessionDto
         {
@@ -468,7 +447,6 @@ public class GameService(INotificationService notificationService, IServiceScope
             {
                 user.Hp--;
             }
-
             await MoveToNextQuestionAsync(gameSession);
         };
         gameSession.Timer.AutoReset = false;
@@ -477,5 +455,11 @@ public class GameService(INotificationService notificationService, IServiceScope
         {
             Value = gameSession
         };
+    }
+
+    public void Dispose()
+    {
+        _matchmakingLock.Dispose();
+        GC.SuppressFinalize(this);
     }
 }
