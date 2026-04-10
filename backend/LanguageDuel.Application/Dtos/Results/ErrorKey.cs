@@ -53,4 +53,7 @@ public enum ErrorKey
 
     [EnumMember(Value = "BAD_REQUEST")]
     BadRequest,
+    
+    [EnumMember(Value = "BANNED")]
+    Banned,
 }

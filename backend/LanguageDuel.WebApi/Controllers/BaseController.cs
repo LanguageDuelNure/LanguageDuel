@@ -29,6 +29,7 @@ public class BaseController : ControllerBase
             ErrorKey.Incorrect or ErrorKey.BadRequest
             or ErrorKey.Forbidden or ErrorKey.AlreadyChosen or 
             ErrorKey.DoNotMatch => BadRequest(result),
+            ErrorKey.Banned => StatusCode(403, result),
             ErrorKey.AlreadyExists => Conflict(result),
             ErrorKey.NotFound => NotFound(result),
             ErrorKey.UnexpectedError or _ => StatusCode(500, result),

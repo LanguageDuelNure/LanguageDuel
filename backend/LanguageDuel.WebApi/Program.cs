@@ -4,6 +4,7 @@ using LanguageDuel.Application.Options;
 using LanguageDuel.Infrastructure;
 using LanguageDuel.Infrastructure.Hubs;
 using LanguageDuel.WebApi;
+using LanguageDuel.WebApi.Middlewares;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -108,6 +109,8 @@ var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>()
 await DbInitializer.InitializeAsync(dbContext);
 
 app.UseCors("Access-Control-Allow-Origin");
+
+app.UseMiddleware<UserBannedMiddleware>();
 
 app.UseDefaultFiles();
 app.UseStaticFiles();

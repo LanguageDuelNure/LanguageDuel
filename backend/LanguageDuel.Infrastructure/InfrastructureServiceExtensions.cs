@@ -27,6 +27,7 @@ public static class InfrastructureServiceExtensions
             {
                 RequireNonAlphanumeric = false
             };
+            options.Lockout.AllowedForNewUsers = true;
         })
             .AddRoles<IdentityRole<Guid>>()
             .AddEntityFrameworkStores<ApplicationDbContext>();

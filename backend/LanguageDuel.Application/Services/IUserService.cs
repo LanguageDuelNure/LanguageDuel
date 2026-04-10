@@ -17,4 +17,5 @@ public interface IUserService
     Task<Result> BanUserAsync(Guid userId, int days);
     Task<Result> UnbanUserAsync(Guid userId);
     Task<Result<IEnumerable<LeaderboardItemDto>>> GetLeaderboardAsync(Guid? languageId);
+    Task<TimeSpan?> IsUserBannedAsync(string userId);
 }

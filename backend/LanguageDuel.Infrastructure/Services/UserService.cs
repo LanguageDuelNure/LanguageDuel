@@ -170,6 +170,20 @@ public class UserService(UserManager<ApplicationUser> userManager, SignInManager
             }
         };
     }
+    
+    public async Task<TimeSpan?> IsUserBannedAsync(string userId)
+    {
+        var user = await userManager.FindByIdAsync(userId);
+    
+        if (user == null)
+        {
+            return null;
+        }
+
+        return user.LockoutEnd.HasValue && user.LockoutEnd.Value > DateTimeOffset.UtcNow
+            ? user.LockoutEnd.Value - DateTimeOffset.UtcNow
+            : null;
+    }
 
     public async Task<Result<LoginResultDto>> LoginAsync(LoginUserDto dto)
     {
