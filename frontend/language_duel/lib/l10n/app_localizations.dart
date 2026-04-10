@@ -799,6 +799,138 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Change avatar'**
   String get changeAvatarTooltip;
+
+  /// Badge label shown on the admin panel header
+  ///
+  /// In en, this message translates to:
+  /// **'ADMIN'**
+  String get adminBadge;
+
+  /// Page title for admin users list
+  ///
+  /// In en, this message translates to:
+  /// **'User Management'**
+  String get adminUsersTitle;
+
+  /// Subtitle shown while users are being fetched
+  ///
+  /// In en, this message translates to:
+  /// **'Loading users…'**
+  String get adminLoadingUsers;
+
+  /// Subtitle showing total number of users
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 user} other{{count} users}}'**
+  String adminUserCount(int count);
+
+  /// Placeholder text inside the search field
+  ///
+  /// In en, this message translates to:
+  /// **'Search by name or email…'**
+  String get adminSearchHint;
+
+  /// Badge shown on a banned user tile
+  ///
+  /// In en, this message translates to:
+  /// **'BANNED'**
+  String get adminBannedLabel;
+
+  /// Shows the date the ban expires
+  ///
+  /// In en, this message translates to:
+  /// **'Banned until {date}'**
+  String adminBannedUntil(String date);
+
+  /// Label on the ban action button
+  ///
+  /// In en, this message translates to:
+  /// **'Ban'**
+  String get adminBan;
+
+  /// Label on the unban action button
+  ///
+  /// In en, this message translates to:
+  /// **'Unban'**
+  String get adminUnban;
+
+  /// Snackbar shown after a successful ban
+  ///
+  /// In en, this message translates to:
+  /// **'{name} has been banned'**
+  String adminBanSuccess(String name);
+
+  /// Snackbar shown after a successful unban
+  ///
+  /// In en, this message translates to:
+  /// **'{name} has been unbanned'**
+  String adminUnbanSuccess(String name);
+
+  /// Title of the ban duration dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Ban User'**
+  String get adminBanDialogTitle;
+
+  /// Label above preset ban-duration chips
+  ///
+  /// In en, this message translates to:
+  /// **'Quick select'**
+  String get adminBanQuickSelect;
+
+  /// Label on a quick-select ban duration chip
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 day} other{{count} days}}'**
+  String adminDayCount(int count);
+
+  /// Hint text inside the custom days input
+  ///
+  /// In en, this message translates to:
+  /// **'Enter number of days'**
+  String get adminBanDaysHint;
+
+  /// Suffix shown after the days input value
+  ///
+  /// In en, this message translates to:
+  /// **'days'**
+  String get adminDaysSuffix;
+
+  /// Validation error for invalid days input
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid number of days (≥ 1)'**
+  String get adminBanDaysError;
+
+  /// Cancel button label in the ban dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get adminCancel;
+
+  /// Confirm button label in the ban dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Ban'**
+  String get adminConfirmBan;
+
+  /// Empty state when the user list is empty
+  ///
+  /// In en, this message translates to:
+  /// **'No users found'**
+  String get adminNoUsers;
+
+  /// Empty state when search returns no matches
+  ///
+  /// In en, this message translates to:
+  /// **'No results for \"{query}\"'**
+  String adminNoResults(String query);
+
+  /// No description provided for @navAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin'**
+  String get navAdmin;
 }
 
 class _AppLocalizationsDelegate

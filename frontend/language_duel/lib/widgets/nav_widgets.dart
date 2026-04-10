@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:language_duel/l10n/app_localizations.dart';
 import '../utils/app_theme.dart';
@@ -7,12 +5,18 @@ import '../utils/app_theme.dart';
 class BottomNav extends StatelessWidget {
   final int selectedIndex;
   final void Function(int) onTap;
+  final bool isAdmin;
 
-  const BottomNav({super.key, required this.selectedIndex, required this.onTap});
+  const BottomNav({
+    super.key,
+    required this.selectedIndex,
+    required this.onTap,
+    this.isAdmin = false,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!; 
+    final l10n = AppLocalizations.of(context)!;
 
     return Container(
       decoration: const BoxDecoration(
@@ -28,24 +32,33 @@ class BottomNav extends StatelessWidget {
               NavItem(
                 icon: Icons.sports_esports_outlined,
                 activeIcon: Icons.sports_esports,
-                label: l10n.navPlay, 
+                label: l10n.navPlay,
                 isActive: selectedIndex == 0,
                 onTap: () => onTap(0),
               ),
               NavItem(
                 icon: Icons.leaderboard_outlined,
                 activeIcon: Icons.leaderboard,
-                label: l10n.navLeaderboard, 
+                label: l10n.navLeaderboard,
                 isActive: selectedIndex == 1,
                 onTap: () => onTap(1),
               ),
               NavItem(
                 icon: Icons.person_outline,
                 activeIcon: Icons.person,
-                label: l10n.navProfile, 
+                label: l10n.navProfile,
                 isActive: selectedIndex == 2,
                 onTap: () => onTap(2),
               ),
+              if (isAdmin)
+                NavItem(
+                  icon: Icons.shield_outlined,
+                  activeIcon: Icons.shield,
+                  label: l10n.navAdmin,
+                  isActive: selectedIndex == 3,
+                  color: AppTheme.danger,
+                  onTap: () => onTap(3),
+                ),
             ],
           ),
         ),
@@ -60,6 +73,7 @@ class NavItem extends StatelessWidget {
   final String label;
   final bool isActive;
   final VoidCallback onTap;
+  final Color? color;
 
   const NavItem({
     super.key,
@@ -68,10 +82,12 @@ class NavItem extends StatelessWidget {
     required this.label,
     required this.isActive,
     required this.onTap,
+    this.color,
   });
 
   @override
   Widget build(BuildContext context) {
+    final activeColor = color ?? AppTheme.accent;
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
@@ -80,14 +96,14 @@ class NavItem extends StatelessWidget {
         children: [
           Icon(
             isActive ? activeIcon : icon,
-            color: isActive ? AppTheme.accent : AppTheme.textSecondary,
+            color: isActive ? activeColor : AppTheme.textSecondary,
             size: 24,
           ),
           const SizedBox(height: 3),
           Text(
             label,
             style: TextStyle(
-              color: isActive ? AppTheme.accent : AppTheme.textSecondary,
+              color: isActive ? activeColor : AppTheme.textSecondary,
               fontSize: 11,
               fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
             ),
@@ -101,12 +117,18 @@ class NavItem extends StatelessWidget {
 class SideRail extends StatelessWidget {
   final int selectedIndex;
   final void Function(int) onTap;
+  final bool isAdmin;
 
-  const SideRail({super.key, required this.selectedIndex, required this.onTap});
+  const SideRail({
+    super.key,
+    required this.selectedIndex,
+    required this.onTap,
+    this.isAdmin = false,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!; 
+    final l10n = AppLocalizations.of(context)!;
 
     return Container(
       width: 220,
@@ -157,24 +179,38 @@ class SideRail extends StatelessWidget {
           RailItem(
             icon: Icons.sports_esports_outlined,
             activeIcon: Icons.sports_esports,
-            label: l10n.navPlay, 
+            label: l10n.navPlay,
             isActive: selectedIndex == 0,
             onTap: () => onTap(0),
           ),
           RailItem(
             icon: Icons.leaderboard_outlined,
             activeIcon: Icons.leaderboard,
-            label: l10n.navLeaderboard, 
+            label: l10n.navLeaderboard,
             isActive: selectedIndex == 1,
             onTap: () => onTap(1),
           ),
           RailItem(
             icon: Icons.person_outline,
             activeIcon: Icons.person,
-            label: l10n.navProfile, 
+            label: l10n.navProfile,
             isActive: selectedIndex == 2,
             onTap: () => onTap(2),
           ),
+          if (isAdmin) ...[
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+              child: Divider(color: AppTheme.border, height: 1),
+            ),
+            RailItem(
+              icon: Icons.shield_outlined,
+              activeIcon: Icons.shield,
+              label: l10n.navAdmin,
+              isActive: selectedIndex == 3,
+              color: AppTheme.danger,
+              onTap: () => onTap(3),
+            ),
+          ],
         ],
       ),
     );
@@ -187,6 +223,7 @@ class RailItem extends StatelessWidget {
   final String label;
   final bool isActive;
   final VoidCallback onTap;
+  final Color? color;
 
   const RailItem({
     super.key,
@@ -195,31 +232,33 @@ class RailItem extends StatelessWidget {
     required this.label,
     required this.isActive,
     required this.onTap,
+    this.color,
   });
 
   @override
   Widget build(BuildContext context) {
+    final activeColor = color ?? AppTheme.accent;
     return GestureDetector(
       onTap: onTap,
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         decoration: BoxDecoration(
-          color: isActive ? AppTheme.accent.withOpacity(0.1) : Colors.transparent,
+          color: isActive ? activeColor.withOpacity(0.1) : Colors.transparent,
           borderRadius: BorderRadius.circular(10),
         ),
         child: Row(
           children: [
             Icon(
               isActive ? activeIcon : icon,
-              color: isActive ? AppTheme.accent : AppTheme.textSecondary,
+              color: isActive ? activeColor : AppTheme.textSecondary,
               size: 20,
             ),
             const SizedBox(width: 12),
             Text(
               label,
               style: TextStyle(
-                color: isActive ? AppTheme.accent : AppTheme.textSecondary,
+                color: isActive ? activeColor : AppTheme.textSecondary,
                 fontSize: 14,
                 fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
               ),

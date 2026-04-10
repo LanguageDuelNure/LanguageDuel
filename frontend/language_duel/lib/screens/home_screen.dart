@@ -8,6 +8,7 @@ import 'game_screen.dart';
 import 'play_page.dart';
 import 'leaderboard_page.dart';
 import 'profile_page.dart';
+import 'admin_users_page.dart';
 
 class HomeScreen extends StatefulWidget {
   final VoidCallback onLogout;
@@ -27,6 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final game = context.watch<GameService>();
     final l10n = AppLocalizations.of(context)!;
     final isMobile = MediaQuery.of(context).size.width < 700;
+    final isAdmin = auth.role == 'Admin';
 
     if (game.status == GameStatus.searching ||
         game.status == GameStatus.inGame ||
@@ -42,13 +44,18 @@ class _HomeScreenState extends State<HomeScreen> {
             .toList(),
       ),
       ProfilePage(onLogout: widget.onLogout),
+      if (isAdmin) const AdminUsersPage(),
     ];
+
+    // Clamp in case the admin tab disappears on role change
+    final safeIndex = _selectedIndex.clamp(0, pages.length - 1);
 
     if (isMobile) {
       return Scaffold(
-        body: pages[_selectedIndex],
+        body: pages[safeIndex],
         bottomNavigationBar: BottomNav(
-          selectedIndex: _selectedIndex,
+          selectedIndex: safeIndex,
+          isAdmin: isAdmin,
           onTap: (i) => setState(() => _selectedIndex = i),
         ),
       );
@@ -58,10 +65,11 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Row(
         children: [
           SideRail(
-            selectedIndex: _selectedIndex,
+            selectedIndex: safeIndex,
+            isAdmin: isAdmin,
             onTap: (i) => setState(() => _selectedIndex = i),
           ),
-          Expanded(child: pages[_selectedIndex]),
+          Expanded(child: pages[safeIndex]),
         ],
       ),
     );

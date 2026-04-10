@@ -158,9 +158,93 @@
   "editNameTitle": "Edit Name",
   "editNameHint": "Your display name",
   "saveBtn": "Save",
-  
+
   "nameSavedSuccess": "Name updated successfully",
   "nameSaveError": "Failed to save name. Please try again.",
   "avatarUploadError": "Failed to upload avatar. Please try again.",
-  "changeAvatarTooltip": "Change avatar"
+  "changeAvatarTooltip": "Change avatar",
+  
+  "adminBadge": "ADMIN",
+  "@adminBadge": { "description": "Badge label shown on the admin panel header" },
+
+  "adminUsersTitle": "User Management",
+  "@adminUsersTitle": { "description": "Page title for admin users list" },
+
+  "adminLoadingUsers": "Loading users…",
+  "@adminLoadingUsers": { "description": "Subtitle shown while users are being fetched" },
+
+  "adminUserCount": "{count, plural, =1{1 user} other{{count} users}}",
+  "@adminUserCount": {
+    "description": "Subtitle showing total number of users",
+    "placeholders": { "count": { "type": "int" } }
+  },
+
+  "adminSearchHint": "Search by name or email…",
+  "@adminSearchHint": { "description": "Placeholder text inside the search field" },
+
+  "adminBannedLabel": "BANNED",
+  "@adminBannedLabel": { "description": "Badge shown on a banned user tile" },
+
+  "adminBannedUntil": "Banned until {date}",
+  "@adminBannedUntil": {
+    "description": "Shows the date the ban expires",
+    "placeholders": { "date": { "type": "String" } }
+  },
+
+  "adminBan": "Ban",
+  "@adminBan": { "description": "Label on the ban action button" },
+
+  "adminUnban": "Unban",
+  "@adminUnban": { "description": "Label on the unban action button" },
+
+  "adminBanSuccess": "{name} has been banned",
+  "@adminBanSuccess": {
+    "description": "Snackbar shown after a successful ban",
+    "placeholders": { "name": { "type": "String" } }
+  },
+
+  "adminUnbanSuccess": "{name} has been unbanned",
+  "@adminUnbanSuccess": {
+    "description": "Snackbar shown after a successful unban",
+    "placeholders": { "name": { "type": "String" } }
+  },
+
+  "adminBanDialogTitle": "Ban User",
+  "@adminBanDialogTitle": { "description": "Title of the ban duration dialog" },
+
+  "adminBanQuickSelect": "Quick select",
+  "@adminBanQuickSelect": { "description": "Label above preset ban-duration chips" },
+
+  "adminDayCount": "{count, plural, =1{1 day} other{{count} days}}",
+  "@adminDayCount": {
+    "description": "Label on a quick-select ban duration chip",
+    "placeholders": { "count": { "type": "int" } }
+  },
+
+  "adminBanDaysHint": "Enter number of days",
+  "@adminBanDaysHint": { "description": "Hint text inside the custom days input" },
+
+  "adminDaysSuffix": "days",
+  "@adminDaysSuffix": { "description": "Suffix shown after the days input value" },
+
+  "adminBanDaysError": "Please enter a valid number of days (≥ 1)",
+  "@adminBanDaysError": { "description": "Validation error for invalid days input" },
+
+  "adminCancel": "Cancel",
+  "@adminCancel": { "description": "Cancel button label in the ban dialog" },
+
+  "adminConfirmBan": "Confirm Ban",
+  "@adminConfirmBan": { "description": "Confirm button label in the ban dialog" },
+
+  "adminNoUsers": "No users found",
+  "@adminNoUsers": { "description": "Empty state when the user list is empty" },
+
+  "adminNoResults": "No results for \"{query}\"",
+  "@adminNoResults": {
+    "description": "Empty state when search returns no matches",
+    "placeholders": { "query": { "type": "String" } }
+  },
+
+  "navAdmin": "Admin"
+
 }

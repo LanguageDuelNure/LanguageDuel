@@ -386,4 +386,94 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get changeAvatarTooltip => 'Change avatar';
+
+  @override
+  String get adminBadge => 'ADMIN';
+
+  @override
+  String get adminUsersTitle => 'User Management';
+
+  @override
+  String get adminLoadingUsers => 'Loading users…';
+
+  @override
+  String adminUserCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count users',
+      one: '1 user',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get adminSearchHint => 'Search by name or email…';
+
+  @override
+  String get adminBannedLabel => 'BANNED';
+
+  @override
+  String adminBannedUntil(String date) {
+    return 'Banned until $date';
+  }
+
+  @override
+  String get adminBan => 'Ban';
+
+  @override
+  String get adminUnban => 'Unban';
+
+  @override
+  String adminBanSuccess(String name) {
+    return '$name has been banned';
+  }
+
+  @override
+  String adminUnbanSuccess(String name) {
+    return '$name has been unbanned';
+  }
+
+  @override
+  String get adminBanDialogTitle => 'Ban User';
+
+  @override
+  String get adminBanQuickSelect => 'Quick select';
+
+  @override
+  String adminDayCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days',
+      one: '1 day',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get adminBanDaysHint => 'Enter number of days';
+
+  @override
+  String get adminDaysSuffix => 'days';
+
+  @override
+  String get adminBanDaysError => 'Please enter a valid number of days (≥ 1)';
+
+  @override
+  String get adminCancel => 'Cancel';
+
+  @override
+  String get adminConfirmBan => 'Confirm Ban';
+
+  @override
+  String get adminNoUsers => 'No users found';
+
+  @override
+  String adminNoResults(String query) {
+    return 'No results for \"$query\"';
+  }
+
+  @override
+  String get navAdmin => 'Admin';
 }

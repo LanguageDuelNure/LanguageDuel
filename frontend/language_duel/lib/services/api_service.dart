@@ -198,6 +198,59 @@ class ApiService {
         .map((e) => LeaderboardItemDto.fromJson(e as Map<String, dynamic>))
         .toList();
   }
+
+  /// Admin: fetch all users. Requires [token] with Admin role.
+  Future<List<UserAdminListItemDto>> getAllUsers({required String token}) async {
+    final response = await _client.get(
+      Uri.parse('$baseUrl/Users'),
+      headers: _buildHeaders(token: token),
+    );
+
+    if (response.statusCode >= 400) {
+      // Let _parseResponse throw the structured error
+      await _parseResponse(response);
+    }
+
+    final decoded = json.decode(response.body);
+    if (decoded is List) {
+      return decoded
+          .map((e) => UserAdminListItemDto.fromJson(e as Map<String, dynamic>))
+          .toList();
+    }
+    // Fallback: server may wrap in an object
+    final list = (decoded as Map<String, dynamic>)['users'] as List<dynamic>? ?? [];
+    return list
+        .map((e) => UserAdminListItemDto.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  /// Admin: ban a user for [days] days. Requires [token] with Admin role.
+  Future<void> banUser({
+    required String token,
+    required String userId,
+    required int days,
+  }) async {
+    final response = await _client.post(
+      Uri.parse('$baseUrl/Users/$userId/ban'),
+      headers: _buildHeaders(token: token),
+      body: json.encode({'days': days}),
+    );
+
+    await _parseResponse(response);
+  }
+
+  /// Admin: unban a user. Requires [token] with Admin role.
+  Future<void> unbanUser({
+    required String token,
+    required String userId,
+  }) async {
+    final response = await _client.post(
+      Uri.parse('$baseUrl/Users/$userId/unban'),
+      headers: _buildHeaders(token: token),
+    );
+
+    await _parseResponse(response);
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -333,4 +386,38 @@ class LeaderboardItemDto {
         totalGames: (json['totalGames'] as num?)?.toInt() ?? 0,
         rank: (json['rank'] as num?)?.toInt() ?? 0,
       );
+}
+
+/// Mirrors UserAdminListItemDto returned by GET /api/Users (Admin only).
+class UserAdminListItemDto {
+  final String id;
+  final String name;
+  final String? email;
+  final String? imageUrl;
+  final bool isBanned;
+  final DateTime? bannedUntil;
+
+  const UserAdminListItemDto({
+    required this.id,
+    required this.name,
+    this.email,
+    this.imageUrl,
+    required this.isBanned,
+    this.bannedUntil,
+  });
+
+  factory UserAdminListItemDto.fromJson(Map<String, dynamic> json) {
+    DateTime? bannedUntil;
+    final raw = json['bannedUntil'] as String?;
+    if (raw != null) bannedUntil = DateTime.tryParse(raw);
+
+    return UserAdminListItemDto(
+      id: json['id'] as String,
+      name: json['name'] as String? ?? '',
+      email: json['email'] as String?,
+      imageUrl: json['imageUrl'] as String?,
+      isBanned: json['isBanned'] as bool? ?? false,
+      bannedUntil: bannedUntil,
+    );
+  }
 }

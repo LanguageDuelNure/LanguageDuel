@@ -387,4 +387,98 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get changeAvatarTooltip => 'Змінити аватар';
+
+  @override
+  String get adminBadge => 'АДМІН';
+
+  @override
+  String get adminUsersTitle => 'Управління користувачами';
+
+  @override
+  String get adminLoadingUsers => 'Завантаження користувачів…';
+
+  @override
+  String adminUserCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count користувача',
+      many: '$count користувачів',
+      few: '$count користувачі',
+      one: '1 користувач',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get adminSearchHint => 'Пошук за ім\'ям або email…';
+
+  @override
+  String get adminBannedLabel => 'ЗАБЛОКОВАНО';
+
+  @override
+  String adminBannedUntil(String date) {
+    return 'Заблоковано до $date';
+  }
+
+  @override
+  String get adminBan => 'Бан';
+
+  @override
+  String get adminUnban => 'Розбанити';
+
+  @override
+  String adminBanSuccess(String name) {
+    return '$name заблоковано';
+  }
+
+  @override
+  String adminUnbanSuccess(String name) {
+    return '$name розблоковано';
+  }
+
+  @override
+  String get adminBanDialogTitle => 'Заблокувати користувача';
+
+  @override
+  String get adminBanQuickSelect => 'Швидкий вибір';
+
+  @override
+  String adminDayCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count дня',
+      many: '$count днів',
+      few: '$count дні',
+      one: '1 день',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get adminBanDaysHint => 'Введіть кількість днів';
+
+  @override
+  String get adminDaysSuffix => 'днів';
+
+  @override
+  String get adminBanDaysError => 'Введіть коректну кількість днів (≥ 1)';
+
+  @override
+  String get adminCancel => 'Скасувати';
+
+  @override
+  String get adminConfirmBan => 'Підтвердити бан';
+
+  @override
+  String get adminNoUsers => 'Користувачів не знайдено';
+
+  @override
+  String adminNoResults(String query) {
+    return 'Немає результатів для \"$query\"';
+  }
+
+  @override
+  String get navAdmin => 'Адмін';
 }

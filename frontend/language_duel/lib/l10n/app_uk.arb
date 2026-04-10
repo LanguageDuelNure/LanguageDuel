@@ -162,5 +162,57 @@
   "nameSavedSuccess": "Імʼя успішно оновлено",
   "nameSaveError": "Не вдалося зберегти імʼя. Спробуйте ще раз.",
   "avatarUploadError": "Не вдалося завантажити аватар. Спробуйте ще раз.",
-  "changeAvatarTooltip": "Змінити аватар"
+  "changeAvatarTooltip": "Змінити аватар",
+
+  "adminBadge": "АДМІН",
+  "adminUsersTitle": "Управління користувачами",
+  "adminLoadingUsers": "Завантаження користувачів…",
+
+  "adminUserCount": "{count, plural, =1{1 користувач} few{{count} користувачі} many{{count} користувачів} other{{count} користувача}}",
+  "@adminUserCount": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+
+  "adminSearchHint": "Пошук за ім'ям або email…",
+  "adminBannedLabel": "ЗАБЛОКОВАНО",
+
+  "adminBannedUntil": "Заблоковано до {date}",
+  "@adminBannedUntil": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+
+  "adminBan": "Бан",
+  "adminUnban": "Розбанити",
+
+  "adminBanSuccess": "{name} заблоковано",
+  "@adminBanSuccess": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+
+  "adminUnbanSuccess": "{name} розблоковано",
+  "@adminUnbanSuccess": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+
+  "adminBanDialogTitle": "Заблокувати користувача",
+  "adminBanQuickSelect": "Швидкий вибір",
+
+  "adminDayCount": "{count, plural, =1{1 день} few{{count} дні} many{{count} днів} other{{count} дня}}",
+  "@adminDayCount": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+
+  "adminBanDaysHint": "Введіть кількість днів",
+  "adminDaysSuffix": "днів",
+  "adminBanDaysError": "Введіть коректну кількість днів (≥ 1)",
+  "adminCancel": "Скасувати",
+  "adminConfirmBan": "Підтвердити бан",
+  "adminNoUsers": "Користувачів не знайдено",
+
+  "adminNoResults": "Немає результатів для \"{query}\"",
+  "@adminNoResults": {
+    "placeholders": { "query": { "type": "String" } }
+  },
+
+  "navAdmin": "Адмін"
 }
