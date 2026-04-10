@@ -52,18 +52,20 @@ class GameStateQuestionDto {
   }
 }
 
-// Now includes rating from server (GameSessionUserDto.Rating)
+// Now includes rating and imageUrl from server (GameSessionUserDto)
 class GameSessionUserDto {
   final String id;
   final String name;
   final int hp;
   final int rating;
+  final String? imageUrl;
 
   GameSessionUserDto({
     required this.id,
     required this.name,
     required this.hp,
     required this.rating,
+    this.imageUrl,
   });
 
   factory GameSessionUserDto.fromJson(Map<String, dynamic> j) =>
@@ -72,6 +74,7 @@ class GameSessionUserDto {
         name: j['name'] as String,
         hp: j['hp'] as int? ?? 100,
         rating: j['rating'] as int? ?? 0,
+        imageUrl: j['imageUrl'] as String?,
       );
 }
 

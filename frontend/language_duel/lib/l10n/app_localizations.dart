@@ -757,6 +757,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Profile'**
   String get navProfile;
+
+  /// No description provided for @editNameTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Name'**
+  String get editNameTitle;
+
+  /// No description provided for @editNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Your display name'**
+  String get editNameHint;
+
+  /// No description provided for @saveBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get saveBtn;
+
+  /// No description provided for @nameSavedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Name updated successfully'**
+  String get nameSavedSuccess;
+
+  /// No description provided for @nameSaveError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save name. Please try again.'**
+  String get nameSaveError;
+
+  /// No description provided for @avatarUploadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to upload avatar. Please try again.'**
+  String get avatarUploadError;
+
+  /// No description provided for @changeAvatarTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Change avatar'**
+  String get changeAvatarTooltip;
 }
 
 class _AppLocalizationsDelegate

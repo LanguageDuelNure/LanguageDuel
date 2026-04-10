@@ -365,4 +365,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get navProfile => 'Profile';
+
+  @override
+  String get editNameTitle => 'Edit Name';
+
+  @override
+  String get editNameHint => 'Your display name';
+
+  @override
+  String get saveBtn => 'Save';
+
+  @override
+  String get nameSavedSuccess => 'Name updated successfully';
+
+  @override
+  String get nameSaveError => 'Failed to save name. Please try again.';
+
+  @override
+  String get avatarUploadError => 'Failed to upload avatar. Please try again.';
+
+  @override
+  String get changeAvatarTooltip => 'Change avatar';
 }

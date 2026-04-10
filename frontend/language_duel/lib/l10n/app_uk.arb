@@ -153,5 +153,14 @@
   "langUkrainian": "Українська",
   "navPlay": "Грати",
   "navLeaderboard": "Таблиця лідерів",
-  "navProfile": "Профіль"
+  
+  "navProfile": "Профіль",
+  "editNameTitle": "Змінити імʼя",
+  "editNameHint": "Ваше ігрове імʼя",
+  "saveBtn": "Зберегти",
+  
+  "nameSavedSuccess": "Імʼя успішно оновлено",
+  "nameSaveError": "Не вдалося зберегти імʼя. Спробуйте ще раз.",
+  "avatarUploadError": "Не вдалося завантажити аватар. Спробуйте ще раз.",
+  "changeAvatarTooltip": "Змінити аватар"
 }

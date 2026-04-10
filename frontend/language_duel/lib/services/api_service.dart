@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 import '../utils/app_constants.dart';
 
 class ApiException implements Exception {
@@ -130,22 +132,47 @@ class ApiService {
     return UserDto.fromJson(data);
   }
 
-  Future<void> updateProfile({
+  /// Update profile: name and/or avatar image bytes.
+  /// Pass [imageBytes] + [imageName] to upload a new avatar.
+  /// Pass [name] to change the display name (can be null to leave unchanged).
+  Future<void> updateProfileWithAvatar({
     required String token,
-    required String name,
+    String? name,
+    Uint8List? imageBytes,
+    String? imageName,
   }) async {
     final request = http.MultipartRequest('PUT', Uri.parse('$baseUrl/Users'));
     request.headers['Authorization'] = 'Bearer $token';
-    request.fields['Name'] = name;
+
+    if (name != null) request.fields['Name'] = name;
+
+    if (imageBytes != null && imageName != null) {
+      final ext = imageName.split('.').last.toLowerCase();
+      final contentType = ext == 'png' ? 'image/png' : 'image/jpeg';
+      request.files.add(http.MultipartFile.fromBytes(
+        'Icon',
+        imageBytes,
+        filename: imageName,
+        contentType: MediaType.parse(contentType),
+      ));
+    }
 
     final streamedResponse = await _client.send(request);
     final response = await http.Response.fromStream(streamedResponse);
 
     if (response.statusCode >= 400) {
       throw const ApiException(
-        message: 'Failed to save name. Please try again.',
+        message: 'Failed to update profile. Please try again.',
       );
     }
+  }
+
+  /// Legacy: update name only (kept for AuthProvider.updateName compatibility).
+  Future<void> updateProfile({
+    required String token,
+    required String name,
+  }) async {
+    await updateProfileWithAvatar(token: token, name: name);
   }
 
   Future<LoginResult> googleLogin(String idToken) async {

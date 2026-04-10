@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:language_duel/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import '../services/auth_provider.dart';
@@ -21,6 +22,9 @@ class _ProfilePageState extends State<ProfilePage> {
   UserDto? _user;
   bool _isLoading = true;
   String? _error;
+
+  // Avatar upload state
+  bool _uploadingAvatar = false;
 
   @override
   void initState() {
@@ -64,6 +68,98 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
+  // ── Avatar picking ──────────────────────────────────────────────────────────
+
+  Future<void> _pickAndUploadAvatar() async {
+    final l10n = AppLocalizations.of(context)!;
+    final picker = ImagePicker();
+    final XFile? file = await picker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 512,
+      maxHeight: 512,
+      imageQuality: 85,
+    );
+    if (file == null) return;
+
+    final bytes = await file.readAsBytes();
+    final name = file.name;
+
+    final auth = context.read<AuthProvider>();
+    if (auth.token == null) return;
+
+    setState(() => _uploadingAvatar = true);
+    try {
+      await ApiService().updateProfileWithAvatar(
+        token: auth.token!,
+        name: auth.userName,
+        imageBytes: bytes,
+        imageName: name,
+      );
+      // Refresh user to get new imageUrl
+      if (mounted) await _refreshUser();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.avatarUploadError),
+            backgroundColor: AppTheme.danger,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _uploadingAvatar = false);
+    }
+  }
+
+  Future<void> _refreshUser() async {
+    final auth = context.read<AuthProvider>();
+    final userId = auth.userId;
+    final token = auth.token;
+    if (userId == null || token == null) return;
+    try {
+      final user = await ApiService().getUser(userId: userId, token: token);
+      if (mounted) setState(() => _user = user);
+    } catch (_) {}
+  }
+
+  // ── Name editing ────────────────────────────────────────────────────────────
+
+  Future<void> _showEditNameDialog() async {
+    final auth = context.read<AuthProvider>();
+    final l10n = AppLocalizations.of(context)!;
+    final controller = TextEditingController(text: auth.userName ?? '');
+
+    final result = await showDialog<String>(
+      context: context,
+      builder: (ctx) => _EditNameDialog(controller: controller),
+    );
+
+    if (result != null && result.trim().isNotEmpty && mounted) {
+      try {
+        await context.read<AuthProvider>().updateName(result.trim());
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(l10n.nameSavedSuccess),
+              backgroundColor: AppTheme.accent,
+            ),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(l10n.nameSaveError),
+              backgroundColor: AppTheme.danger,
+            ),
+          );
+        }
+      }
+    }
+  }
+
+  // ── Build ───────────────────────────────────────────────────────────────────
+
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
@@ -82,27 +178,59 @@ class _ProfilePageState extends State<ProfilePage> {
               .fadeIn(),
           const SizedBox(height: 28),
 
+          // ── Avatar + name row ─────────────────────────────────────────────
           Row(
             children: [
-              _buildAvatar(userName),
+              _AvatarWithUpload(
+                user: _user,
+                userName: userName,
+                uploading: _uploadingAvatar,
+                onTap: _pickAndUploadAvatar,
+              ),
               const SizedBox(width: 16),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    userName,
-                    style: const TextStyle(
-                      color: AppTheme.textPrimary,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            userName,
+                            style: const TextStyle(
+                              color: AppTheme.textPrimary,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                        // Edit name button
+                        GestureDetector(
+                          onTap: _showEditNameDialog,
+                          child: Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: AppTheme.surfaceElevated,
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: AppTheme.border),
+                            ),
+                            child: const Icon(
+                              Icons.edit_outlined,
+                              color: AppTheme.textSecondary,
+                              size: 16,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  _RoleBadge(role: role),
-                ],
+                    const SizedBox(height: 4),
+                    _RoleBadge(role: role),
+                  ],
+                ),
               ),
             ],
           ).animate().fadeIn(delay: 100.ms),
+
           const SizedBox(height: 32),
 
           Text(l10n.statsTitle, style: Theme.of(context).textTheme.titleLarge)
@@ -212,42 +340,172 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
     );
   }
+}
 
-  // NOTE: This is the method that went missing!
-  Widget _buildAvatar(String userName) {
-    final imageUrl = _user?.imageUrl;
-    if (imageUrl != null && imageUrl.isNotEmpty) {
-      return CircleAvatar(
-        radius: 36,
-        backgroundImage: NetworkImage(imageUrl),
-      );
-    }
-    return Container(
-      width: 72,
-      height: 72,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            AppTheme.accent.withOpacity(0.3),
-            AppTheme.accentDim.withOpacity(0.3),
-          ],
-        ),
-        shape: BoxShape.circle,
-        border: Border.all(color: AppTheme.accent.withOpacity(0.4), width: 2),
-      ),
-      child: Center(
-        child: Text(
-          userName.isNotEmpty ? userName[0].toUpperCase() : '?',
-          style: const TextStyle(
-            color: AppTheme.accent,
-            fontSize: 28,
-            fontWeight: FontWeight.w800,
+// ── Avatar widget with upload overlay ──────────────────────────────────────────
+
+class _AvatarWithUpload extends StatelessWidget {
+  final UserDto? user;
+  final String userName;
+  final bool uploading;
+  final VoidCallback onTap;
+
+  const _AvatarWithUpload({
+    required this.user,
+    required this.userName,
+    required this.uploading,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final imageUrl = user?.imageUrl;
+    final hasImage = imageUrl != null && imageUrl.isNotEmpty;
+
+    return GestureDetector(
+      onTap: uploading ? null : onTap,
+      child: Stack(
+        children: [
+          // Avatar circle
+          Container(
+            width: 72,
+            height: 72,
+            decoration: BoxDecoration(
+              gradient: hasImage
+                  ? null
+                  : LinearGradient(
+                      colors: [
+                        AppTheme.accent.withOpacity(0.3),
+                        AppTheme.accentDim.withOpacity(0.3),
+                      ],
+                    ),
+              shape: BoxShape.circle,
+              border: Border.all(
+                  color: AppTheme.accent.withOpacity(0.4), width: 2),
+            ),
+            child: ClipOval(
+              child: hasImage
+                  ? Image.network(
+                      imageUrl,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => _InitialAvatar(userName: userName),
+                    )
+                  : _InitialAvatar(userName: userName),
+            ),
           ),
+
+          // Upload spinner or camera badge
+          Positioned(
+            right: 0,
+            bottom: 0,
+            child: uploading
+                ? Container(
+                    width: 22,
+                    height: 22,
+                    decoration: BoxDecoration(
+                      color: AppTheme.bg,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                          color: AppTheme.accent.withOpacity(0.4), width: 1),
+                    ),
+                    child: const Padding(
+                      padding: EdgeInsets.all(3),
+                      child: CircularProgressIndicator(
+                          strokeWidth: 2, color: AppTheme.accent),
+                    ),
+                  )
+                : Container(
+                    width: 22,
+                    height: 22,
+                    decoration: BoxDecoration(
+                      color: AppTheme.surfaceElevated,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                          color: AppTheme.accent.withOpacity(0.5), width: 1.5),
+                    ),
+                    child: const Icon(Icons.camera_alt,
+                        size: 12, color: AppTheme.accent),
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _InitialAvatar extends StatelessWidget {
+  final String userName;
+  const _InitialAvatar({required this.userName});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text(
+        userName.isNotEmpty ? userName[0].toUpperCase() : '?',
+        style: const TextStyle(
+          color: AppTheme.accent,
+          fontSize: 28,
+          fontWeight: FontWeight.w800,
         ),
       ),
     );
   }
 }
+
+// ── Edit-name dialog ────────────────────────────────────────────────────────────
+
+class _EditNameDialog extends StatelessWidget {
+  final TextEditingController controller;
+  const _EditNameDialog({required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return AlertDialog(
+      backgroundColor: AppTheme.surface,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      title: Text(
+        l10n.editNameTitle,
+        style: const TextStyle(
+            color: AppTheme.textPrimary, fontWeight: FontWeight.w700),
+      ),
+      content: TextField(
+        controller: controller,
+        autofocus: true,
+        maxLength: 32,
+        style: const TextStyle(color: AppTheme.textPrimary),
+        decoration: InputDecoration(
+          hintText: l10n.editNameHint,
+          hintStyle: const TextStyle(color: AppTheme.textSecondary),
+          counterStyle: const TextStyle(color: AppTheme.textSecondary),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: const BorderSide(color: AppTheme.border),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide:
+                const BorderSide(color: AppTheme.accent, width: 1.5),
+          ),
+        ),
+        onSubmitted: (v) => Navigator.pop(context, v),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(l10n.cancelBtn,
+              style: const TextStyle(color: AppTheme.textSecondary)),
+        ),
+        ElevatedButton(
+          onPressed: () => Navigator.pop(context, controller.text),
+          child: Text(l10n.saveBtn),
+        ),
+      ],
+    );
+  }
+}
+
+// ── Rest of widgets (unchanged) ─────────────────────────────────────────────────
 
 class _RoleBadge extends StatelessWidget {
   final String role;
@@ -454,8 +712,8 @@ class LanguageRatingRow extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 8, vertical: 3),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                     decoration: BoxDecoration(
                       color: _difficultyColor.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(8),
@@ -500,9 +758,7 @@ class LanguageRatingRow extends StatelessWidget {
           Row(
             children: [
               _StatChip(
-                  label: l10n.statW,
-                  value: '$totalWins',
-                  color: AppTheme.accent),
+                  label: l10n.statW, value: '$totalWins', color: AppTheme.accent),
               const SizedBox(width: 8),
               _StatChip(
                   label: l10n.statG,
@@ -540,7 +796,8 @@ class _StatChip extends StatelessWidget {
       ),
       child: Text(
         '$label $value',
-        style: TextStyle(color: color, fontSize: 11, fontWeight: FontWeight.w600),
+        style: TextStyle(
+            color: color, fontSize: 11, fontWeight: FontWeight.w600),
       ),
     );
   }

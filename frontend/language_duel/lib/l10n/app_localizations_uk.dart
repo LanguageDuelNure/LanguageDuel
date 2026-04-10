@@ -365,4 +365,26 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get navProfile => 'Профіль';
+
+  @override
+  String get editNameTitle => 'Змінити імʼя';
+
+  @override
+  String get editNameHint => 'Ваше ігрове імʼя';
+
+  @override
+  String get saveBtn => 'Зберегти';
+
+  @override
+  String get nameSavedSuccess => 'Імʼя успішно оновлено';
+
+  @override
+  String get nameSaveError => 'Не вдалося зберегти імʼя. Спробуйте ще раз.';
+
+  @override
+  String get avatarUploadError =>
+      'Не вдалося завантажити аватар. Спробуйте ще раз.';
+
+  @override
+  String get changeAvatarTooltip => 'Змінити аватар';
 }

@@ -177,6 +177,7 @@ class _GameViewState extends State<GameView> {
                           name: me?.name ?? l10n.youPlayer,
                           rating: me?.rating ?? 0,
                           isMe: true,
+                          imageUrl: me?.imageUrl,
                         ).animate().fadeIn(delay: 100.ms).slideX(begin: -0.2),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -193,6 +194,7 @@ class _GameViewState extends State<GameView> {
                           name: opponent?.name ?? l10n.unknownOpponent,
                           rating: opponent?.rating ?? 0,
                           isMe: false,
+                          imageUrl: opponent?.imageUrl,
                         ).animate().fadeIn(delay: 100.ms).slideX(begin: 0.2),
                       ],
                     ),
@@ -353,6 +355,7 @@ class _GameViewState extends State<GameView> {
                           hp: me?.hp ?? 100,
                           maxHp: myMaxHp,
                           isMe: true,
+                          imageUrl: me?.imageUrl,
                         ),
                       ),
                       TimerBadge(seconds: isRevealPhase ? 0 : _displaySeconds),
@@ -362,6 +365,7 @@ class _GameViewState extends State<GameView> {
                           hp: opponent?.hp ?? 100,
                           maxHp: opponentMaxHp,
                           isMe: false,
+                          imageUrl: opponent?.imageUrl,
                         ),
                       ),
                     ],
@@ -687,15 +691,18 @@ class _PlayerChip extends StatelessWidget {
   final String name;
   final int rating;
   final bool isMe;
+  final String? imageUrl;
 
   const _PlayerChip({
     required this.name,
     required this.rating,
     required this.isMe,
+    this.imageUrl,
   });
 
   @override
   Widget build(BuildContext context) {
+    final hasImage = imageUrl != null && imageUrl!.isNotEmpty;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -703,29 +710,48 @@ class _PlayerChip extends StatelessWidget {
           width: 56,
           height: 56,
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: isMe
-                  ? [
-                      AppTheme.accent.withOpacity(0.3),
-                      AppTheme.accentDim.withOpacity(0.2),
-                    ]
-                  : [AppTheme.surfaceElevated, AppTheme.surface],
-            ),
+            gradient: hasImage
+                ? null
+                : LinearGradient(
+                    colors: isMe
+                        ? [
+                            AppTheme.accent.withOpacity(0.3),
+                            AppTheme.accentDim.withOpacity(0.2),
+                          ]
+                        : [AppTheme.surfaceElevated, AppTheme.surface],
+                  ),
             shape: BoxShape.circle,
             border: Border.all(
               color: isMe ? AppTheme.accent.withOpacity(0.5) : AppTheme.border,
               width: 1.5,
             ),
           ),
-          child: Center(
-            child: Text(
-              name.isNotEmpty ? name[0].toUpperCase() : '?',
-              style: TextStyle(
-                color: isMe ? AppTheme.accent : AppTheme.textSecondary,
-                fontSize: 22,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
+          child: ClipOval(
+            child: hasImage
+                ? Image.network(
+                    imageUrl!,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Center(
+                      child: Text(
+                        name.isNotEmpty ? name[0].toUpperCase() : '?',
+                        style: TextStyle(
+                          color: isMe ? AppTheme.accent : AppTheme.textSecondary,
+                          fontSize: 22,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                  )
+                : Center(
+                    child: Text(
+                      name.isNotEmpty ? name[0].toUpperCase() : '?',
+                      style: TextStyle(
+                        color: isMe ? AppTheme.accent : AppTheme.textSecondary,
+                        fontSize: 22,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
           ),
         ),
         const SizedBox(height: 8),
