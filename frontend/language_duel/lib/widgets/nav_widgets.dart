@@ -1,6 +1,7 @@
-// ignore_for_file: deprecated_member_use
+
 
 import 'package:flutter/material.dart';
+import 'package:language_duel/l10n/app_localizations.dart';
 import '../utils/app_theme.dart';
 
 class BottomNav extends StatelessWidget {
@@ -11,6 +12,8 @@ class BottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!; 
+
     return Container(
       decoration: const BoxDecoration(
         border: Border(top: BorderSide(color: AppTheme.border)),
@@ -25,21 +28,21 @@ class BottomNav extends StatelessWidget {
               NavItem(
                 icon: Icons.sports_esports_outlined,
                 activeIcon: Icons.sports_esports,
-                label: 'Play',
+                label: l10n.navPlay, 
                 isActive: selectedIndex == 0,
                 onTap: () => onTap(0),
               ),
               NavItem(
                 icon: Icons.leaderboard_outlined,
                 activeIcon: Icons.leaderboard,
-                label: 'Ranks',
+                label: l10n.navLeaderboard, 
                 isActive: selectedIndex == 1,
                 onTap: () => onTap(1),
               ),
               NavItem(
                 icon: Icons.person_outline,
                 activeIcon: Icons.person,
-                label: 'Profile',
+                label: l10n.navProfile, 
                 isActive: selectedIndex == 2,
                 onTap: () => onTap(2),
               ),
@@ -103,6 +106,8 @@ class SideRail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!; 
+
     return Container(
       width: 220,
       decoration: const BoxDecoration(
@@ -152,21 +157,21 @@ class SideRail extends StatelessWidget {
           RailItem(
             icon: Icons.sports_esports_outlined,
             activeIcon: Icons.sports_esports,
-            label: 'Play',
+            label: l10n.navPlay, 
             isActive: selectedIndex == 0,
             onTap: () => onTap(0),
           ),
           RailItem(
             icon: Icons.leaderboard_outlined,
             activeIcon: Icons.leaderboard,
-            label: 'Leaderboard',
+            label: l10n.navLeaderboard, 
             isActive: selectedIndex == 1,
             onTap: () => onTap(1),
           ),
           RailItem(
             icon: Icons.person_outline,
             activeIcon: Icons.person,
-            label: 'Profile',
+            label: l10n.navProfile, 
             isActive: selectedIndex == 2,
             onTap: () => onTap(2),
           ),

@@ -1,0 +1,157 @@
+{
+  "@@locale": "en",
+  "setupNameTitle": "Set your display name",
+  "setupNameSubtitle": "This is how other duelists will see you.",
+  "nameLabel": "Name",
+  "nameHint": "Your display name",
+  "nameRequired": "Name is required",
+  "nameMinLen": "Minimum 3 characters",
+  "nameMaxLen": "Maximum 32 characters",
+  "unexpectedError": "An unexpected error occurred.",
+  "continueToArena": "Continue to Arena",
+  "createAccountTitle": "Create account",
+  "joinArenaSubtitle": "Join the dueling arena",
+  "emailLabel": "Email",
+  "emailHint": "you@example.com",
+  "emailRequired": "Email is required",
+  "emailInvalid": "Enter a valid email",
+  "passwordLabel": "Password",
+  "passwordHint": "••••••••",
+  "passwordRequired": "Password is required",
+  "passwordMinLen": "Minimum 8 characters",
+  "passwordComplexity": "Must have upper and lowercase letters",
+  "confirmPasswordLabel": "Confirm password",
+  "confirmPasswordRequired": "Please confirm your password",
+  "passwordMismatch": "Passwords do not match",
+  "createAccountBtn": "Create Account",
+  "alreadyHaveAccount": "Already have an account? ",
+  "signInLink": "Sign In",
+  "profileTitle": "Profile",
+  "notAuthenticated": "Not authenticated",
+  "rolePlayer": "Player",
+  "statsTitle": "Statistics",
+  "ratingsByLanguageTitle": "Ratings by language",
+  "signOutBtn": "Sign Out",
+  "errorRetry": "Retry",
+  "statTotalMatches": "Total matches",
+  "statTotalWins": "Total wins",
+  "statCurrentRating": "Current rating",
+  "statBestRating": "Best rating",
+  "diffEasy": "Easy",
+  "diffMedium": "Medium",
+  "diffHard": "Hard",
+  "diffVeryHard": "Very Hard",
+  "ptsSuffix": "{count} pts",
+  "@ptsSuffix": { "placeholders": { "count": { "type": "int" } } },
+  "statW": "W",
+  "statG": "G",
+  "statBest": "Best",
+  "helloUser": "Hello, {userName} 👋",
+  "@helloUser": { "placeholders": { "userName": { "type": "String" } } },
+  "readyToDuel": "Ready to duel?",
+  "quickDuel": "QUICK DUEL",
+  "challengeRandom": "Challenge a random opponent\nof similar skill level",
+  "noLanguages": "No languages available",
+  "languageLabel": "Language",
+  "searchingOpponent": "Searching for opponent...",
+  "cancelBtn": "Cancel",
+  "findOpponentBtn": "Find Opponent",
+  "statRating": "Rating",
+  "statWins": "Wins",
+  "statPlayed": "Played",
+  "welcomeBackTitle": "Welcome back",
+  "signInSubtitle": "Sign in to continue your duels",
+  "connectionError": "Could not reach server. Check your connection.",
+  "continueWithGoogle": "Continue with Google",
+  "noAccount": "Don't have an account? ",
+  "registerLink": "Register",
+  "leaderboardTitle": "Leaderboard",
+  "globalRankings": "Global rankings — all languages",
+  "allLanguages": "All languages",
+  "noPlayers": "No players yet",
+  "winsCount": "{count} wins",
+  "@winsCount": { "placeholders": { "count": { "type": "int" } } },
+  "winsGamesRatio": "{wins} W / {games} G",
+  "@winsGamesRatio": { "placeholders": { "wins": { "type": "int" }, "games": { "type": "int" } } },
+  "checkEmailTitle": "Check your email",
+  "checkEmailSubtitleFallback": "We sent a 6-digit code to your email address.",
+  "emailSentTo": "We sent a 6-digit code to\n{email}",
+  "@emailSentTo": { "placeholders": { "email": { "type": "String" } } },
+  "resendSuccess": "A new code has been sent to your email.",
+  "didntReceive": "Didn't receive it? ",
+  "resendCode": "Resend code",
+  "defaultDuelistName": "Duelist",
+  "findingOpponent": "Finding opponent...",
+  "matchingSkill": "Matching you with a player of similar skill",
+  
+  "pointsGained": "points gained",
+  "pointsLost": "points lost",
+  "noChange": "no change",
+  "languageRatingSuffix": "{language} rating",
+  "@languageRatingSuffix": {
+    "placeholders": {
+      "language": { "type": "String" }
+    }
+  },
+  "resultDraw": "Draw!",
+  "resultVictory": "Victory!",
+  "resultDefeat": "Defeat",
+  "wellPlayed": "Well played!",
+  "playerWins": "{playerName} wins",
+  "@playerWins": {
+    "placeholders": {
+      "playerName": { "type": "String" }
+    }
+  },
+  "roundSummary": "Round Summary",
+  "questionReviewTitle": "Q{num}: {question}",
+  "@questionReviewTitle": {
+    "placeholders": {
+      "num": { "type": "int" },
+      "question": { "type": "String" }
+    }
+  },
+  "yourAnswer": "Your answer: {answer}",
+  "@yourAnswer": {
+    "placeholders": {
+      "answer": { "type": "String" }
+    }
+  },
+  "correctAnswer": "Correct: {answer}",
+  "@correctAnswer": {
+    "placeholders": {
+      "answer": { "type": "String" }
+    }
+  },
+  "backToLobbyBtn": "Back to Lobby",
+
+  "giveUpTitle": "Give up?",
+  "giveUpContent": "You will forfeit the match and lose rating points.",
+  "giveUpBtn": "Give Up",
+  "matchFoundTitle": "MATCH FOUND",
+  "youPlayer": "You",
+  "unknownOpponent": "...",
+  "vsText": "VS",
+  "preparingFirstQuestion": "Preparing first question...",
+  "opponentAnswered": "{opponentName} answered",
+  "@opponentAnswered": {
+    "placeholders": {
+      "opponentName": { "type": "String" }
+    }
+  },
+  "nextQuestionIncoming": "Next question incoming...",
+  "opponentsAnswer": "{opponentName}'s answer",
+  "@opponentsAnswer": {
+    "placeholders": {
+      "opponentName": { "type": "String" }
+    }
+  },
+  "bothPickedThis": "Both picked this",
+  
+  "settingsLanguage": "Language",
+  "langEnglish": "English",
+  "langUkrainian": "Українська",
+  "navPlay": "Play",
+  "navLeaderboard": "Leaderboard",
+  "navProfile": "Profile"
+}

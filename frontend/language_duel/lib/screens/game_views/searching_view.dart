@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:language_duel/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import '../../services/game_service.dart';
 import '../../utils/app_theme.dart';
@@ -13,6 +14,7 @@ class SearchingView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final game = context.read<GameService>();
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: AppTheme.bg,
@@ -73,9 +75,9 @@ class SearchingView extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 32),
-                const Text(
-                  'Finding opponent...',
-                  style: TextStyle(
+                Text(
+                  l10n.findingOpponent,
+                  style: const TextStyle(
                     color: AppTheme.textPrimary,
                     fontSize: 22,
                     fontWeight: FontWeight.w700,
@@ -86,10 +88,10 @@ class SearchingView extends StatelessWidget {
                     .then()
                     .fadeOut(duration: 800.ms),
                 const SizedBox(height: 10),
-                const Text(
-                  'Matching you with a player of similar skill',
+                Text(
+                  l10n.matchingSkill,
                   style:
-                      TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+                      const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
                 ),
                 const SizedBox(height: 40),
                 OutlinedButton(
@@ -102,7 +104,7 @@ class SearchingView extends StatelessWidget {
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12)),
                   ),
-                  child: const Text('Cancel'),
+                  child: Text(l10n.cancelBtn),
                 ),
               ],
             ),

@@ -1,12 +1,12 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:language_duel/services/auth_provider.dart';
+import 'package:language_duel/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
+import '../services/auth_provider.dart';
 import '../services/api_service.dart';
 import '../utils/app_theme.dart';
 import '../services/game_service.dart';
+import '../services/locale_provider.dart';
 
 class ProfilePage extends StatefulWidget {
   final VoidCallback onLogout;
@@ -25,19 +25,24 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
-    _loadUser();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadUser(context);
+    });
   }
 
-  Future<void> _loadUser() async {
+  Future<void> _loadUser(BuildContext context) async {
     final auth = context.read<AuthProvider>();
     final userId = auth.userId;
     final token = auth.token;
+    final l10n = AppLocalizations.of(context)!;
 
     if (userId == null || token == null) {
-      setState(() {
-        _error = 'Not authenticated';
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _error = l10n.notAuthenticated;
+          _isLoading = false;
+        });
+      }
       return;
     }
 
@@ -62,8 +67,9 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
+    final l10n = AppLocalizations.of(context)!;
     final userName = auth.userName ?? '';
-    final role = auth.role ?? 'Player';
+    final role = auth.role ?? l10n.rolePlayer;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
@@ -71,12 +77,11 @@ class _ProfilePageState extends State<ProfilePage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 16),
-          Text('Profile', style: Theme.of(context).textTheme.displayMedium)
+          Text(l10n.profileTitle, style: Theme.of(context).textTheme.displayMedium)
               .animate()
               .fadeIn(),
           const SizedBox(height: 28),
 
-          
           Row(
             children: [
               _buildAvatar(userName),
@@ -100,8 +105,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ).animate().fadeIn(delay: 100.ms),
           const SizedBox(height: 32),
 
-          
-          Text('Statistics', style: Theme.of(context).textTheme.titleLarge)
+          Text(l10n.statsTitle, style: Theme.of(context).textTheme.titleLarge)
               .animate()
               .fadeIn(delay: 200.ms),
           const SizedBox(height: 14),
@@ -111,14 +115,13 @@ class _ProfilePageState extends State<ProfilePage> {
                 .animate()
                 .fadeIn(delay: 250.ms)
           else if (_error != null)
-            _ErrorBanner(message: _error!, onRetry: _loadUser)
+            _ErrorBanner(message: _error!, onRetry: () => _loadUser(context))
           else
             _StatsGrid(user: _user!).animate().fadeIn(delay: 250.ms),
 
-          
           if (!_isLoading && _error == null && _user!.languageRatings.isNotEmpty) ...[
             const SizedBox(height: 32),
-            Text('Ratings by language',
+            Text(l10n.ratingsByLanguageTitle,
                     style: Theme.of(context).textTheme.titleLarge)
                 .animate()
                 .fadeIn(delay: 300.ms),
@@ -143,11 +146,61 @@ class _ProfilePageState extends State<ProfilePage> {
           ],
 
           const SizedBox(height: 32),
+
+          // --- Language Settings Widget ---
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: AppTheme.surface,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: AppTheme.border),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    const Icon(Icons.language, color: AppTheme.textSecondary, size: 20),
+                    const SizedBox(width: 12),
+                    Text(
+                      l10n.settingsLanguage,
+                      style: const TextStyle(color: AppTheme.textPrimary, fontSize: 16, fontWeight: FontWeight.w500),
+                    ),
+                  ],
+                ),
+                DropdownButtonHideUnderline(
+                  child: DropdownButton<Locale>(
+                    value: context.watch<LocaleProvider>().locale,
+                    dropdownColor: AppTheme.surfaceElevated,
+                    icon: const Icon(Icons.keyboard_arrow_down, color: AppTheme.textSecondary),
+                    items: [
+                      DropdownMenuItem(
+                        value: const Locale('en'),
+                        child: Text(l10n.langEnglish, style: const TextStyle(color: AppTheme.textPrimary)),
+                      ),
+                      DropdownMenuItem(
+                        value: const Locale('uk'),
+                        child: Text(l10n.langUkrainian, style: const TextStyle(color: AppTheme.textPrimary)),
+                      ),
+                    ],
+                    onChanged: (Locale? newLocale) {
+                      if (newLocale != null) {
+                        context.read<LocaleProvider>().setLocale(newLocale);
+                      }
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ).animate().fadeIn(delay: 350.ms),
+
+          const SizedBox(height: 24),
+
           OutlinedButton.icon(
             onPressed: widget.onLogout,
             icon: const Icon(Icons.logout, size: 18, color: AppTheme.danger),
-            label: const Text('Sign Out',
-                style: TextStyle(color: AppTheme.danger)),
+            label: Text(l10n.signOutBtn,
+                style: const TextStyle(color: AppTheme.danger)),
             style: OutlinedButton.styleFrom(
               side: const BorderSide(color: AppTheme.danger),
               minimumSize: const Size(double.infinity, 50),
@@ -160,6 +213,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
+  // NOTE: This is the method that went missing!
   Widget _buildAvatar(String userName) {
     final imageUrl = _user?.imageUrl;
     if (imageUrl != null && imageUrl.isNotEmpty) {
@@ -179,8 +233,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ],
         ),
         shape: BoxShape.circle,
-        border:
-            Border.all(color: AppTheme.accent.withOpacity(0.4), width: 2),
+        border: Border.all(color: AppTheme.accent.withOpacity(0.4), width: 2),
       ),
       child: Center(
         child: Text(
@@ -195,8 +248,6 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 }
-
-
 
 class _RoleBadge extends StatelessWidget {
   final String role;
@@ -230,6 +281,7 @@ class _ErrorBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -247,8 +299,8 @@ class _ErrorBanner extends StatelessWidget {
           ),
           TextButton(
             onPressed: onRetry,
-            child: const Text('Retry',
-                style: TextStyle(color: AppTheme.accent)),
+            child: Text(l10n.errorRetry,
+                style: const TextStyle(color: AppTheme.accent)),
           ),
         ],
       ),
@@ -260,14 +312,12 @@ class _StatsGrid extends StatelessWidget {
   final UserDto user;
   const _StatsGrid({required this.user});
 
-  
   int get _bestRating => user.languageRatings.isEmpty
       ? 0
       : user.languageRatings
           .map((l) => l.maxRating)
           .reduce((a, b) => a > b ? a : b);
 
-  
   int get _currentRating => user.languageRatings.isEmpty
       ? 0
       : user.languageRatings
@@ -276,11 +326,12 @@ class _StatsGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final stats = [
-      ('Total matches', '${user.totalGames}', Icons.sports_esports_outlined),
-      ('Total wins', '${user.totalWins}', Icons.emoji_events_outlined),
-      ('Current rating', '$_currentRating', Icons.star_border),
-      ('Best rating', '$_bestRating', Icons.military_tech_outlined),
+      (l10n.statTotalMatches, '${user.totalGames}', Icons.sports_esports_outlined),
+      (l10n.statTotalWins, '${user.totalWins}', Icons.emoji_events_outlined),
+      (l10n.statCurrentRating, '$_currentRating', Icons.star_border),
+      (l10n.statBestRating, '$_bestRating', Icons.military_tech_outlined),
     ];
 
     return GridView.count(
@@ -332,8 +383,6 @@ class _StatsGrid extends StatelessWidget {
   }
 }
 
-
-
 class LanguageRatingRow extends StatelessWidget {
   final String languageName;
   final int rating;
@@ -350,11 +399,11 @@ class LanguageRatingRow extends StatelessWidget {
     required this.totalWins,
   });
 
-  String get _difficultyLabel {
-    if (rating < 30) return 'Easy';
-    if (rating < 70) return 'Medium';
-    if (rating < 120) return 'Hard';
-    return 'Very Hard';
+  String _difficultyLabel(AppLocalizations l10n) {
+    if (rating < 30) return l10n.diffEasy;
+    if (rating < 70) return l10n.diffMedium;
+    if (rating < 120) return l10n.diffHard;
+    return l10n.diffVeryHard;
   }
 
   Color get _difficultyColor {
@@ -366,6 +415,7 @@ class LanguageRatingRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     const maxScale = 200.0;
     final fraction = (rating / maxScale).clamp(0.0, 1.0);
     final maxFraction = (maxRating / maxScale).clamp(0.0, 1.0);
@@ -395,7 +445,7 @@ class LanguageRatingRow extends StatelessWidget {
               Row(
                 children: [
                   Text(
-                    '$rating pts',
+                    l10n.ptsSuffix(rating),
                     style: TextStyle(
                       color: _difficultyColor,
                       fontWeight: FontWeight.w700,
@@ -413,7 +463,7 @@ class LanguageRatingRow extends StatelessWidget {
                           color: _difficultyColor.withOpacity(0.3)),
                     ),
                     child: Text(
-                      _difficultyLabel,
+                      _difficultyLabel(l10n),
                       style: TextStyle(
                         color: _difficultyColor,
                         fontSize: 11,
@@ -426,7 +476,6 @@ class LanguageRatingRow extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 10),
-          
           ClipRRect(
             borderRadius: BorderRadius.circular(4),
             child: LinearProgressIndicator(
@@ -437,7 +486,6 @@ class LanguageRatingRow extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 4),
-          
           ClipRRect(
             borderRadius: BorderRadius.circular(4),
             child: LinearProgressIndicator(
@@ -449,21 +497,20 @@ class LanguageRatingRow extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 8),
-          
           Row(
             children: [
               _StatChip(
-                  label: 'W',
+                  label: l10n.statW,
                   value: '$totalWins',
                   color: AppTheme.accent),
               const SizedBox(width: 8),
               _StatChip(
-                  label: 'G',
+                  label: l10n.statG,
                   value: '$totalGames',
                   color: AppTheme.textSecondary),
               const SizedBox(width: 8),
               _StatChip(
-                label: 'Best',
+                label: l10n.statBest,
                 value: '$maxRating',
                 color: const Color(0xFFFFD700),
               ),

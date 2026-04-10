@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:language_duel/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import '../../models/game_models.dart';
 import '../../services/game_service.dart';
@@ -84,34 +85,35 @@ class _GameViewState extends State<GameView> {
   }
 
   Future<void> _confirmGiveUp(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppTheme.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text(
-          'Give up?',
-          style: TextStyle(
+        title: Text(
+          l10n.giveUpTitle,
+          style: const TextStyle(
             color: AppTheme.textPrimary,
             fontWeight: FontWeight.w700,
           ),
         ),
-        content: const Text(
-          'You will forfeit the match and lose rating points.',
-          style: TextStyle(color: AppTheme.textSecondary),
+        content: Text(
+          l10n.giveUpContent,
+          style: const TextStyle(color: AppTheme.textSecondary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text(
-              'Cancel',
-              style: TextStyle(color: AppTheme.textSecondary),
+            child: Text(
+              l10n.cancelBtn,
+              style: const TextStyle(color: AppTheme.textSecondary),
             ),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
             style: TextButton.styleFrom(foregroundColor: AppTheme.danger),
-            child: const Text('Give Up'),
+            child: Text(l10n.giveUpBtn),
           ),
         ],
       ),
@@ -135,9 +137,12 @@ class _GameViewState extends State<GameView> {
   }
 
   Widget _buildMatchFoundScreen(
+    BuildContext context,
     GameSessionUserDto? me,
     GameSessionUserDto? opponent,
   ) {
+    final l10n = AppLocalizations.of(context)!;
+    
     return Scaffold(
       backgroundColor: AppTheme.bg,
       body: Stack(
@@ -155,9 +160,9 @@ class _GameViewState extends State<GameView> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Text(
-                      'MATCH FOUND',
-                      style: TextStyle(
+                    Text(
+                      l10n.matchFoundTitle,
+                      style: const TextStyle(
                         color: AppTheme.accent,
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
@@ -169,14 +174,14 @@ class _GameViewState extends State<GameView> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         _PlayerChip(
-                          name: me?.name ?? 'You',
+                          name: me?.name ?? l10n.youPlayer,
                           rating: me?.rating ?? 0,
                           isMe: true,
                         ).animate().fadeIn(delay: 100.ms).slideX(begin: -0.2),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: Text(
-                            'VS',
+                            l10n.vsText,
                             style: TextStyle(
                               color: AppTheme.textSecondary.withOpacity(0.6),
                               fontSize: 18,
@@ -185,7 +190,7 @@ class _GameViewState extends State<GameView> {
                           ),
                         ).animate().fadeIn(delay: 200.ms),
                         _PlayerChip(
-                          name: opponent?.name ?? '...',
+                          name: opponent?.name ?? l10n.unknownOpponent,
                           rating: opponent?.rating ?? 0,
                           isMe: false,
                         ).animate().fadeIn(delay: 100.ms).slideX(begin: 0.2),
@@ -201,9 +206,9 @@ class _GameViewState extends State<GameView> {
                       ),
                     ).animate().fadeIn(delay: 300.ms),
                     const SizedBox(height: 14),
-                    const Text(
-                      'Preparing first question...',
-                      style: TextStyle(
+                    Text(
+                      l10n.preparingFirstQuestion,
+                      style: const TextStyle(
                         color: AppTheme.textSecondary,
                         fontSize: 13,
                       ),
@@ -223,12 +228,13 @@ class _GameViewState extends State<GameView> {
     final game = context.watch<GameService>();
     final state = game.gameState ?? widget.state;
     final myUserId = game.userId;
+    final l10n = AppLocalizations.of(context)!;
 
     final me = state.users.where((u) => u.id == myUserId).firstOrNull;
     final opponent = state.users.where((u) => u.id != myUserId).firstOrNull;
 
     if (state.currentQuestion == null) {
-      return _buildMatchFoundScreen(me, opponent);
+      return _buildMatchFoundScreen(context, me, opponent);
     }
 
     final q = state.currentQuestion!;
@@ -326,7 +332,7 @@ class _GameViewState extends State<GameView> {
                             color: AppTheme.danger,
                             size: 20,
                           ),
-                          tooltip: 'Give up',
+                          tooltip: l10n.giveUpTitle,
                           padding: EdgeInsets.zero,
                           constraints: const BoxConstraints(),
                         ),
@@ -343,7 +349,7 @@ class _GameViewState extends State<GameView> {
                     children: [
                       Expanded(
                         child: HpBar(
-                          name: me?.name ?? 'You',
+                          name: me?.name ?? l10n.youPlayer,
                           hp: me?.hp ?? 100,
                           maxHp: myMaxHp,
                           isMe: true,
@@ -352,7 +358,7 @@ class _GameViewState extends State<GameView> {
                       TimerBadge(seconds: isRevealPhase ? 0 : _displaySeconds),
                       Expanded(
                         child: HpBar(
-                          name: opponent?.name ?? 'Opponent',
+                          name: opponent?.name ?? l10n.unknownOpponent,
                           hp: opponent?.hp ?? 100,
                           maxHp: opponentMaxHp,
                           isMe: false,
@@ -409,7 +415,7 @@ class _GameViewState extends State<GameView> {
                         ),
                         const SizedBox(width: 6),
                         Text(
-                          '${opponent?.name ?? 'Opponent'} answered',
+                          l10n.opponentAnswered(opponent?.name ?? l10n.unknownOpponent),
                           style: const TextStyle(
                             color: AppTheme.textSecondary,
                             fontSize: 12,
@@ -434,9 +440,9 @@ class _GameViewState extends State<GameView> {
                           ),
                         ),
                         const SizedBox(width: 8),
-                        const Text(
-                          'Next question incoming...',
-                          style: TextStyle(
+                        Text(
+                          l10n.nextQuestionIncoming,
+                          style: const TextStyle(
                             color: AppTheme.textSecondary,
                             fontSize: 12,
                           ),
@@ -626,7 +632,7 @@ class _GameViewState extends State<GameView> {
                                                           top: 2,
                                                         ),
                                                     child: Text(
-                                                      '${opponent?.name ?? 'Opponent'}\'s answer',
+                                                      l10n.opponentsAnswer(opponent?.name ?? l10n.unknownOpponent),
                                                       style: TextStyle(
                                                         color: AppTheme.danger
                                                             .withOpacity(0.7),
@@ -642,7 +648,7 @@ class _GameViewState extends State<GameView> {
                                                           top: 2,
                                                         ),
                                                     child: Text(
-                                                      'Both picked this',
+                                                      l10n.bothPickedThis,
                                                       style: TextStyle(
                                                         color: AppTheme.danger
                                                             .withOpacity(0.7),

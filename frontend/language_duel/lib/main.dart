@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:language_duel/l10n/app_localizations.dart';
 import 'package:language_duel/screens/setup_name_screen.dart';
 import 'package:provider/provider.dart';
+
 import 'services/auth_provider.dart';
 import 'services/game_service.dart';
+import 'services/locale_provider.dart';
 import 'screens/login_screen.dart';
 import 'screens/register_screen.dart';
 import 'screens/email_confirm_screen.dart';
@@ -12,11 +15,22 @@ import 'utils/app_constants.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  
   final auth = AuthProvider();
   await auth.loadFromStorage();
+  
+  
+  final localeProvider = LocaleProvider();
+  await localeProvider.loadFromStorage();
+  
   runApp(
-    ChangeNotifierProvider.value(
-      value: auth,
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: auth),
+        
+        ChangeNotifierProvider.value(value: localeProvider),
+      ],
       child: const LanguageDuelApp(),
     ),
   );
@@ -27,10 +41,19 @@ class LanguageDuelApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    
+    final localeProvider = context.watch<LocaleProvider>();
+
     return MaterialApp(
       title: 'LanguageDuel',
       theme: AppTheme.dark,
       debugShowCheckedModeBanner: false,
+      
+      
+      locale: localeProvider.locale,
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      
       home: const _AppNavigator(),
     );
   }
@@ -53,25 +76,25 @@ class _AppNavigatorState extends State<_AppNavigator> {
 
   @override
   void initState() {
-  super.initState();
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-    final auth = context.read<AuthProvider>();
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final auth = context.read<AuthProvider>();
 
-    auth.onWebSignInComplete = (isNewUser) {
-      if (isNewUser) {
-        setState(() => _screen = _Screen.setupName);
-      } else {
+      auth.onWebSignInComplete = (isNewUser) {
+        if (isNewUser) {
+          setState(() => _screen = _Screen.setupName);
+        } else {
+          _createGameService(auth);
+          setState(() => _screen = _Screen.home);
+        }
+      };
+
+      if (auth.isAuthenticated) {
         _createGameService(auth);
         setState(() => _screen = _Screen.home);
       }
-    };
-
-    if (auth.isAuthenticated) {
-      _createGameService(auth);
-      setState(() => _screen = _Screen.home);
-    }
-  });
-}
+    });
+  }
 
   void _createGameService(AuthProvider auth) {
     _gameService?.dispose();

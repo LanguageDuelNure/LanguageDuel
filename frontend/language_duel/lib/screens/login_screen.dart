@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:language_duel/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import '../services/api_service.dart';
 import '../services/auth_provider.dart';
@@ -60,11 +61,13 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  Future<void> _submit() async {
+  Future<void> _submit(BuildContext context) async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _error = null);
 
     final auth = context.read<AuthProvider>();
+    final l10n = AppLocalizations.of(context)!;
+    
     try {
       final pendingUserId = await auth.login(
         email: _emailCtrl.text.trim(),
@@ -78,7 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
     } on ApiException catch (e) {
       setState(() => _error = e.message);
     } catch (_) {
-      setState(() => _error = 'Could not reach server. Check your connection.');
+      setState(() => _error = l10n.connectionError);
     }
   }
 
@@ -86,6 +89,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     final isLoading = context.watch<AuthProvider>().isLoading;
     final isMobile = MediaQuery.of(context).size.width < 600;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       body: Stack(
@@ -107,19 +111,19 @@ class _LoginScreenState extends State<LoginScreen> {
                       const BrandLogo(size: 52).animate().fadeIn(duration: 400.ms),
                       const SizedBox(height: 32),
                       Text(
-                        'Welcome back',
+                        l10n.welcomeBackTitle,
                         style: Theme.of(context).textTheme.displayMedium,
                       ).animate().fadeIn(delay: 100.ms, duration: 400.ms),
                       const SizedBox(height: 8),
-                      const Text(
-                        'Sign in to continue your duels',
-                        style: TextStyle(color: AppTheme.textSecondary, fontSize: 15),
+                      Text(
+                        l10n.signInSubtitle,
+                        style: const TextStyle(color: AppTheme.textSecondary, fontSize: 15),
                       ).animate().fadeIn(delay: 150.ms, duration: 400.ms),
                       const SizedBox(height: 40),
 
                       DuelTextField(
-                        hint: 'you@example.com',
-                        label: 'Email',
+                        hint: l10n.emailHint,
+                        label: l10n.emailLabel,
                         controller: _emailCtrl,
                         keyboardType: TextInputType.emailAddress,
                         prefixIcon: const Icon(Icons.alternate_email, size: 18),
@@ -128,25 +132,25 @@ class _LoginScreenState extends State<LoginScreen> {
                         onEditingComplete: () =>
                             FocusScope.of(context).requestFocus(_passwordFocus),
                         validator: (v) {
-                          if (v == null || v.isEmpty) return 'Email is required';
-                          if (!v.contains('@')) return 'Enter a valid email';
+                          if (v == null || v.isEmpty) return l10n.emailRequired;
+                          if (!v.contains('@')) return l10n.emailInvalid;
                           return null;
                         },
                       ).animate().fadeIn(delay: 200.ms, duration: 400.ms),
                       const SizedBox(height: 14),
 
                       DuelTextField(
-                        hint: '••••••••',
-                        label: 'Password',
+                        hint: l10n.passwordHint,
+                        label: l10n.passwordLabel,
                         controller: _passwordCtrl,
                         obscure: true,
                         prefixIcon: const Icon(Icons.lock_outline, size: 18),
                         textInputAction: TextInputAction.done,
                         focusNode: _passwordFocus,
-                        onEditingComplete: _submit,
+                        onEditingComplete: () => _submit(context),
                         validator: (v) {
-                          if (v == null || v.isEmpty) return 'Password is required';
-                          if (v.length < 8) return 'Minimum 8 characters';
+                          if (v == null || v.isEmpty) return l10n.passwordRequired;
+                          if (v.length < 8) return l10n.passwordMinLen;
                           return null;
                         },
                       ).animate().fadeIn(delay: 250.ms, duration: 400.ms),
@@ -161,14 +165,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       ],
 
                       DuelButton(
-                        label: 'Sign In',
-                        onPressed: _submit,
+                        label: l10n.signInLink,
+                        onPressed: () => _submit(context),
                         isLoading: isLoading,
                       ).animate().fadeIn(delay: 300.ms, duration: 400.ms),
                       const SizedBox(height: 16),
 
-                      // Web uses renderButton from google_sign_in_web (via conditional export)
-                      // Mobile uses a normal OutlinedButton
                       if (kIsWeb)
                         Center(
                           child: SizedBox(
@@ -180,7 +182,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         OutlinedButton.icon(
                           onPressed: isLoading ? null : _googleSignIn,
                           icon: const Icon(Icons.g_mobiledata, size: 28),
-                          label: const Text('Continue with Google'),
+                          label: Text(l10n.continueWithGoogle),
                           style: OutlinedButton.styleFrom(
                             foregroundColor: AppTheme.textPrimary,
                             side: const BorderSide(color: AppTheme.border),
@@ -193,13 +195,13 @@ class _LoginScreenState extends State<LoginScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text(
-                            "Don't have an account? ",
-                            style: TextStyle(color: AppTheme.textSecondary),
+                          Text(
+                            l10n.noAccount,
+                            style: const TextStyle(color: AppTheme.textSecondary),
                           ),
                           TextButton(
                             onPressed: widget.onGoToRegister,
-                            child: const Text('Register'),
+                            child: Text(l10n.registerLink),
                           ),
                         ],
                       ).animate().fadeIn(delay: 350.ms, duration: 400.ms),

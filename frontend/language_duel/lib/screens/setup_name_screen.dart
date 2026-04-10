@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:language_duel/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import '../services/api_service.dart';
 import '../services/auth_provider.dart';
@@ -27,24 +28,27 @@ class _SetupNameScreenState extends State<SetupNameScreen> {
     super.dispose();
   }
 
-  Future<void> _submit() async {
+  Future<void> _submit(BuildContext context) async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _error = null);
 
     final auth = context.read<AuthProvider>();
+    final l10n = AppLocalizations.of(context)!;
+    
     try {
       await auth.updateName(_nameCtrl.text.trim());
       widget.onSetupComplete();
     } on ApiException catch (e) {
       setState(() => _error = e.message);
     } catch (_) {
-      setState(() => _error = 'An unexpected error occurred.');
+      setState(() => _error = l10n.unexpectedError);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final isLoading = context.watch<AuthProvider>().isLoading;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       body: Stack(
@@ -63,26 +67,26 @@ class _SetupNameScreenState extends State<SetupNameScreen> {
                       const BrandLogo(size: 52).animate().fadeIn(),
                       const SizedBox(height: 32),
                       Text(
-                        'Set your display name',
+                        l10n.setupNameTitle,
                         style: Theme.of(context).textTheme.displayMedium,
                       ).animate().fadeIn(delay: 100.ms),
                       const SizedBox(height: 8),
-                      const Text(
-                        'This is how other duelists will see you.',
-                        style: TextStyle(color: AppTheme.textSecondary, fontSize: 15),
+                      Text(
+                        l10n.setupNameSubtitle,
+                        style: const TextStyle(color: AppTheme.textSecondary, fontSize: 15),
                       ).animate().fadeIn(delay: 150.ms),
                       const SizedBox(height: 40),
 
                       DuelTextField(
-                        hint: 'Your display name',
-                        label: 'Name',
+                        hint: l10n.nameHint,
+                        label: l10n.nameLabel,
                         controller: _nameCtrl,
                         prefixIcon: const Icon(Icons.person_outline, size: 18),
                         textInputAction: TextInputAction.done,
-                        onEditingComplete: _submit,
+                        onEditingComplete: () => _submit(context),
                         validator: (v) {
-                          if (v == null || v.isEmpty) return 'Name is required';
-                          if (v.length < 3) return 'Minimum 3 characters';
+                          if (v == null || v.isEmpty) return l10n.nameRequired;
+                          if (v.length < 3) return l10n.nameMinLen;
                           return null;
                         },
                       ).animate().fadeIn(delay: 200.ms),
@@ -94,8 +98,8 @@ class _SetupNameScreenState extends State<SetupNameScreen> {
                       ],
 
                       DuelButton(
-                        label: 'Continue to Arena',
-                        onPressed: _submit,
+                        label: l10n.continueToArena,
+                        onPressed: () => _submit(context),
                         isLoading: isLoading,
                       ).animate().fadeIn(delay: 250.ms),
                     ],

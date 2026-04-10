@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:language_duel/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import '../services/auth_provider.dart';
 import '../services/game_service.dart';
@@ -24,6 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
     final game = context.watch<GameService>();
+    final l10n = AppLocalizations.of(context)!;
     final isMobile = MediaQuery.of(context).size.width < 700;
 
     if (game.status == GameStatus.searching ||
@@ -33,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     final pages = [
-      PlayPage(userName: auth.userName ?? 'Duelist'),
+      PlayPage(userName: auth.userName ?? l10n.defaultDuelistName),
       LeaderboardPage(
         languages: game.allLanguageNames.entries
             .map((e) => LanguageOption(id: e.key, name: e.value))

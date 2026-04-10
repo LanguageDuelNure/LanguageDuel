@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:language_duel/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import '../services/api_service.dart';
 import '../services/auth_provider.dart';
@@ -38,7 +39,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
-  Future<void> _submit() async {
+  Future<void> _submit(BuildContext context) async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _error = null);
 
@@ -62,6 +63,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget build(BuildContext context) {
     final isLoading = context.watch<AuthProvider>().isLoading;
     final isMobile = MediaQuery.of(context).size.width < 600;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       body: Stack(
@@ -89,59 +91,58 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       const BrandLogo(size: 52).animate().fadeIn(duration: 400.ms),
                       const SizedBox(height: 32),
                       Text(
-                        'Create account',
+                        l10n.createAccountTitle,
                         style: Theme.of(context).textTheme.displayMedium,
                       ).animate().fadeIn(delay: 100.ms),
                       const SizedBox(height: 8),
-                      const Text(
-                        'Join the dueling arena',
-                        style: TextStyle(
-                            color: AppTheme.textSecondary, fontSize: 15),
+                      Text(
+                        l10n.joinArenaSubtitle,
+                        style: const TextStyle(color: AppTheme.textSecondary, fontSize: 15),
                       ).animate().fadeIn(delay: 150.ms),
                       const SizedBox(height: 40),
 
                       DuelTextField(
-                        hint: 'Your display name',
-                        label: 'Name',
+                        hint: l10n.nameHint,
+                        label: l10n.nameLabel,
                         controller: _nameCtrl,
                         prefixIcon: const Icon(Icons.person_outline, size: 18),
                         textInputAction: TextInputAction.next,
                         validator: (v) {
-                          if (v == null || v.isEmpty) return 'Name is required';
-                          if (v.length < 3) return 'Minimum 3 characters';
-                          if (v.length > 32) return 'Maximum 32 characters';
+                          if (v == null || v.isEmpty) return l10n.nameRequired;
+                          if (v.length < 3) return l10n.nameMinLen;
+                          if (v.length > 32) return l10n.nameMaxLen;
                           return null;
                         },
                       ).animate().fadeIn(delay: 200.ms),
                       const SizedBox(height: 14),
 
                       DuelTextField(
-                        hint: 'you@example.com',
-                        label: 'Email',
+                        hint: l10n.emailHint,
+                        label: l10n.emailLabel,
                         controller: _emailCtrl,
                         keyboardType: TextInputType.emailAddress,
                         prefixIcon: const Icon(Icons.alternate_email, size: 18),
                         textInputAction: TextInputAction.next,
                         validator: (v) {
-                          if (v == null || v.isEmpty) return 'Email is required';
-                          if (!v.contains('@')) return 'Enter a valid email';
+                          if (v == null || v.isEmpty) return l10n.emailRequired;
+                          if (!v.contains('@')) return l10n.emailInvalid;
                           return null;
                         },
                       ).animate().fadeIn(delay: 250.ms),
                       const SizedBox(height: 14),
 
                       DuelTextField(
-                        hint: '••••••••',
-                        label: 'Password',
+                        hint: l10n.passwordHint,
+                        label: l10n.passwordLabel,
                         controller: _passwordCtrl,
                         obscure: true,
                         prefixIcon: const Icon(Icons.lock_outline, size: 18),
                         textInputAction: TextInputAction.next,
                         validator: (v) {
-                          if (v == null || v.isEmpty) return 'Password is required';
-                          if (v.length < 8) return 'Minimum 8 characters';
+                          if (v == null || v.isEmpty) return l10n.passwordRequired;
+                          if (v.length < 8) return l10n.passwordMinLen;
                           if (!RegExp(r'(?=.*[a-z])(?=.*[A-Z])').hasMatch(v)) {
-                            return 'Must have upper and lowercase letters';
+                            return l10n.passwordComplexity;
                           }
                           return null;
                         },
@@ -149,19 +150,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       const SizedBox(height: 14),
 
                       DuelTextField(
-                        hint: '••••••••',
-                        label: 'Confirm password',
+                        hint: l10n.passwordHint,
+                        label: l10n.confirmPasswordLabel,
                         controller: _confirmCtrl,
                         obscure: true,
                         prefixIcon: const Icon(Icons.lock_outline, size: 18),
                         textInputAction: TextInputAction.done,
-                        onEditingComplete: _submit,
+                        onEditingComplete: () => _submit(context),
                         validator: (v) {
                           if (v == null || v.isEmpty) {
-                            return 'Please confirm your password';
+                            return l10n.confirmPasswordRequired;
                           }
                           if (v != _passwordCtrl.text) {
-                            return 'Passwords do not match';
+                            return l10n.passwordMismatch;
                           }
                           return null;
                         },
@@ -177,8 +178,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ],
 
                       DuelButton(
-                        label: 'Create Account',
-                        onPressed: _submit,
+                        label: l10n.createAccountBtn,
+                        onPressed: () => _submit(context),
                         isLoading: isLoading,
                       ).animate().fadeIn(delay: 350.ms),
                       const SizedBox(height: 24),
@@ -186,13 +187,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text(
-                            'Already have an account? ',
-                            style: TextStyle(color: AppTheme.textSecondary),
+                          Text(
+                            l10n.alreadyHaveAccount,
+                            style: const TextStyle(color: AppTheme.textSecondary),
                           ),
                           TextButton(
                             onPressed: widget.onGoToLogin,
-                            child: const Text('Sign In'),
+                            child: Text(l10n.signInLink),
                           ),
                         ],
                       ).animate().fadeIn(delay: 380.ms),

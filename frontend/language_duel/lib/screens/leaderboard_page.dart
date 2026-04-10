@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:language_duel/l10n/app_localizations.dart';
 import '../services/api_service.dart';
 import '../utils/app_theme.dart';
-
 
 class LanguageOption {
   final String id;
@@ -11,8 +11,6 @@ class LanguageOption {
 }
 
 class LeaderboardPage extends StatefulWidget {
-  
-  
   final List<LanguageOption> languages;
 
   const LeaderboardPage({super.key, this.languages = const []});
@@ -23,12 +21,9 @@ class LeaderboardPage extends StatefulWidget {
 
 class _LeaderboardPageState extends State<LeaderboardPage> {
   final ApiService _api = ApiService();
-
   List<LeaderboardItemDto> _players = [];
   bool _isLoading = true;
   String? _error;
-
-  
   LanguageOption? _selectedLanguage;
 
   @override
@@ -69,23 +64,24 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 16),
-          Text('Leaderboard', style: Theme.of(context).textTheme.displayMedium)
+          Text(l10n.leaderboardTitle, style: Theme.of(context).textTheme.displayMedium)
               .animate()
               .fadeIn(),
           const SizedBox(height: 4),
-          const Text(
-            'Global rankings — all languages',
-            style: TextStyle(color: AppTheme.textSecondary),
+          Text(
+            l10n.globalRankings,
+            style: const TextStyle(color: AppTheme.textSecondary),
           ).animate().fadeIn(delay: 100.ms),
           const SizedBox(height: 20),
 
-          
           if (widget.languages.isNotEmpty)
             _LanguageFilter(
               languages: widget.languages,
@@ -95,7 +91,6 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
 
           const SizedBox(height: 24),
 
-          
           if (_isLoading)
             const Center(
               child: Padding(
@@ -106,12 +101,12 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
           else if (_error != null)
             _ErrorBanner(message: _error!, onRetry: _load)
           else if (_players.isEmpty)
-            const Center(
+            Center(
               child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 60),
+                padding: const EdgeInsets.symmetric(vertical: 60),
                 child: Text(
-                  'No players yet',
-                  style: TextStyle(color: AppTheme.textSecondary),
+                  l10n.noPlayers,
+                  style: const TextStyle(color: AppTheme.textSecondary),
                 ),
               ),
             )
@@ -122,8 +117,6 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
     );
   }
 }
-
-
 
 class _LanguageFilter extends StatelessWidget {
   final List<LanguageOption> languages;
@@ -138,7 +131,8 @@ class _LanguageFilter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final label = selected?.name ?? 'All languages';
+    final l10n = AppLocalizations.of(context)!;
+    final label = selected?.name ?? l10n.allLanguages;
 
     return PopupMenuButton<LanguageOption?>(
       color: AppTheme.surface,
@@ -151,7 +145,7 @@ class _LanguageFilter extends StatelessWidget {
         PopupMenuItem<LanguageOption?>(
           value: null,
           child: Text(
-            'All languages',
+            l10n.allLanguages,
             style: TextStyle(
               color: selected == null
                   ? AppTheme.accent
@@ -206,8 +200,6 @@ class _LanguageFilter extends StatelessWidget {
   }
 }
 
-
-
 class _LeaderboardContent extends StatelessWidget {
   final List<LeaderboardItemDto> players;
   const _LeaderboardContent({required this.players});
@@ -219,12 +211,9 @@ class _LeaderboardContent extends StatelessWidget {
 
     return Column(
       children: [
-        
         if (top3.isNotEmpty)
           _Podium(top3: top3).animate().fadeIn(delay: 200.ms),
         const SizedBox(height: 28),
-
-        
         ...rest.asMap().entries.map(
           (e) => LeaderRow(
             rank: e.value.rank,
@@ -239,15 +228,12 @@ class _LeaderboardContent extends StatelessWidget {
   }
 }
 
-
-
 class _Podium extends StatelessWidget {
   final List<LeaderboardItemDto> top3;
   const _Podium({required this.top3});
 
   @override
   Widget build(BuildContext context) {
-    
     LeaderboardItemDto? p(int rank) =>
         top3.where((p) => p.rank == rank).firstOrNull ??
         (top3.length >= rank ? top3[rank - 1] : null);
@@ -288,8 +274,6 @@ class _Podium extends StatelessWidget {
   }
 }
 
-
-
 class PodiumItem extends StatelessWidget {
   final int rank;
   final String name;
@@ -314,10 +298,10 @@ class PodiumItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Expanded(
       child: Column(
         children: [
-          
           _buildAvatar(),
           const SizedBox(height: 8),
           Text(
@@ -333,7 +317,7 @@ class PodiumItem extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            '$wins wins',
+            l10n.winsCount(wins),
             style: const TextStyle(color: AppTheme.textSecondary, fontSize: 11),
           ),
           const SizedBox(height: 6),
@@ -391,8 +375,6 @@ class PodiumItem extends StatelessWidget {
   }
 }
 
-
-
 class LeaderRow extends StatelessWidget {
   final int rank;
   final String name;
@@ -411,6 +393,7 @@ class LeaderRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -432,7 +415,6 @@ class LeaderRow extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          
           _miniAvatar(),
           const SizedBox(width: 12),
           Expanded(
@@ -445,9 +427,8 @@ class LeaderRow extends StatelessWidget {
             ),
           ),
           Text(
-            '$wins W / $games G',
-            style:
-                const TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+            l10n.winsGamesRatio(wins, games),
+            style: const TextStyle(color: AppTheme.textSecondary, fontSize: 13),
           ),
         ],
       ),
@@ -475,8 +456,6 @@ class LeaderRow extends StatelessWidget {
   }
 }
 
-
-
 class _ErrorBanner extends StatelessWidget {
   final String message;
   final VoidCallback onRetry;
@@ -484,6 +463,7 @@ class _ErrorBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -497,13 +477,12 @@ class _ErrorBanner extends StatelessWidget {
           const SizedBox(width: 12),
           Expanded(
             child: Text(message,
-                style:
-                    const TextStyle(color: AppTheme.danger, fontSize: 13)),
+                style: const TextStyle(color: AppTheme.danger, fontSize: 13)),
           ),
           TextButton(
             onPressed: onRetry,
-            child: const Text('Retry',
-                style: TextStyle(color: AppTheme.accent)),
+            child: Text(l10n.errorRetry,
+                style: const TextStyle(color: AppTheme.accent)),
           ),
         ],
       ),

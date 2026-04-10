@@ -1,6 +1,6 @@
 // ignore_for_file: deprecated_member_use
-
 import 'package:flutter/material.dart';
+import 'package:language_duel/l10n/app_localizations.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
@@ -40,35 +40,39 @@ class _EmailConfirmScreenState extends State<EmailConfirmScreen> {
     super.dispose();
   }
 
-  Future<void> _confirm(String code) async {
+  Future<void> _confirm(BuildContext context, String code) async {
     if (code.length < 6) return;
     setState(() => _error = null);
 
     final auth = context.read<AuthProvider>();
+    final l10n = AppLocalizations.of(context)!;
+    
     try {
       await auth.confirmEmail(userId: widget.userId, code: code);
       widget.onConfirmed();
     } on ApiException catch (e) {
       setState(() => _error = e.message);
     } catch (_) {
-      setState(() => _error = 'Could not reach server. Check your connection.');
+      setState(() => _error = l10n.connectionError);
     }
   }
 
-  Future<void> _resend() async {
+  Future<void> _resend(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
     setState(() {
       _resendLoading = true;
       _error = null;
       _successMsg = null;
     });
+    
     final auth = context.read<AuthProvider>();
     try {
       await auth.resendConfirmEmail(widget.userId);
-      setState(() => _successMsg = 'A new code has been sent to your email.');
+      setState(() => _successMsg = l10n.resendSuccess);
     } on ApiException catch (e) {
       setState(() => _error = e.message);
     } catch (_) {
-      setState(() => _error = 'Could not reach server. Check your connection.');
+      setState(() => _error = l10n.connectionError);
     } finally {
       setState(() => _resendLoading = false);
     }
@@ -78,6 +82,7 @@ class _EmailConfirmScreenState extends State<EmailConfirmScreen> {
   Widget build(BuildContext context) {
     final isLoading = context.watch<AuthProvider>().isLoading;
     final isMobile = MediaQuery.of(context).size.width < 600;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       body: Stack(
@@ -124,14 +129,14 @@ class _EmailConfirmScreenState extends State<EmailConfirmScreen> {
                     const SizedBox(height: 28),
 
                     Text(
-                      'Check your email',
+                      l10n.checkEmailTitle,
                       style: Theme.of(context).textTheme.displayMedium,
                     ).animate().fadeIn(delay: 150.ms),
                     const SizedBox(height: 8),
                     Text(
                       widget.email != null
-                          ? 'We sent a 6-digit code to\n${widget.email}'
-                          : 'We sent a 6-digit code to your email address.',
+                          ? l10n.emailSentTo(widget.email!)
+                          : l10n.checkEmailSubtitleFallback,
                       style: const TextStyle(
                           color: AppTheme.textSecondary,
                           fontSize: 15,
@@ -150,7 +155,7 @@ class _EmailConfirmScreenState extends State<EmailConfirmScreen> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       onChanged: (_) {},
-                      onCompleted: _confirm,
+                      onCompleted: (c) => _confirm(context, c),
                     ).animate().fadeIn(delay: 250.ms),
 
                     const SizedBox(height: 8),
@@ -207,9 +212,9 @@ class _EmailConfirmScreenState extends State<EmailConfirmScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text(
-                          "Didn't receive it? ",
-                          style: TextStyle(color: AppTheme.textSecondary),
+                        Text(
+                          l10n.didntReceive,
+                          style: const TextStyle(color: AppTheme.textSecondary),
                         ),
                         _resendLoading
                             ? const SizedBox(
@@ -221,8 +226,8 @@ class _EmailConfirmScreenState extends State<EmailConfirmScreen> {
                                 ),
                               )
                             : TextButton(
-                                onPressed: _resend,
-                                child: const Text('Resend code'),
+                                onPressed: () => _resend(context),
+                                child: Text(l10n.resendCode),
                               ),
                       ],
                     ).animate().fadeIn(delay: 300.ms),

@@ -1,7 +1,7 @@
 // ignore_for_file: deprecated_member_use
-
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:language_duel/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import '../models/game_models.dart';
 import '../services/game_service.dart';
@@ -22,7 +22,6 @@ class _PlayPageState extends State<PlayPage> {
   List<LanguageDto> _languages = [];
   LanguageDto? _selectedLanguage;
   bool _loadingLanguages = true;
-  
   UserDto? _user;
 
   @override
@@ -59,7 +58,6 @@ class _PlayPageState extends State<PlayPage> {
         });
       }
     } catch (e) {
-      // Silently fail or log error; stats will default to 0 if they can't be loaded
       debugPrint('Could not load user stats: $e');
     }
   }
@@ -77,8 +75,8 @@ class _PlayPageState extends State<PlayPage> {
   @override
   Widget build(BuildContext context) {
     final game = context.watch<GameService>();
+    final l10n = AppLocalizations.of(context)!;
 
-    // Extract dynamic statistics based on the selected language
     int currentWins = 0;
     int currentPlayed = 0;
 
@@ -100,12 +98,12 @@ class _PlayPageState extends State<PlayPage> {
         children: [
           const SizedBox(height: 16),
           Text(
-            'Hello, ${widget.userName} 👋',
+            l10n.helloUser(widget.userName),
             style: const TextStyle(color: AppTheme.textSecondary, fontSize: 15),
           ).animate().fadeIn(),
           const SizedBox(height: 4),
           Text(
-            'Ready to duel?',
+            l10n.readyToDuel,
             style: Theme.of(context).textTheme.displayMedium,
           ).animate().fadeIn(delay: 100.ms),
 
@@ -119,8 +117,7 @@ class _PlayPageState extends State<PlayPage> {
                 border: Border.all(color: AppTheme.danger.withOpacity(0.4)),
               ),
               child: Text(game.error!,
-                  style:
-                      const TextStyle(color: AppTheme.danger, fontSize: 13)),
+                  style: const TextStyle(color: AppTheme.danger, fontSize: 13)),
             ),
           ],
 
@@ -143,7 +140,7 @@ class _PlayPageState extends State<PlayPage> {
             children: [
               Expanded(
                 child: StatCard(
-                  label: 'Rating',
+                  label: l10n.statRating,
                   value: _selectedLanguage != null
                       ? '${game.ratingForLanguage(_selectedLanguage!.id)}'
                       : '—',
@@ -153,7 +150,7 @@ class _PlayPageState extends State<PlayPage> {
               const SizedBox(width: 12),
               Expanded(
                 child: StatCard(
-                  label: 'Wins', 
+                  label: l10n.statWins, 
                   value: '$currentWins', 
                   icon: Icons.emoji_events_outlined
                 ),
@@ -161,7 +158,7 @@ class _PlayPageState extends State<PlayPage> {
               const SizedBox(width: 12),
               Expanded(
                 child: StatCard(
-                  label: 'Played', 
+                  label: l10n.statPlayed, 
                   value: '$currentPlayed', 
                   icon: Icons.history
                 ),
@@ -198,6 +195,8 @@ class PlayCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -219,9 +218,9 @@ class PlayCard extends StatelessWidget {
             children: [
               const Icon(Icons.flash_on, color: AppTheme.accent, size: 20),
               const SizedBox(width: 8),
-              const Text(
-                'QUICK DUEL',
-                style: TextStyle(
+              Text(
+                l10n.quickDuel,
+                style: const TextStyle(
                   color: AppTheme.accent,
                   fontWeight: FontWeight.w700,
                   fontSize: 13,
@@ -231,9 +230,9 @@ class PlayCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          const Text(
-            'Challenge a random opponent\nof similar skill level',
-            style: TextStyle(
+          Text(
+            l10n.challengeRandom,
+            style: const TextStyle(
               color: AppTheme.textPrimary,
               fontSize: 16,
               height: 1.5,
@@ -251,12 +250,12 @@ class PlayCard extends StatelessWidget {
               ),
             )
           else if (languages.isEmpty)
-            const Text('No languages available',
-                style: TextStyle(color: AppTheme.textSecondary))
+            Text(l10n.noLanguages,
+                style: const TextStyle(color: AppTheme.textSecondary))
           else ...[
-            const Text(
-              'Language',
-              style: TextStyle(
+            Text(
+              l10n.languageLabel,
+              style: const TextStyle(
                   color: AppTheme.textSecondary,
                   fontSize: 12,
                   fontWeight: FontWeight.w600),
@@ -339,13 +338,13 @@ class PlayCard extends StatelessWidget {
                       strokeWidth: 2, color: AppTheme.accent),
                 ),
                 const SizedBox(width: 12),
-                const Text('Searching for opponent...',
-                    style: TextStyle(color: AppTheme.textSecondary)),
+                Text(l10n.searchingOpponent,
+                    style: const TextStyle(color: AppTheme.textSecondary)),
                 const Spacer(),
                 TextButton(
                   onPressed: onCancel,
-                  child: const Text('Cancel',
-                      style: TextStyle(color: AppTheme.danger)),
+                  child: Text(l10n.cancelBtn,
+                      style: const TextStyle(color: AppTheme.danger)),
                 ),
               ],
             ),
@@ -355,7 +354,7 @@ class PlayCard extends StatelessWidget {
               child: ElevatedButton.icon(
                 onPressed: selectedLanguage != null ? onPlay : null,
                 icon: const Icon(Icons.play_arrow, size: 18),
-                label: const Text('Find Opponent'),
+                label: Text(l10n.findOpponentBtn),
               ),
             ),
           ],
@@ -402,8 +401,7 @@ class StatCard extends StatelessWidget {
           const SizedBox(height: 2),
           Text(
             label,
-            style:
-                const TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+            style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12),
           ),
         ],
       ),

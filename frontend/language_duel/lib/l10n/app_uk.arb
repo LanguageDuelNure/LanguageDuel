@@ -1,0 +1,157 @@
+{
+  "@@locale": "uk",
+  "setupNameTitle": "Встановіть відображуване ім'я",
+  "setupNameSubtitle": "Так вас бачитимуть інші дуелянти.",
+  "nameLabel": "Ім'я",
+  "nameHint": "Ваше відображуване ім'я",
+  "nameRequired": "Ім'я обов'язкове",
+  "nameMinLen": "Мінімум 3 символи",
+  "nameMaxLen": "Максимум 32 символи",
+  "unexpectedError": "Сталася непередбачена помилка.",
+  "continueToArena": "Перейти на арену",
+  "createAccountTitle": "Створити акаунт",
+  "joinArenaSubtitle": "Приєднуйтесь до дуельної арени",
+  "emailLabel": "Електронна пошта",
+  "emailHint": "you@example.com",
+  "emailRequired": "Електронна пошта обов'язкова",
+  "emailInvalid": "Введіть дійсну електронну пошту",
+  "passwordLabel": "Пароль",
+  "passwordHint": "••••••••",
+  "passwordRequired": "Пароль обов'язковий",
+  "passwordMinLen": "Мінімум 8 символів",
+  "passwordComplexity": "Повинен містити великі та малі літери",
+  "confirmPasswordLabel": "Підтвердіть пароль",
+  "confirmPasswordRequired": "Будь ласка, підтвердіть свій пароль",
+  "passwordMismatch": "Паролі не збігаються",
+  "createAccountBtn": "Створити акаунт",
+  "alreadyHaveAccount": "Вже є акаунт? ",
+  "signInLink": "Увійти",
+  "profileTitle": "Профіль",
+  "notAuthenticated": "Не автентифіковано",
+  "rolePlayer": "Гравець",
+  "statsTitle": "Статистика",
+  "ratingsByLanguageTitle": "Рейтинг за мовами",
+  "signOutBtn": "Вийти",
+  "errorRetry": "Повторити",
+  "statTotalMatches": "Всього матчів",
+  "statTotalWins": "Всього перемог",
+  "statCurrentRating": "Поточний рейтинг",
+  "statBestRating": "Найкращий рейтинг",
+  "diffEasy": "Легко",
+  "diffMedium": "Середньо",
+  "diffHard": "Складно",
+  "diffVeryHard": "Дуже складно",
+  "ptsSuffix": "{count} очок",
+  "@ptsSuffix": { "placeholders": { "count": { "type": "int" } } },
+  "statW": "П",
+  "statG": "І",
+  "statBest": "Макс",
+  "helloUser": "Привіт, {userName} 👋",
+  "@helloUser": { "placeholders": { "userName": { "type": "String" } } },
+  "readyToDuel": "Готові до дуелі?",
+  "quickDuel": "ШВИДКА ДУЕЛЬ",
+  "challengeRandom": "Киньте виклик випадковому супротивнику\nсхожого рівня навичок",
+  "noLanguages": "Немає доступних мов",
+  "languageLabel": "Мова",
+  "searchingOpponent": "Пошук супротивника...",
+  "cancelBtn": "Скасувати",
+  "findOpponentBtn": "Знайти супротивника",
+  "statRating": "Рейтинг",
+  "statWins": "Перемоги",
+  "statPlayed": "Зіграно",
+  "welcomeBackTitle": "З поверненням",
+  "signInSubtitle": "Увійдіть, щоб продовжити дуелі",
+  "connectionError": "Не вдалося з'єднатися з сервером. Перевірте підключення.",
+  "continueWithGoogle": "Продовжити з Google",
+  "noAccount": "Немає акаунта? ",
+  "registerLink": "Зареєструватися",
+  "leaderboardTitle": "Таблиця лідерів",
+  "globalRankings": "Глобальний рейтинг — усі мови",
+  "allLanguages": "Усі мови",
+  "noPlayers": "Поки немає гравців",
+  "winsCount": "{count} перемог",
+  "@winsCount": { "placeholders": { "count": { "type": "int" } } },
+  "winsGamesRatio": "{wins} П / {games} І",
+  "@winsGamesRatio": { "placeholders": { "wins": { "type": "int" }, "games": { "type": "int" } } },
+  "checkEmailTitle": "Перевірте пошту",
+  "checkEmailSubtitleFallback": "Ми надіслали 6-значний код на вашу електронну адресу.",
+  "emailSentTo": "Ми надіслали 6-значний код на\n{email}",
+  "@emailSentTo": { "placeholders": { "email": { "type": "String" } } },
+  "resendSuccess": "Новий код надіслано на вашу електронну пошту.",
+  "didntReceive": "Не отримали? ",
+  "resendCode": "Надіслати код ще раз",
+  "defaultDuelistName": "Дуелянт",
+  "findingOpponent": "Пошук супротивника...",
+  "matchingSkill": "Підбираємо вам гравця зі схожими навичками",
+  
+  "pointsGained": "очок отримано",
+  "pointsLost": "очок втрачено",
+  "noChange": "без змін",
+  "languageRatingSuffix": "Рейтинг: {language}",
+  "@languageRatingSuffix": {
+    "placeholders": {
+      "language": { "type": "String" }
+    }
+  },
+  "resultDraw": "Нічия!",
+  "resultVictory": "Перемога!",
+  "resultDefeat": "Поразка",
+  "wellPlayed": "Чудова гра!",
+  "playerWins": "{playerName} перемагає",
+  "@playerWins": {
+    "placeholders": {
+      "playerName": { "type": "String" }
+    }
+  },
+  "roundSummary": "Підсумок раунду",
+  "questionReviewTitle": "П{num}: {question}",
+  "@questionReviewTitle": {
+    "placeholders": {
+      "num": { "type": "int" },
+      "question": { "type": "String" }
+    }
+  },
+  "yourAnswer": "Ваша відповідь: {answer}",
+  "@yourAnswer": {
+    "placeholders": {
+      "answer": { "type": "String" }
+    }
+  },
+  "correctAnswer": "Правильна: {answer}",
+  "@correctAnswer": {
+    "placeholders": {
+      "answer": { "type": "String" }
+    }
+  },
+  "backToLobbyBtn": "Повернутися до лобі",
+
+  "giveUpTitle": "Здатися?",
+  "giveUpContent": "Ви достроково завершите матч і втратите рейтингові очки.",
+  "giveUpBtn": "Здатися",
+  "matchFoundTitle": "МАТЧ ЗНАЙДЕНО",
+  "youPlayer": "Ви",
+  "unknownOpponent": "...",
+  "vsText": "ПРОТИ",
+  "preparingFirstQuestion": "Готуємо перше питання...",
+  "opponentAnswered": "{opponentName} відповів(-ла)",
+  "@opponentAnswered": {
+    "placeholders": {
+      "opponentName": { "type": "String" }
+    }
+  },
+  "nextQuestionIncoming": "Наступне питання вже близько...",
+  "opponentsAnswer": "Відповідь: {opponentName}",
+  "@opponentsAnswer": {
+    "placeholders": {
+      "opponentName": { "type": "String" }
+    }
+  },
+  "bothPickedThis": "Обидва обрали це",
+  
+  "settingsLanguage": "Мова",
+  "langEnglish": "English",
+  "langUkrainian": "Українська",
+  "navPlay": "Грати",
+  "navLeaderboard": "Таблиця лідерів",
+  "navProfile": "Профіль"
+}

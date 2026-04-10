@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:language_duel/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import '../../models/game_models.dart';
 import '../../services/game_service.dart';
@@ -16,21 +17,22 @@ class ResultView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final game = context.watch<GameService>();
+    final l10n = AppLocalizations.of(context)!;
     final didWin = result.winnerUserId == game.userId;
     final isDraw = result.winnerUserId == null;
 
-    // Server returns absolute magnitude. Apply sign by outcome:
-    // win → +x, loss → -x, draw → 0 (server doesn't subtract for draw)
     final magnitude = result.ratingChangeAfterWinOrLoss.abs();
     final signedDelta = isDraw ? 0 : (didWin ? magnitude : -magnitude);
     final ratingText = signedDelta > 0
         ? '+$signedDelta'
-        : '$signedDelta'; // shows "0" for draw, "-6" for loss
+        : '$signedDelta';
+    
     final ratingAction = signedDelta > 0
-        ? 'points gained'
+        ? l10n.pointsGained
         : signedDelta < 0
-            ? 'points lost'
-            : 'no change';
+            ? l10n.pointsLost
+            : l10n.noChange;
+            
     final ratingBadgeColor = signedDelta > 0
         ? AppTheme.accent
         : signedDelta < 0
@@ -84,7 +86,7 @@ class ResultView extends StatelessWidget {
                   const SizedBox(height: 20),
 
                   Text(
-                    isDraw ? 'Draw!' : didWin ? 'Victory!' : 'Defeat',
+                    isDraw ? l10n.resultDraw : didWin ? l10n.resultVictory : l10n.resultDefeat,
                     style: TextStyle(
                       color: outcomeColor,
                       fontSize: 36,
@@ -94,7 +96,7 @@ class ResultView extends StatelessWidget {
 
                   if (!isDraw && result.winnerUserName != null)
                     Text(
-                      didWin ? 'Well played!' : '${result.winnerUserName} wins',
+                      didWin ? l10n.wellPlayed : l10n.playerWins(result.winnerUserName!),
                       style: const TextStyle(
                           color: AppTheme.textSecondary, fontSize: 15),
                     ).animate().fadeIn(delay: 300.ms),
@@ -112,7 +114,7 @@ class ResultView extends StatelessWidget {
                       const SizedBox(width: 12),
                       RatingBadge(
                         label: '$newRating',
-                        sublabel: '${game.selectedLanguageName} rating',
+                        sublabel: l10n.languageRatingSuffix(game.selectedLanguageName),
                         color: AppTheme.accent,
                       ),
                     ],
@@ -123,7 +125,7 @@ class ResultView extends StatelessWidget {
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      'Round Summary',
+                      l10n.roundSummary,
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                   ),
@@ -154,7 +156,7 @@ class ResultView extends StatelessWidget {
                   ElevatedButton.icon(
                     onPressed: () async => game.leaveGame(),
                     icon: const Icon(Icons.arrow_back, size: 18),
-                    label: const Text('Back to Lobby'),
+                    label: Text(l10n.backToLobbyBtn),
                   ).animate().fadeIn(delay: 500.ms),
                 ],
               ),
@@ -233,6 +235,7 @@ class QuestionReviewCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(16),
@@ -258,7 +261,7 @@ class QuestionReviewCard extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  'Q${index + 1}: ${question.name}',
+                  l10n.questionReviewTitle(index + 1, question.name),
                   style: const TextStyle(
                     color: AppTheme.textPrimary,
                     fontWeight: FontWeight.w600,
@@ -271,7 +274,7 @@ class QuestionReviewCard extends StatelessWidget {
           if (myAnswer != null) ...[
             const SizedBox(height: 8),
             Text(
-              'Your answer: ${myAnswer!.name}',
+              l10n.yourAnswer(myAnswer!.name),
               style: TextStyle(
                 color: wasCorrect ? AppTheme.accent : AppTheme.danger,
                 fontSize: 12,
@@ -281,7 +284,7 @@ class QuestionReviewCard extends StatelessWidget {
           if (!wasCorrect && correctAnswer != null) ...[
             const SizedBox(height: 4),
             Text(
-              'Correct: ${correctAnswer!.name}',
+              l10n.correctAnswer(correctAnswer!.name),
               style: const TextStyle(color: AppTheme.accent, fontSize: 12),
             ),
           ],
