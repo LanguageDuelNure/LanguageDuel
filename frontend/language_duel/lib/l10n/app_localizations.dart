@@ -931,6 +931,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Admin'**
   String get navAdmin;
+
+  /// No description provided for @bannedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Banned'**
+  String get bannedTitle;
+
+  /// No description provided for @bannedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account has been restricted from matchmaking.'**
+  String get bannedMessage;
+
+  /// No description provided for @bannedUntilMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account has been restricted from matchmaking until {date}.'**
+  String bannedUntilMessage(String date);
 }
 
 class _AppLocalizationsDelegate

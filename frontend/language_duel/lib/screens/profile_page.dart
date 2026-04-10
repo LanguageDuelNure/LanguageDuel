@@ -23,6 +23,9 @@ class _ProfilePageState extends State<ProfilePage> {
   bool _isLoading = true;
   String? _error;
 
+  bool _isBanned = false;
+  DateTime? _bannedUntil; // Added state for the date
+
   // Avatar upload state
   bool _uploadingAvatar = false;
 
@@ -60,8 +63,14 @@ class _ProfilePageState extends State<ProfilePage> {
       }
     } catch (e) {
       if (mounted) {
+        // Assuming your ApiException exposes isBanned and bannedUntil
+        final isApiEx = e is ApiException;
+        final banned = isApiEx && e.isBanned;
+        
         setState(() {
-          _error = e.toString();
+          _isBanned = banned;
+          _bannedUntil = isApiEx ? e.bannedUntil : null; // Extract date
+          _error = banned ? null : e.toString();
           _isLoading = false;
         });
       }
@@ -95,7 +104,6 @@ class _ProfilePageState extends State<ProfilePage> {
         imageBytes: bytes,
         imageName: name,
       );
-      // Refresh user to get new imageUrl
       if (mounted) await _refreshUser();
     } catch (e) {
       if (mounted) {
@@ -185,7 +193,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 user: _user,
                 userName: userName,
                 uploading: _uploadingAvatar,
-                onTap: _pickAndUploadAvatar,
+                onTap: _isBanned ? () {} : _pickAndUploadAvatar,
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -204,23 +212,23 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                           ),
                         ),
-                        // Edit name button
-                        GestureDetector(
-                          onTap: _showEditNameDialog,
-                          child: Container(
-                            padding: const EdgeInsets.all(6),
-                            decoration: BoxDecoration(
-                              color: AppTheme.surfaceElevated,
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: AppTheme.border),
-                            ),
-                            child: const Icon(
-                              Icons.edit_outlined,
-                              color: AppTheme.textSecondary,
-                              size: 16,
+                        if (!_isBanned)
+                          GestureDetector(
+                            onTap: _showEditNameDialog,
+                            child: Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                color: AppTheme.surfaceElevated,
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(color: AppTheme.border),
+                              ),
+                              child: const Icon(
+                                Icons.edit_outlined,
+                                color: AppTheme.textSecondary,
+                                size: 16,
+                              ),
                             ),
                           ),
-                        ),
                       ],
                     ),
                     const SizedBox(height: 4),
@@ -233,6 +241,13 @@ class _ProfilePageState extends State<ProfilePage> {
 
           const SizedBox(height: 32),
 
+          // ── Banned banner ─────────────────────────────────────────────────
+          if (_isBanned) ...[
+            _BannedBanner(bannedUntil: _bannedUntil).animate().fadeIn(delay: 150.ms),
+            const SizedBox(height: 32),
+          ],
+
+          if (!_isBanned) ...[
           Text(l10n.statsTitle, style: Theme.of(context).textTheme.titleLarge)
               .animate()
               .fadeIn(delay: 200.ms),
@@ -247,7 +262,7 @@ class _ProfilePageState extends State<ProfilePage> {
           else
             _StatsGrid(user: _user!).animate().fadeIn(delay: 250.ms),
 
-          if (!_isLoading && _error == null && _user!.languageRatings.isNotEmpty) ...[
+          if (!_isLoading && _error == null && _user != null && _user!.languageRatings.isNotEmpty) ...[
             const SizedBox(height: 32),
             Text(l10n.ratingsByLanguageTitle,
                     style: Theme.of(context).textTheme.titleLarge)
@@ -272,6 +287,8 @@ class _ProfilePageState extends State<ProfilePage> {
               );
             }),
           ],
+
+          ],  // end if (!_isBanned)
 
           const SizedBox(height: 32),
 
@@ -798,6 +815,68 @@ class _StatChip extends StatelessWidget {
         '$label $value',
         style: TextStyle(
             color: color, fontSize: 11, fontWeight: FontWeight.w600),
+      ),
+    );
+  }
+}
+
+// ── Banned banner ───────────────────────────────────────────────────────────────
+
+class _BannedBanner extends StatelessWidget {
+  final DateTime? bannedUntil;
+
+  const _BannedBanner({this.bannedUntil});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    
+    // Format the date dynamically
+    String dateStr = '';
+    if (bannedUntil != null) {
+      final local = bannedUntil!.toLocal();
+      dateStr = '${local.year}-${local.month.toString().padLeft(2, '0')}-${local.day.toString().padLeft(2, '0')} ${local.hour.toString().padLeft(2, '0')}:${local.minute.toString().padLeft(2, '0')}';
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppTheme.danger.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppTheme.danger.withOpacity(0.35)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(Icons.block_rounded, color: AppTheme.danger, size: 24),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l10n.bannedTitle,
+                  style: const TextStyle(
+                    color: AppTheme.danger,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  bannedUntil != null 
+                      ? l10n.bannedUntilMessage(dateStr) 
+                      : l10n.bannedMessage,
+                  style: TextStyle(
+                    color: AppTheme.danger.withOpacity(0.8),
+                    fontSize: 13,
+                    height: 1.4,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

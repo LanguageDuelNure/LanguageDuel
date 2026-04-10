@@ -389,8 +389,23 @@ public class UserService(UserManager<ApplicationUser> userManager, SignInManager
 
         foreach (var dto in userDtos)
         {
+            var user = users.First(u => u.Id == dto.Id);
+
             dto.ImageUrl = fileService.GetFileUrl(Path.Combine(IconFolderName, dto.Id.ToString()));
-            dto.Role = (await userManager.GetRolesAsync(users.First(u => u.Id == dto.Id))).First();
+        
+            var roles = await userManager.GetRolesAsync(user);
+            dto.Role = roles.FirstOrDefault() ?? string.Empty;
+
+            if (user.LockoutEnd.HasValue && user.LockoutEnd.Value > DateTimeOffset.UtcNow)
+            {
+                dto.IsBanned = true;
+                dto.BannedUntil = user.LockoutEnd.Value.UtcDateTime;
+            }
+            else
+            {
+                dto.IsBanned = false;
+                dto.BannedUntil = null;
+            }
         }
 
         return new Result<IEnumerable<UserAdminListItemDto>> { Value = userDtos };

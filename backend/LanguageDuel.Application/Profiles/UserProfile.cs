@@ -14,14 +14,16 @@ public class UserProfile : Profile
             .ForMember(dest => dest.UserOpponents,
                 opt => opt.MapFrom(src =>
                     src.ApplicationUserOpponents
-                    .Concat(src.OpponentApplicationUsers)
-                    .ToList()));
+                        .Concat(src.OpponentApplicationUsers)
+                        .ToList()));
 
         CreateMap<ApplicationUser, UserAdminListItemDto>()
-            .ForMember(dest => dest.RemainingBanDuration, opt => opt.MapFrom(src => 
-                src.LockoutEnd.HasValue && src.LockoutEnd.Value > DateTimeOffset.UtcNow 
-                    ? src.LockoutEnd.Value - DateTimeOffset.UtcNow 
-                    : (TimeSpan?)null));
+            .ForMember(dest => dest.IsBanned, opt => opt.MapFrom(src => 
+                src.LockoutEnd.HasValue && src.LockoutEnd.Value > DateTimeOffset.UtcNow))
+            .ForMember(dest => dest.BannedUntil, opt => opt.MapFrom(src => 
+                (src.LockoutEnd.HasValue && src.LockoutEnd.Value > DateTimeOffset.UtcNow) 
+                    ? src.LockoutEnd.Value.UtcDateTime 
+                    : (DateTime?)null));
         
         CreateMap<ApplicationUser, LeaderboardItemDto>()
             .ForMember(dest => dest.Rank, opt => opt.MapFrom(src => 

@@ -20,6 +20,7 @@ class GameService extends ChangeNotifier {
   GameStateDto? _gameState;
   GameResultDto? _gameResult;
   String? _error;
+  DateTime? _bannedUntil; // Added bannedUntil state
   bool _inviteHandled = false;
   String _selectedLanguageName = '';
 
@@ -31,6 +32,7 @@ class GameService extends ChangeNotifier {
   GameStateDto? get gameState => _gameState;
   GameResultDto? get gameResult => _gameResult;
   String? get error => _error;
+  DateTime? get bannedUntil => _bannedUntil; // Getter for the UI
   String get selectedLanguageName => _selectedLanguageName;
 
   int get currentRating =>
@@ -69,26 +71,26 @@ class GameService extends ChangeNotifier {
         .withAutomaticReconnect()
         .build();
 
-      _hub!.on('ReceiveGameInvitation', (args) async {
-  if (args == null || args.isEmpty) return;
-  final dto = GameInvitationDto.fromJson(args[0] as Map<String, dynamic>);
+    _hub!.on('ReceiveGameInvitation', (args) async {
+      if (args == null || args.isEmpty) return;
+      final dto = GameInvitationDto.fromJson(args[0] as Map<String, dynamic>);
 
-  debugPrint('[GameService] ReceiveGameInvitation: gameId=${dto.gameId}, '
-      'inviter=${dto.inviterUserId}, me=$userId, handled=$_inviteHandled');
+      debugPrint('[GameService] ReceiveGameInvitation: gameId=${dto.gameId}, '
+          'inviter=${dto.inviterUserId}, me=$userId, handled=$_inviteHandled');
 
-  // Wait for the invitation that actually has a gameId
-  if (dto.gameId == null) return;  // ← ADD THIS
+      // Wait for the invitation that actually has a gameId
+      if (dto.gameId == null) return;
 
-  if (_inviteHandled) return;
-  _inviteHandled = true;
+      if (_inviteHandled) return;
+      _inviteHandled = true;
 
-  _gameId = dto.gameId;
-  await _hub!.invoke('StopSearchGameAsync', args: [userId, _selectedLanguageId!]);
-  await _hub!.invoke('AddToGameAsync', args: [_gameId!]);
+      _gameId = dto.gameId;
+      await _hub!.invoke('StopSearchGameAsync', args: [userId, _selectedLanguageId!]);
+      await _hub!.invoke('AddToGameAsync', args: [_gameId!]);
 
-  _status = GameStatus.inGame;
-  notifyListeners();
-});
+      _status = GameStatus.inGame;
+      notifyListeners();
+    });
 
     _hub!.on('GameStateChanged', (args) {
       if (args == null || args.isEmpty) return;
@@ -97,19 +99,19 @@ class GameService extends ChangeNotifier {
       notifyListeners();
     });
 
-_hub!.on('ReceiveGameResult', (args) async {
-  if (args == null || args.isEmpty) return;
-  _gameResult = GameResultDto.fromJson(args[0] as Map<String, dynamic>);
-  _status = GameStatus.finished;
-  // Make sure we leave the SignalR group cleanly
-  if (_gameId != null) {
-    try {
-      await _hub!.invoke('LeaveGameAsync', args: [_gameId!]);
-    } catch (_) {}
-  }
-  await fetchLanguages();
-  notifyListeners();
-});
+    _hub!.on('ReceiveGameResult', (args) async {
+      if (args == null || args.isEmpty) return;
+      _gameResult = GameResultDto.fromJson(args[0] as Map<String, dynamic>);
+      _status = GameStatus.finished;
+      // Make sure we leave the SignalR group cleanly
+      if (_gameId != null) {
+        try {
+          await _hub!.invoke('LeaveGameAsync', args: [_gameId!]);
+        } catch (_) {}
+      }
+      await fetchLanguages();
+      notifyListeners();
+    });
 
     try {
       await _hub!.start();
@@ -117,7 +119,20 @@ _hub!.on('ReceiveGameResult', (args) async {
       // (handles app restart / background kill while a game was in progress)
       await _rejoinActiveGameIfAny();
     } catch (e) {
-      _error = 'Could not connect to game server: $e';
+      final msg = e.toString();
+      if (msg.contains('403') || msg.toLowerCase().contains('forbidden') || msg.toLowerCase().contains('banned')) {
+        _error = 'banned';
+        
+        // SignalR Exceptions are often just strings, but if the backend included the JSON inside the message string, we can try to extract the date:
+        try {
+          final match = RegExp(r'"bannedUntil"\s*:\s*"([^"]+)"').firstMatch(msg);
+          if (match != null && match.groupCount >= 1) {
+            _bannedUntil = DateTime.tryParse(match.group(1)!);
+          }
+        } catch (_) {}
+      } else {
+        _error = 'Could not connect to game server: $e';
+      }
       notifyListeners();
     }
   }
@@ -134,10 +149,6 @@ _hub!.on('ReceiveGameResult', (args) async {
       // 204 No Content or 404 means no active game
       if (currentRes.statusCode == 204 || currentRes.statusCode == 404) return;
 
-      // FIX: Log unexpected non-200 responses in debug mode instead of silently
-      // swallowing them. Previously a 500 from the backend NullReferenceException
-      // in GetGame() was invisible here, making the ghost-session bug very hard
-      // to diagnose.
       if (currentRes.statusCode != 200) {
         debugPrint(
           '[GameService] _rejoinActiveGameIfAny: unexpected status '
@@ -169,9 +180,6 @@ _hub!.on('ReceiveGameResult', (args) async {
         notifyListeners();
       }
     } catch (e) {
-      // FIX: Log the error in debug mode so rejoin failures are visible during
-      // development. In production this remains a silent no-op since the user
-      // simply has no active game to rejoin.
       debugPrint('[GameService] _rejoinActiveGameIfAny error: $e');
     }
   }
@@ -179,9 +187,11 @@ _hub!.on('ReceiveGameResult', (args) async {
   Future<void> startSearch(String languageId,
       {String languageName = '', int rating = 0}) async {
     _error = null;
+    _bannedUntil = null; // Clear ban date state on new request
     _selectedLanguageId = languageId;
     _selectedLanguageName = languageName;
     _languageNames[languageId] = languageName;
+    
     if (!_languageRatings.containsKey(languageId)) {
       _languageRatings[languageId] = rating;
     }
@@ -199,7 +209,23 @@ _hub!.on('ReceiveGameResult', (args) async {
         headers: _headers,
         body: '{}',
       );
+      
       if (response.statusCode >= 400) {
+        // If the REST API blocks the match search, parse the JSON for the ban date
+        if (response.statusCode == 403 || response.statusCode == 401) {
+          _error = 'banned';
+          try {
+            final data = json.decode(response.body);
+            if (data is Map && data.containsKey('bannedUntil') && data['bannedUntil'] != null) {
+              _bannedUntil = DateTime.tryParse(data['bannedUntil'].toString());
+            }
+          } catch (_) {}
+          
+          _status = GameStatus.idle;
+          notifyListeners();
+          return;
+        }
+        
         throw Exception('Server error: ${response.body}');
       }
     } catch (e) {
@@ -277,23 +303,23 @@ _hub!.on('ReceiveGameResult', (args) async {
     }
   }
 
-Future<void> giveUp() async {
-  if (_gameId == null) return;
-  try {
-    await _http.post(
-      Uri.parse('$baseUrl/api/games/give-up?gameId=$_gameId'),
-      headers: _headers,
-      body: '{}',
-    );
-    // Give the backend a moment to broadcast ReceiveGameResult to the group
-    // before we invoke LeaveGameAsync
-    await Future.delayed(const Duration(milliseconds: 300));
-    await _hub!.invoke('LeaveGameAsync', args: [_gameId!]);
-  } catch (e) {
-    _error = e.toString();
-    notifyListeners();
+  Future<void> giveUp() async {
+    if (_gameId == null) return;
+    try {
+      await _http.post(
+        Uri.parse('$baseUrl/api/games/give-up?gameId=$_gameId'),
+        headers: _headers,
+        body: '{}',
+      );
+      // Give the backend a moment to broadcast ReceiveGameResult to the group
+      // before we invoke LeaveGameAsync
+      await Future.delayed(const Duration(milliseconds: 300));
+      await _hub!.invoke('LeaveGameAsync', args: [_gameId!]);
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
+    }
   }
-}
 
   @override
   void dispose() {
