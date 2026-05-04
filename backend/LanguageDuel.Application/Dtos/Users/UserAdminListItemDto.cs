@@ -12,7 +12,8 @@ public class UserAdminListItemDto
     
     public string Role { get; set; } = string.Empty;
     
-    public TimeSpan? RemainingBanDuration { get; set; }
+    public bool IsBanned { get; set; }
+    public DateTime? BannedUntil { get; set; }
     
     public string? ImageUrl { get; set; }
 }

@@ -8,13 +8,22 @@ class ApiException implements Exception {
   final String message;
   final int? statusCode;
   final String? field;
+  final DateTime? bannedUntil;
 
-  const ApiException({required this.message, this.statusCode, this.field});
+  const ApiException({
+    required this.message,
+    this.statusCode,
+    this.field,
+    this.bannedUntil,
+  });
+
+  bool get isBanned => statusCode == 403 || statusCode == 401 || message.toLowerCase().contains('banned');
 
   @override
   String toString() =>
       'ApiException($statusCode): $message'
-      '${field != null ? ' [field: $field]' : ''}';
+      '${field != null ? ' [field: $field]' : ''}'
+      '${bannedUntil != null ? ' [bannedUntil: $bannedUntil]' : ''}';
 }
 
 class ApiService {
@@ -41,15 +50,27 @@ class ApiService {
 
     String errorMessage = 'Request failed with status $statusCode';
     String? field;
+    DateTime? bannedUntil;
 
     try {
       final body = json.decode(response.body) as Map<String, dynamic>;
+      
+      // Look for bannedUntil at the root of the error response
+      if (body.containsKey('bannedUntil') && body['bannedUntil'] != null) {
+        bannedUntil = DateTime.tryParse(body['bannedUntil'].toString());
+      }
+
       final errors = body['errors'] as List<dynamic>?;
 
       if (errors != null && errors.isNotEmpty) {
         final firstError = errors.first as Map<String, dynamic>;
         errorMessage = firstError['message'] as String? ?? errorMessage;
         field = firstError['field'] as String?;
+        
+        // Sometimes backend frameworks nest custom fields inside the error object
+        if (firstError.containsKey('bannedUntil') && firstError['bannedUntil'] != null) {
+          bannedUntil ??= DateTime.tryParse(firstError['bannedUntil'].toString());
+        }
       }
     } catch (_) {}
 
@@ -57,6 +78,7 @@ class ApiService {
       message: errorMessage,
       statusCode: statusCode,
       field: field,
+      bannedUntil: bannedUntil,
     );
   }
 
@@ -335,6 +357,10 @@ class UserDto {
   final int totalGames;
   final int totalWins;
   final List<UserLanguageDto> languageRatings;
+  
+  // 👇 Add the fields here
+  final bool isBanned;
+  final DateTime? bannedUntil;
 
   const UserDto({
     required this.id,
@@ -343,18 +369,29 @@ class UserDto {
     this.totalGames = 0,
     this.totalWins = 0,
     this.languageRatings = const [],
+    this.isBanned = false,
+    this.bannedUntil,
   });
 
-  factory UserDto.fromJson(Map<String, dynamic> json) => UserDto(
-    id: json['id'] as String,
-    name: json['name'] as String,
-    imageUrl: json['imageUrl'] as String?,
-    totalGames: (json['totalGames'] as num?)?.toInt() ?? 0,
-    totalWins: (json['totalWins'] as num?)?.toInt() ?? 0,
-    languageRatings: (json['languageRatings'] as List<dynamic>? ?? [])
-        .map((e) => UserLanguageDto.fromJson(e as Map<String, dynamic>))
-        .toList(),
-  );
+  factory UserDto.fromJson(Map<String, dynamic> json) {
+    DateTime? parsedDate;
+    if (json['bannedUntil'] != null) {
+      parsedDate = DateTime.tryParse(json['bannedUntil'].toString());
+    }
+
+    return UserDto(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      imageUrl: json['imageUrl'] as String?,
+      totalGames: (json['totalGames'] as num?)?.toInt() ?? 0,
+      totalWins: (json['totalWins'] as num?)?.toInt() ?? 0,
+      languageRatings: (json['languageRatings'] as List<dynamic>? ?? [])
+          .map((e) => UserLanguageDto.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      isBanned: json['isBanned'] as bool? ?? false,
+      bannedUntil: parsedDate,
+    );
+  }
 }
 
 class LeaderboardItemDto {

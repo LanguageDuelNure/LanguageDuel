@@ -476,4 +476,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get navAdmin => 'Admin';
+
+  @override
+  String get bannedTitle => 'Account Banned';
+
+  @override
+  String get bannedMessage =>
+      'Your account has been restricted from matchmaking.';
+
+  @override
+  String bannedUntilMessage(String date) {
+    return 'Your account has been restricted from matchmaking until $date.';
+  }
 }

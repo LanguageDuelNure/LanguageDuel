@@ -245,6 +245,16 @@
     "placeholders": { "query": { "type": "String" } }
   },
 
-  "navAdmin": "Admin"
+  "navAdmin": "Admin",
+
+  "bannedTitle": "Account Banned",
+  "bannedMessage": "Your account has been restricted from matchmaking.",
+  
+  "bannedUntilMessage": "Your account has been restricted from matchmaking until {date}.",
+  "@bannedUntilMessage": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  }
 
 }

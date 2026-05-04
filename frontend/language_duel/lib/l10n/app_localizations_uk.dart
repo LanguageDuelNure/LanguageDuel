@@ -481,4 +481,15 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get navAdmin => 'Адмін';
+
+  @override
+  String get bannedTitle => 'Акаунт заблоковано';
+
+  @override
+  String get bannedMessage => 'Ваш акаунт було обмежено для пошуку ігор.';
+
+  @override
+  String bannedUntilMessage(String date) {
+    return 'Ваш акаунт було обмежено для пошуку ігор до $date.';
+  }
 }

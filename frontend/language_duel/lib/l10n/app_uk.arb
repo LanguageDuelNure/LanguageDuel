@@ -214,5 +214,10 @@
     "placeholders": { "query": { "type": "String" } }
   },
 
-  "navAdmin": "Адмін"
+  "navAdmin": "Адмін",
+
+  "bannedTitle": "Акаунт заблоковано",
+  "bannedMessage": "Ваш акаунт було обмежено для пошуку ігор.",
+  "bannedUntilMessage": "Ваш акаунт було обмежено для пошуку ігор до {date}."
+  
 }

@@ -160,7 +160,7 @@ public class UsersController(IUserService userService, IMapper mapper) : BaseCon
     [Authorize(Roles = "Admin")]
     [ProducesResponseType(typeof(IEnumerable<UserAdminListItemDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(Result), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<IEnumerable<UserDto>>> GetAllUsers()
+    public async Task<ActionResult<IEnumerable<UserAdminListItemDto>>> GetAllUsers()
     {
         var result = await userService.GetAllUsersAsync();
         if (!result.IsSuccess)

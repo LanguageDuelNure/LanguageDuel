@@ -1,4 +1,4 @@
-// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:language_duel/l10n/app_localizations.dart';
@@ -43,6 +43,7 @@ class _PlayPageState extends State<PlayPage> {
     }
   }
 
+  DateTime? _apiBannedUntil;
   Future<void> _loadUserStats() async {
     final auth = context.read<AuthProvider>();
     final userId = auth.userId;
@@ -58,6 +59,12 @@ class _PlayPageState extends State<PlayPage> {
         });
       }
     } catch (e) {
+      
+      if (e is ApiException && e.isBanned && mounted) {
+        setState(() {
+          _apiBannedUntil = e.bannedUntil;
+        });
+      }
       debugPrint('Could not load user stats: $e');
     }
   }
@@ -109,6 +116,10 @@ class _PlayPageState extends State<PlayPage> {
 
           if (game.error != null) ...[
             const SizedBox(height: 16),
+            if (game.error == 'banned')
+              
+              _PlayBannedBanner(bannedUntil: _user?.bannedUntil ?? game.bannedUntil).animate().fadeIn(delay: 150.ms)
+            else
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -121,6 +132,7 @@ class _PlayPageState extends State<PlayPage> {
             ),
           ],
 
+          if (game.error != 'banned') ...[
           const SizedBox(height: 32),
 
           PlayCard(
@@ -165,6 +177,7 @@ class _PlayPageState extends State<PlayPage> {
               ),
             ],
           ).animate().fadeIn(delay: 300.ms),
+          ], 
         ],
       ),
     );
@@ -402,6 +415,67 @@ class StatCard extends StatelessWidget {
           Text(
             label,
             style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+class _PlayBannedBanner extends StatelessWidget {
+  final DateTime? bannedUntil;
+
+  const _PlayBannedBanner({this.bannedUntil});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    
+    
+    String dateStr = '';
+    if (bannedUntil != null) {
+      final local = bannedUntil!.toLocal();
+      dateStr = '${local.year}-${local.month.toString().padLeft(2, '0')}-${local.day.toString().padLeft(2, '0')} ${local.hour.toString().padLeft(2, '0')}:${local.minute.toString().padLeft(2, '0')}';
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppTheme.danger.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppTheme.danger.withOpacity(0.35)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(Icons.block_rounded, color: AppTheme.danger, size: 24),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l10n.bannedTitle,
+                  style: const TextStyle(
+                    color: AppTheme.danger,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  bannedUntil != null 
+                      ? l10n.bannedUntilMessage(dateStr) 
+                      : l10n.bannedMessage,
+                  style: TextStyle(
+                    color: AppTheme.danger.withOpacity(0.8),
+                    fontSize: 13,
+                    height: 1.4,
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
