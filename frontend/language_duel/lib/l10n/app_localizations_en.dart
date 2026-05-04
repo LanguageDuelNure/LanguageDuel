@@ -488,4 +488,76 @@ class AppLocalizationsEn extends AppLocalizations {
   String bannedUntilMessage(String date) {
     return 'Your account has been restricted from matchmaking until $date.';
   }
+
+  @override
+  String get matchHistoryTitle => 'Match History';
+
+  @override
+  String get myTicketsTitle => 'My Tickets';
+
+  @override
+  String get manageTicketsAdmin => 'Manage Tickets (Admin)';
+
+  @override
+  String banReasonLabel(String reason) {
+    return 'Reason: $reason';
+  }
+
+  @override
+  String get noMatchHistory => 'No match history found';
+
+  @override
+  String get victoryLabel => 'VICTORY';
+
+  @override
+  String get defeatLabel => 'DEFEAT';
+
+  @override
+  String get matchDetailsTitle => 'Match Details';
+
+  @override
+  String get failedLoadDetails => 'Failed to load details';
+
+  @override
+  String get newTicketTitle => 'New Ticket';
+
+  @override
+  String get ticketIssueHint => 'Describe your issue...';
+
+  @override
+  String get submitBtn => 'Submit';
+
+  @override
+  String get noTicketsFound => 'No tickets found';
+
+  @override
+  String ticketIdLabel(String id) {
+    return 'Ticket #$id';
+  }
+
+  @override
+  String ticketStatusTitle(String status) {
+    return 'Ticket $status';
+  }
+
+  @override
+  String get errorLoadingTicket => 'Error loading ticket';
+
+  @override
+  String get messageHint => 'Message...';
+
+  @override
+  String get manageTicketsTitle => 'Manage Tickets';
+
+  @override
+  String get ticketStatusOpen => 'Open';
+
+  @override
+  String get ticketStatusInProgress => 'In Progress';
+
+  @override
+  String get ticketStatusClosed => 'Closed';
+
+  @override
+  String get noMessages => 'No messages';
 }

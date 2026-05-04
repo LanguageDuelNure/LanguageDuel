@@ -16,10 +16,8 @@ import 'utils/app_constants.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  
   final auth = AuthProvider();
   await auth.loadFromStorage();
-  
   
   final localeProvider = LocaleProvider();
   await localeProvider.loadFromStorage();

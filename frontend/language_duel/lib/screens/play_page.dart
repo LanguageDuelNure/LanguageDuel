@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:language_duel/l10n/app_localizations.dart';
@@ -44,6 +43,8 @@ class _PlayPageState extends State<PlayPage> {
   }
 
   DateTime? _apiBannedUntil;
+  String? _apiBanReason;
+
   Future<void> _loadUserStats() async {
     final auth = context.read<AuthProvider>();
     final userId = auth.userId;
@@ -59,10 +60,10 @@ class _PlayPageState extends State<PlayPage> {
         });
       }
     } catch (e) {
-      
       if (e is ApiException && e.isBanned && mounted) {
         setState(() {
           _apiBannedUntil = e.bannedUntil;
+          _apiBanReason = e.banReason;
         });
       }
       debugPrint('Could not load user stats: $e');
@@ -117,8 +118,10 @@ class _PlayPageState extends State<PlayPage> {
           if (game.error != null) ...[
             const SizedBox(height: 16),
             if (game.error == 'banned')
-              
-              _PlayBannedBanner(bannedUntil: _user?.bannedUntil ?? game.bannedUntil).animate().fadeIn(delay: 150.ms)
+              _PlayBannedBanner(
+                bannedUntil: _user?.bannedUntil ?? game.bannedUntil ?? _apiBannedUntil,
+                banReason: _apiBanReason,
+              ).animate().fadeIn(delay: 150.ms)
             else
             Container(
               padding: const EdgeInsets.all(12),
@@ -422,16 +425,15 @@ class StatCard extends StatelessWidget {
   }
 }
 
-
 class _PlayBannedBanner extends StatelessWidget {
   final DateTime? bannedUntil;
+  final String? banReason;
 
-  const _PlayBannedBanner({this.bannedUntil});
+  const _PlayBannedBanner({this.bannedUntil, this.banReason});
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
     
     String dateStr = '';
     if (bannedUntil != null) {
@@ -474,6 +476,17 @@ class _PlayBannedBanner extends StatelessWidget {
                     height: 1.4,
                   ),
                 ),
+                if (banReason != null && banReason!.isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    l10n.banReasonLabel(banReason!), // ЛОКАЛІЗАЦІЯ
+                    style: const TextStyle(
+                      color: AppTheme.textPrimary,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ]
               ],
             ),
           ),

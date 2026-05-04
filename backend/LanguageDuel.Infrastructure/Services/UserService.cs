@@ -171,11 +171,11 @@ public class UserService(UserManager<ApplicationUser> userManager, SignInManager
             }
         };
     }
-    
+
     public async Task<Result> IsUserBannedAsync(string userId)
     {
         var user = await userManager.FindByIdAsync(userId);
-    
+
         if (user == null)
         {
             return new Result
@@ -192,19 +192,19 @@ public class UserService(UserManager<ApplicationUser> userManager, SignInManager
         {
             return new Result
             {
-                 Errors = [new Error()
+                Errors = [new Error()
                  {
                      Key = ErrorKey.Banned,
                      Message = "You are banned.",
                      Parameters =
                      {
-                         {"TimeRemain", user.LockoutEnd - DateTime.UtcNow},
+                         {"BannedUntil", user.LockoutEnd.Value.ToString("O")},
                          {"Reason", user.BanReason},
                      }
                  }]
             };
         }
-        
+
         return new Result();
     }
 

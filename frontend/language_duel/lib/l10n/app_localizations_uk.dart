@@ -492,4 +492,76 @@ class AppLocalizationsUk extends AppLocalizations {
   String bannedUntilMessage(String date) {
     return 'Ваш акаунт було обмежено для пошуку ігор до $date.';
   }
+
+  @override
+  String get matchHistoryTitle => 'Історія матчів';
+
+  @override
+  String get myTicketsTitle => 'Мої тікети';
+
+  @override
+  String get manageTicketsAdmin => 'Управління тікетами (Адмін)';
+
+  @override
+  String banReasonLabel(String reason) {
+    return 'Причина: $reason';
+  }
+
+  @override
+  String get noMatchHistory => 'Історію матчів не знайдено';
+
+  @override
+  String get victoryLabel => 'ПЕРЕМОГА';
+
+  @override
+  String get defeatLabel => 'ПОРАЗКА';
+
+  @override
+  String get matchDetailsTitle => 'Деталі матчу';
+
+  @override
+  String get failedLoadDetails => 'Не вдалося завантажити деталі';
+
+  @override
+  String get newTicketTitle => 'Новий тікет';
+
+  @override
+  String get ticketIssueHint => 'Опишіть вашу проблему...';
+
+  @override
+  String get submitBtn => 'Надіслати';
+
+  @override
+  String get noTicketsFound => 'Тікети не знайдено';
+
+  @override
+  String ticketIdLabel(String id) {
+    return 'Тікет #$id';
+  }
+
+  @override
+  String ticketStatusTitle(String status) {
+    return 'Тікет $status';
+  }
+
+  @override
+  String get errorLoadingTicket => 'Помилка завантаження тікета';
+
+  @override
+  String get messageHint => 'Повідомлення...';
+
+  @override
+  String get manageTicketsTitle => 'Управління тікетами';
+
+  @override
+  String get ticketStatusOpen => 'Відкриті';
+
+  @override
+  String get ticketStatusInProgress => 'В процесі';
+
+  @override
+  String get ticketStatusClosed => 'Закриті';
+
+  @override
+  String get noMessages => 'Немає повідомлень';
 }

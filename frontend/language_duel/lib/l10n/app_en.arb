@@ -255,6 +255,48 @@
     "placeholders": {
       "date": { "type": "String" }
     }
-  }
+  },
 
+  "matchHistoryTitle": "Match History",
+  "myTicketsTitle": "My Tickets",
+  "manageTicketsAdmin": "Manage Tickets (Admin)",
+  
+  "banReasonLabel": "Reason: {reason}",
+  "@banReasonLabel": {
+    "placeholders": {
+      "reason": { "type": "String" }
+    }
+  },
+  
+  "noMatchHistory": "No match history found",
+  "victoryLabel": "VICTORY",
+  "defeatLabel": "DEFEAT",
+  "matchDetailsTitle": "Match Details",
+  "failedLoadDetails": "Failed to load details",
+  "newTicketTitle": "New Ticket",
+  "ticketIssueHint": "Describe your issue...",
+  "submitBtn": "Submit",
+  "noTicketsFound": "No tickets found",
+  
+  "ticketIdLabel": "Ticket #{id}",
+  "@ticketIdLabel": {
+    "placeholders": {
+      "id": { "type": "String" }
+    }
+  },
+  
+  "ticketStatusTitle": "Ticket {status}",
+  "@ticketStatusTitle": {
+    "placeholders": {
+      "status": { "type": "String" }
+    }
+  },
+  
+  "errorLoadingTicket": "Error loading ticket",
+  "messageHint": "Message...",
+  "manageTicketsTitle": "Manage Tickets",
+  "ticketStatusOpen": "Open",
+  "ticketStatusInProgress": "In Progress",
+  "ticketStatusClosed": "Closed",
+  "noMessages": "No messages"
 }

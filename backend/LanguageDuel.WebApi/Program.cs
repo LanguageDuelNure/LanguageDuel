@@ -106,6 +106,8 @@ if (app.Environment.IsDevelopment())
 
 using var scope = app.Services.CreateScope();
 var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+dbContext.Database.EnsureCreated();
+
 await DbInitializer.InitializeAsync(dbContext);
 
 app.UseCors("Access-Control-Allow-Origin");

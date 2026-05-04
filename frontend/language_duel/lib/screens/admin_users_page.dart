@@ -85,17 +85,22 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
 
   Future<void> _ban(UserAdminListItemDto user) async {
     final l10n = AppLocalizations.of(context)!;
-    final days = await showDialog<int>(
+    // Returns a Map with 'days' and 'reason'
+    final result = await showDialog<Map<String, dynamic>>(
       context: context,
       builder: (_) => _BanDaysDialog(userName: user.name),
     );
-    if (days == null || !mounted) return;
+    if (result == null || !mounted) return;
 
     setState(() => _pendingIds.add(user.id));
     final auth = context.read<AuthProvider>();
     try {
       await ApiService().banUser(
-          token: auth.token!, userId: user.id, days: days);
+        token: auth.token!, 
+        userId: user.id, 
+        days: result['days'], 
+        reason: result['reason'] // Passed to API
+      );
       await _loadUsers();
       if (mounted) _showSnack(l10n.adminBanSuccess(user.name), AppTheme.danger);
     } catch (e) {
@@ -539,14 +544,16 @@ class _BanDaysDialog extends StatefulWidget {
 }
 
 class _BanDaysDialogState extends State<_BanDaysDialog> {
-  final _ctrl = TextEditingController();
+  final _daysCtrl = TextEditingController();
+  final _reasonCtrl = TextEditingController(); // ADDED
   final _formKey = GlobalKey<FormState>();
 
   static const _presets = [1, 3, 7, 14, 30];
 
   @override
   void dispose() {
-    _ctrl.dispose();
+    _daysCtrl.dispose();
+    _reasonCtrl.dispose();
     super.dispose();
   }
 
@@ -556,8 +563,7 @@ class _BanDaysDialogState extends State<_BanDaysDialog> {
 
     return Dialog(
       backgroundColor: AppTheme.surface,
-      shape:
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Form(
@@ -574,84 +580,49 @@ class _BanDaysDialogState extends State<_BanDaysDialog> {
                       color: AppTheme.danger.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: const Icon(Icons.block_outlined,
-                        color: AppTheme.danger, size: 20),
+                    child: const Icon(Icons.block_outlined, color: AppTheme.danger, size: 20),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          l10n.adminBanDialogTitle,
-                          style: const TextStyle(
-                            color: AppTheme.textPrimary,
-                            fontSize: 17,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        Text(
-                          widget.userName,
-                          style: const TextStyle(
-                              color: AppTheme.textSecondary,
-                              fontSize: 13),
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                        Text(l10n.adminBanDialogTitle, style: const TextStyle(color: AppTheme.textPrimary, fontSize: 17, fontWeight: FontWeight.w700)),
+                        Text(widget.userName, style: const TextStyle(color: AppTheme.textSecondary, fontSize: 13), overflow: TextOverflow.ellipsis),
                       ],
                     ),
                   ),
                 ],
               ),
-
               const SizedBox(height: 20),
-
-              Text(
-                l10n.adminBanQuickSelect,
-                style: const TextStyle(
-                    color: AppTheme.textSecondary, fontSize: 12),
-              ),
-              const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
                 children: _presets.map((d) {
                   return GestureDetector(
-                    onTap: () => setState(() => _ctrl.text = '$d'),
+                    onTap: () => setState(() => _daysCtrl.text = '$d'),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 6),
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
                         color: AppTheme.surfaceElevated,
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(color: AppTheme.border),
                       ),
-                      child: Text(
-                        l10n.adminDayCount(d),
-                        style: const TextStyle(
-                          color: AppTheme.textPrimary,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                      child: Text(l10n.adminDayCount(d), style: const TextStyle(color: AppTheme.textPrimary, fontSize: 12, fontWeight: FontWeight.w600)),
                     ),
                   );
                 }).toList(),
               ),
-
               const SizedBox(height: 16),
-
               TextFormField(
-                controller: _ctrl,
+                controller: _daysCtrl,
                 keyboardType: TextInputType.number,
-                style: const TextStyle(
-                    color: AppTheme.textPrimary, fontSize: 14),
+                style: const TextStyle(color: AppTheme.textPrimary, fontSize: 14),
                 decoration: InputDecoration(
                   hintText: l10n.adminBanDaysHint,
-                  hintStyle: const TextStyle(
-                      color: AppTheme.textSecondary, fontSize: 13),
+                  hintStyle: const TextStyle(color: AppTheme.textSecondary, fontSize: 13),
                   suffixText: l10n.adminDaysSuffix,
-                  suffixStyle: const TextStyle(
-                      color: AppTheme.textSecondary, fontSize: 13),
+                  suffixStyle: const TextStyle(color: AppTheme.textSecondary, fontSize: 13),
                 ),
                 validator: (v) {
                   final n = int.tryParse(v?.trim() ?? '');
@@ -659,9 +630,18 @@ class _BanDaysDialogState extends State<_BanDaysDialog> {
                   return null;
                 },
               ),
-
+              const SizedBox(height: 12),
+              // NEW REASON FIELD
+              TextFormField(
+                controller: _reasonCtrl,
+                style: const TextStyle(color: AppTheme.textPrimary, fontSize: 14),
+                decoration: const InputDecoration(
+                  hintText: 'Reason for ban (Required)',
+                  hintStyle: TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+                ),
+                validator: (v) => v?.trim().isEmpty == true ? 'Reason is required' : null,
+              ),
               const SizedBox(height: 24),
-
               Row(
                 children: [
                   Expanded(
@@ -670,10 +650,8 @@ class _BanDaysDialogState extends State<_BanDaysDialog> {
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppTheme.textSecondary,
                         side: const BorderSide(color: AppTheme.border),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)),
-                        padding:
-                            const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
                       child: Text(l10n.adminCancel),
                     ),
@@ -683,17 +661,17 @@ class _BanDaysDialogState extends State<_BanDaysDialog> {
                     child: ElevatedButton(
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
-                          Navigator.pop(
-                              context, int.parse(_ctrl.text.trim()));
+                          Navigator.pop(context, {
+                            'days': int.parse(_daysCtrl.text.trim()),
+                            'reason': _reasonCtrl.text.trim()
+                          });
                         }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppTheme.danger,
                         foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)),
-                        padding:
-                            const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
                       child: Text(l10n.adminConfirmBan),
                     ),

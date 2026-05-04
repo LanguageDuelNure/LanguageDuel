@@ -218,6 +218,53 @@
 
   "bannedTitle": "Акаунт заблоковано",
   "bannedMessage": "Ваш акаунт було обмежено для пошуку ігор.",
-  "bannedUntilMessage": "Ваш акаунт було обмежено для пошуку ігор до {date}."
+  "bannedUntilMessage": "Ваш акаунт було обмежено для пошуку ігор до {date}.",
+  "@bannedUntilMessage": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+
+  "matchHistoryTitle": "Історія матчів",
+  "myTicketsTitle": "Мої тікети",
+  "manageTicketsAdmin": "Управління тікетами (Адмін)",
   
+  "banReasonLabel": "Причина: {reason}",
+  "@banReasonLabel": {
+    "placeholders": {
+      "reason": { "type": "String" }
+    }
+  },
+  
+  "noMatchHistory": "Історію матчів не знайдено",
+  "victoryLabel": "ПЕРЕМОГА",
+  "defeatLabel": "ПОРАЗКА",
+  "matchDetailsTitle": "Деталі матчу",
+  "failedLoadDetails": "Не вдалося завантажити деталі",
+  "newTicketTitle": "Новий тікет",
+  "ticketIssueHint": "Опишіть вашу проблему...",
+  "submitBtn": "Надіслати",
+  "noTicketsFound": "Тікети не знайдено",
+  
+  "ticketIdLabel": "Тікет #{id}",
+  "@ticketIdLabel": {
+    "placeholders": {
+      "id": { "type": "String" }
+    }
+  },
+  
+  "ticketStatusTitle": "Тікет {status}",
+  "@ticketStatusTitle": {
+    "placeholders": {
+      "status": { "type": "String" }
+    }
+  },
+  
+  "errorLoadingTicket": "Помилка завантаження тікета",
+  "messageHint": "Повідомлення...",
+  "manageTicketsTitle": "Управління тікетами",
+  "ticketStatusOpen": "Відкриті",
+  "ticketStatusInProgress": "В процесі",
+  "ticketStatusClosed": "Закриті",
+  "noMessages": "Немає повідомлень"
 }

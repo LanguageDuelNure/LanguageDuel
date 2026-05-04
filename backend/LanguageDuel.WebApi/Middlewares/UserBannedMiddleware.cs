@@ -17,13 +17,13 @@ public class UserBannedMiddleware
     public async Task InvokeAsync(HttpContext context, IUserService userService)
     {
         var endpoint = context.GetEndpoint();
-        
+
         if (endpoint?.Metadata.GetMetadata<AllowBannedAttribute>() != null)
         {
             await _next(context);
             return;
         }
-        
+
         if (context.User.Identity?.IsAuthenticated == true)
         {
             var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
