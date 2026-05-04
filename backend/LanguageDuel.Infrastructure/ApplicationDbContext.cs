@@ -19,6 +19,10 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<ApplicationUserLanguage> ApplicationUserLanguages { get; set; }
 
     public DbSet<ApplicationUserOpponent> ApplicationUserOpponents { get; set; }
+    
+    public DbSet<Ticket> Tickets { get; set; }
+    
+    public DbSet<TicketMessage> TicketMessages { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

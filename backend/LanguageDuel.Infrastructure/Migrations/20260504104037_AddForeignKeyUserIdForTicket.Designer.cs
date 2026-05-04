@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LanguageDuel.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260327125115_AddApplicationUserOpponentEntityAndStatisticForApplicationUserAndApplicationUserLanguage")]
-    partial class AddApplicationUserOpponentEntityAndStatisticForApplicationUserAndApplicationUserLanguage
+    [Migration("20260504104037_AddForeignKeyUserIdForTicket")]
+    partial class AddForeignKeyUserIdForTicket
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -53,6 +53,11 @@ namespace LanguageDuel.Infrastructure.Migrations
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
+
+                    b.Property<string>("BanReason")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar(1000)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -230,6 +235,53 @@ namespace LanguageDuel.Infrastructure.Migrations
                     b.HasIndex("LanguageId");
 
                     b.ToTable("Questions");
+                });
+
+            modelBuilder.Entity("LanguageDuel.Domain.Entities.Ticket", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("ApplicationUserId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.ToTable("Tickets");
+                });
+
+            modelBuilder.Entity("LanguageDuel.Domain.Entities.TicketMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("ApplicationUserId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<Guid>("TicketId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.HasIndex("TicketId");
+
+                    b.ToTable("TicketMessages");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>
@@ -430,6 +482,36 @@ namespace LanguageDuel.Infrastructure.Migrations
                     b.Navigation("Language");
                 });
 
+            modelBuilder.Entity("LanguageDuel.Domain.Entities.Ticket", b =>
+                {
+                    b.HasOne("LanguageDuel.Domain.Entities.ApplicationUser", "ApplicationUser")
+                        .WithMany("Tickets")
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUser");
+                });
+
+            modelBuilder.Entity("LanguageDuel.Domain.Entities.TicketMessage", b =>
+                {
+                    b.HasOne("LanguageDuel.Domain.Entities.ApplicationUser", "ApplicationUser")
+                        .WithMany()
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LanguageDuel.Domain.Entities.Ticket", "Ticket")
+                        .WithMany("Messages")
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUser");
+
+                    b.Navigation("Ticket");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", null)
@@ -488,6 +570,8 @@ namespace LanguageDuel.Infrastructure.Migrations
                     b.Navigation("ApplicationUserOpponents");
 
                     b.Navigation("OpponentApplicationUsers");
+
+                    b.Navigation("Tickets");
                 });
 
             modelBuilder.Entity("LanguageDuel.Domain.Entities.DifficultyLevel", b =>
@@ -505,6 +589,11 @@ namespace LanguageDuel.Infrastructure.Migrations
             modelBuilder.Entity("LanguageDuel.Domain.Entities.Question", b =>
                 {
                     b.Navigation("Answers");
+                });
+
+            modelBuilder.Entity("LanguageDuel.Domain.Entities.Ticket", b =>
+                {
+                    b.Navigation("Messages");
                 });
 #pragma warning restore 612, 618
         }

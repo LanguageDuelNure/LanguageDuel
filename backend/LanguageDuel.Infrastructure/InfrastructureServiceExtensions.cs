@@ -29,6 +29,8 @@ public static class InfrastructureServiceExtensions
         services.AddScoped<IDifficultyRepository, DifficultyRepository>();
         services.AddScoped<IQuestionRepository, QuestionRepository>();
         services.AddScoped<ILanguageRepository, LanguageRepository>();
+        services.AddScoped<ITicketRepository, TicketRepository>();
+        services.AddScoped<ITicketMessageRepository, TicketMessageRepository>();
         
         services.AddDefaultIdentity<ApplicationUser>(options =>
             {

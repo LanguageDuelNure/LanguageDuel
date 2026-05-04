@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LanguageDuel.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260311163829_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20260504103617_RenameFromUserIdToApplicationUserId")]
+    partial class RenameFromUserIdToApplicationUserId
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -22,7 +22,7 @@ namespace LanguageDuel.Infrastructure.Migrations
                 .HasAnnotation("ProductVersion", "8.0.21")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
-            modelBuilder.Entity("LanguageDuel.Domain.Answer", b =>
+            modelBuilder.Entity("LanguageDuel.Domain.Entities.Answer", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -45,24 +45,6 @@ namespace LanguageDuel.Infrastructure.Migrations
                     b.ToTable("Answers");
                 });
 
-            modelBuilder.Entity("LanguageDuel.Domain.ApplicationUserLanguage", b =>
-                {
-                    b.Property<Guid>("ApplicationUserId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<Guid>("LanguageId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<int>("Rating")
-                        .HasColumnType("int");
-
-                    b.HasKey("ApplicationUserId", "LanguageId");
-
-                    b.HasIndex("LanguageId");
-
-                    b.ToTable("ApplicationUserLanguages");
-                });
-
             modelBuilder.Entity("LanguageDuel.Domain.Entities.ApplicationUser", b =>
                 {
                     b.Property<Guid>("Id")
@@ -71,6 +53,11 @@ namespace LanguageDuel.Infrastructure.Migrations
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
+
+                    b.Property<string>("BanReason")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar(1000)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -114,6 +101,12 @@ namespace LanguageDuel.Infrastructure.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("longtext");
 
+                    b.Property<int>("TotalGames")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalWins")
+                        .HasColumnType("int");
+
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("tinyint(1)");
 
@@ -138,6 +131,54 @@ namespace LanguageDuel.Infrastructure.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("LanguageDuel.Domain.Entities.ApplicationUserLanguage", b =>
+                {
+                    b.Property<Guid>("ApplicationUserId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("LanguageId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<int>("MaxRating")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalGames")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalWins")
+                        .HasColumnType("int");
+
+                    b.HasKey("ApplicationUserId", "LanguageId");
+
+                    b.HasIndex("LanguageId");
+
+                    b.ToTable("ApplicationUserLanguages");
+                });
+
+            modelBuilder.Entity("LanguageDuel.Domain.Entities.ApplicationUserOpponent", b =>
+                {
+                    b.Property<Guid>("ApplicationUserId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("OpponentId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("LastPlayedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("MatchesPlayed")
+                        .HasColumnType("int");
+
+                    b.HasKey("ApplicationUserId", "OpponentId");
+
+                    b.HasIndex("OpponentId");
+
+                    b.ToTable("ApplicationUserOpponents");
+                });
+
             modelBuilder.Entity("LanguageDuel.Domain.Entities.DifficultyLevel", b =>
                 {
                     b.Property<Guid>("Id")
@@ -156,7 +197,7 @@ namespace LanguageDuel.Infrastructure.Migrations
                     b.ToTable("DifficultyLevels");
                 });
 
-            modelBuilder.Entity("LanguageDuel.Domain.Language", b =>
+            modelBuilder.Entity("LanguageDuel.Domain.Entities.Language", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -171,15 +212,14 @@ namespace LanguageDuel.Infrastructure.Migrations
                     b.ToTable("Languages");
                 });
 
-            modelBuilder.Entity("LanguageDuel.Domain.Question", b =>
+            modelBuilder.Entity("LanguageDuel.Domain.Entities.Question", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
                     b.Property<Guid>("DifficultyLevelId")
-                        .HasColumnType("char(36)")
-                        .HasAnnotation("Relational:JsonPropertyName", "DifficultyLevel");
+                        .HasColumnType("char(36)");
 
                     b.Property<Guid>("LanguageId")
                         .HasColumnType("char(36)");
@@ -195,6 +235,51 @@ namespace LanguageDuel.Infrastructure.Migrations
                     b.HasIndex("LanguageId");
 
                     b.ToTable("Questions");
+                });
+
+            modelBuilder.Entity("LanguageDuel.Domain.Entities.Ticket", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("ApplicationUserId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Tickets");
+                });
+
+            modelBuilder.Entity("LanguageDuel.Domain.Entities.TicketMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("ApplicationUserId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<Guid>("TicketId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.HasIndex("TicketId");
+
+                    b.ToTable("TicketMessages");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>
@@ -327,9 +412,9 @@ namespace LanguageDuel.Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("LanguageDuel.Domain.Answer", b =>
+            modelBuilder.Entity("LanguageDuel.Domain.Entities.Answer", b =>
                 {
-                    b.HasOne("LanguageDuel.Domain.Question", "Question")
+                    b.HasOne("LanguageDuel.Domain.Entities.Question", "Question")
                         .WithMany("Answers")
                         .HasForeignKey("QuestionId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -338,7 +423,7 @@ namespace LanguageDuel.Infrastructure.Migrations
                     b.Navigation("Question");
                 });
 
-            modelBuilder.Entity("LanguageDuel.Domain.ApplicationUserLanguage", b =>
+            modelBuilder.Entity("LanguageDuel.Domain.Entities.ApplicationUserLanguage", b =>
                 {
                     b.HasOne("LanguageDuel.Domain.Entities.ApplicationUser", "ApplicationUser")
                         .WithMany("ApplicationUserLanguages")
@@ -346,7 +431,7 @@ namespace LanguageDuel.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("LanguageDuel.Domain.Language", "Language")
+                    b.HasOne("LanguageDuel.Domain.Entities.Language", "Language")
                         .WithMany("ApplicationUserLanguages")
                         .HasForeignKey("LanguageId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -357,7 +442,26 @@ namespace LanguageDuel.Infrastructure.Migrations
                     b.Navigation("Language");
                 });
 
-            modelBuilder.Entity("LanguageDuel.Domain.Question", b =>
+            modelBuilder.Entity("LanguageDuel.Domain.Entities.ApplicationUserOpponent", b =>
+                {
+                    b.HasOne("LanguageDuel.Domain.Entities.ApplicationUser", "ApplicationUser")
+                        .WithMany("ApplicationUserOpponents")
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LanguageDuel.Domain.Entities.ApplicationUser", "Opponent")
+                        .WithMany("OpponentApplicationUsers")
+                        .HasForeignKey("OpponentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUser");
+
+                    b.Navigation("Opponent");
+                });
+
+            modelBuilder.Entity("LanguageDuel.Domain.Entities.Question", b =>
                 {
                     b.HasOne("LanguageDuel.Domain.Entities.DifficultyLevel", "DifficultyLevel")
                         .WithMany("Questions")
@@ -365,7 +469,7 @@ namespace LanguageDuel.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("LanguageDuel.Domain.Language", "Language")
+                    b.HasOne("LanguageDuel.Domain.Entities.Language", "Language")
                         .WithMany("Questions")
                         .HasForeignKey("LanguageId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -374,6 +478,25 @@ namespace LanguageDuel.Infrastructure.Migrations
                     b.Navigation("DifficultyLevel");
 
                     b.Navigation("Language");
+                });
+
+            modelBuilder.Entity("LanguageDuel.Domain.Entities.TicketMessage", b =>
+                {
+                    b.HasOne("LanguageDuel.Domain.Entities.ApplicationUser", "ApplicationUser")
+                        .WithMany()
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LanguageDuel.Domain.Entities.Ticket", "Ticket")
+                        .WithMany("Messages")
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUser");
+
+                    b.Navigation("Ticket");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -430,6 +553,10 @@ namespace LanguageDuel.Infrastructure.Migrations
             modelBuilder.Entity("LanguageDuel.Domain.Entities.ApplicationUser", b =>
                 {
                     b.Navigation("ApplicationUserLanguages");
+
+                    b.Navigation("ApplicationUserOpponents");
+
+                    b.Navigation("OpponentApplicationUsers");
                 });
 
             modelBuilder.Entity("LanguageDuel.Domain.Entities.DifficultyLevel", b =>
@@ -437,16 +564,21 @@ namespace LanguageDuel.Infrastructure.Migrations
                     b.Navigation("Questions");
                 });
 
-            modelBuilder.Entity("LanguageDuel.Domain.Language", b =>
+            modelBuilder.Entity("LanguageDuel.Domain.Entities.Language", b =>
                 {
                     b.Navigation("ApplicationUserLanguages");
 
                     b.Navigation("Questions");
                 });
 
-            modelBuilder.Entity("LanguageDuel.Domain.Question", b =>
+            modelBuilder.Entity("LanguageDuel.Domain.Entities.Question", b =>
                 {
                     b.Navigation("Answers");
+                });
+
+            modelBuilder.Entity("LanguageDuel.Domain.Entities.Ticket", b =>
+                {
+                    b.Navigation("Messages");
                 });
 #pragma warning restore 612, 618
         }

@@ -23,4 +23,6 @@ public class ApplicationUser : IdentityUser<Guid>
     public ICollection<ApplicationUserOpponent> ApplicationUserOpponents { get; set; } = [];
 
     public ICollection<ApplicationUserOpponent> OpponentApplicationUsers { get; set; } = [];
+    
+    public ICollection<Ticket> Tickets { get; set; } = [];
 }
