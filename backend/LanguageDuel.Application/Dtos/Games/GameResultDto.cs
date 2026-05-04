@@ -6,6 +6,8 @@ public class GameResultDto
 {
     public bool IsVictory { get; set; }
     
+    public DateTime CreatedAt { get; set; }
+    
     public string YourName { get; set; }
     
     public string OpponentName { get; set; }

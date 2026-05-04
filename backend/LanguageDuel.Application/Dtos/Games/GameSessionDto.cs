@@ -20,6 +20,8 @@ public class GameSessionDto
     public List<GameSessionUserDto> Users { get; set; } = [];
 
     public Timer Timer { get; set; }
+    
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     public DateTime CurrentQuestionStartDateTime { get; set; }
 }

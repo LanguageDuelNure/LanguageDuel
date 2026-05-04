@@ -4,6 +4,8 @@ public class Game
 {
     public Guid Id { get; set; }
     
+    public DateTime CreatedAt { get; set; }
+    
     public Guid LanguageId { get; set; }
     
     public Language Language { get; set; }

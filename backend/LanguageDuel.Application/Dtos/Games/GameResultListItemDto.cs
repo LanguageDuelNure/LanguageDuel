@@ -4,6 +4,8 @@ public class GameResultListItemDto
 {
     public Guid Id { get; set; }
     
+    public DateTime CreatedAt { get; set; }
+    
     public bool IsVictory { get; set; }
     
     public string YourName { get; set; }

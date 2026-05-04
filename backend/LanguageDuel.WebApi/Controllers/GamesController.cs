@@ -1,4 +1,5 @@
 ﻿using LanguageDuel.Application.Dtos.Games;
+using LanguageDuel.Application.Dtos.Results;
 using LanguageDuel.Application.Services.Games;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,6 +16,8 @@ public class GamesController(IGameService gameService) : BaseController
     /// </remarks>
     [HttpGet("current")]
     [Authorize]
+    [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Result), StatusCodes.Status404NotFound)]
     public ActionResult GetGame()
     {
         var result = gameService.GetGame(GetUserId());
@@ -27,6 +30,8 @@ public class GamesController(IGameService gameService) : BaseController
     /// </remarks>
     [HttpGet("{gameId}/history")]
     [Authorize]
+    [ProducesResponseType(typeof(GameResultDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Result), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<GameResultDto>> GetGameHistory(Guid gameId)
     {
         var result = await gameService.GetGameHistory(GetUserId(), gameId);
@@ -39,6 +44,7 @@ public class GamesController(IGameService gameService) : BaseController
     /// </remarks>
     [HttpGet("history")]
     [Authorize]
+    [ProducesResponseType(typeof(IEnumerable<GameResultListItemDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<GameResultListItemDto>>> GetGamesHistory()
     {
         var result = await gameService.GetGamesHistory(GetUserId());
@@ -51,6 +57,8 @@ public class GamesController(IGameService gameService) : BaseController
     /// </remarks>
     [HttpGet("state")]
     [Authorize]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(Result), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> SendGameStateAsync(Guid gameId)
     {
         var result = await gameService.SendGameStateAsync(gameId);
@@ -63,6 +71,8 @@ public class GamesController(IGameService gameService) : BaseController
     /// </remarks>
     [HttpPost]
     [Authorize]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(Result), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> SendGameInvitation(Guid languageId)
     {
         var result = await gameService.SendGameInvitationsAsync(GetUserId(), languageId);
@@ -75,6 +85,7 @@ public class GamesController(IGameService gameService) : BaseController
     /// </remarks>
     [HttpDelete]
     [Authorize]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<ActionResult> RemoveFromSearchGroupsAsync(Guid languageId)
     {
         var result = await gameService.RemoveFromSearchGroupsAsync(GetUserId(), languageId);
@@ -89,6 +100,8 @@ public class GamesController(IGameService gameService) : BaseController
     /// </remarks>
     [HttpPost("answer")]
     [Authorize]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(Result), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> ChooseAnswer(Guid gameId, Guid answerId)
     {
         var result = await gameService.ChooseAnswerAsync(GetUserId(), gameId, answerId);
@@ -103,6 +116,9 @@ public class GamesController(IGameService gameService) : BaseController
     /// </remarks>
     [HttpPost("give-up")]
     [Authorize]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(Result), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(Result), StatusCodes.Status404NotFound)]
     public async Task<ActionResult> GiveUp(Guid gameId)
     {
         var result = await gameService.GiveUpAsync(GetUserId(), gameId);
