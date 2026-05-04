@@ -7,6 +7,9 @@ public class ApplicationUser : IdentityUser<Guid>
 {
     [MaxLength(6)]
     public string VerificationCode { get; set; } = string.Empty;
+    
+    [MaxLength(1000)]
+    public string BanReason { get; set; } = string.Empty;
 
     [MaxLength(50)]
     public string Name { get; set; } = string.Empty;

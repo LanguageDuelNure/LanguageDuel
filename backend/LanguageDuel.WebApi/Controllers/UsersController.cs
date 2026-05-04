@@ -204,7 +204,7 @@ public class UsersController(IUserService userService, IMapper mapper) : BaseCon
     [ProducesResponseType(typeof(Result), StatusCodes.Status404NotFound)]
     public async Task<ActionResult> BanUser(Guid userId, [FromBody] BanUserRequestModel request)
     {
-        var result = await userService.BanUserAsync(userId, request.Days);
+        var result = await userService.BanUserAsync(userId, mapper.Map<BanUserDto>(request));
         if (!result.IsSuccess)
         {
             return HandleErrors(result);

@@ -20,23 +20,6 @@ public static class InfrastructureServiceExtensions
         services.AddDbContextFactory<ApplicationDbContext>(options =>
             options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
-        services.AddDefaultIdentity<ApplicationUser>(options =>
-        {
-            options.SignIn.RequireConfirmedAccount = true;
-            options.Password = new PasswordOptions
-            {
-                RequireNonAlphanumeric = false
-            };
-            options.Lockout.AllowedForNewUsers = true;
-        })
-            .AddRoles<IdentityRole<Guid>>()
-            .AddEntityFrameworkStores<ApplicationDbContext>();
-
-        services.AddSignalR(options =>
-        {
-            options.EnableDetailedErrors = true;
-        });
-
         services.AddScoped<IEmailSender, SmtpEmailSender>();
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IFileService, FileService>();
@@ -46,6 +29,22 @@ public static class InfrastructureServiceExtensions
         services.AddScoped<IDifficultyRepository, DifficultyRepository>();
         services.AddScoped<IQuestionRepository, QuestionRepository>();
         services.AddScoped<ILanguageRepository, LanguageRepository>();
+        
+        services.AddDefaultIdentity<ApplicationUser>(options =>
+            {
+                options.SignIn.RequireConfirmedAccount = true;
+                options.Password = new PasswordOptions
+                {
+                    RequireNonAlphanumeric = false
+                };
+            })
+            .AddRoles<IdentityRole<Guid>>()
+            .AddEntityFrameworkStores<ApplicationDbContext>();
+
+        services.AddSignalR(options =>
+        {
+            options.EnableDetailedErrors = true;
+        });
 
         services.Configure<SmtpEmailOptions>(configuration.GetSection("EmailOptions"));
         services.Configure<JwtTokenOptions>(configuration.GetSection("Jwt"));

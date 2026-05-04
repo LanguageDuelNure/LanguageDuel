@@ -14,8 +14,8 @@ public interface IUserService
     Task<Result<LoginResultDto>> HandleGoogleLoginAsync(string idToken);
     Task<Result> UpdateUserProfileAsync(Guid userId, UpdateUserProfileDto dto);
     Task<Result<IEnumerable<UserAdminListItemDto>>> GetAllUsersAsync();
-    Task<Result> BanUserAsync(Guid userId, int days);
+    Task<Result> BanUserAsync(Guid userId, BanUserDto dto);
     Task<Result> UnbanUserAsync(Guid userId);
     Task<Result<IEnumerable<LeaderboardItemDto>>> GetLeaderboardAsync(Guid? languageId);
-    Task<TimeSpan?> IsUserBannedAsync(string userId);
+    Task<Result> IsUserBannedAsync(string userId);
 }

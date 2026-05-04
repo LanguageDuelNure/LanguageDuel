@@ -1,10 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using LanguageDuel.WebApi.ValidationAttributes;
 
 namespace LanguageDuel.WebApi.Requests.Users;
 
 public class UpdateUserProfileRequestModel
 {
-    [Required]
+    [RequiredWithCode]
     public string Name { get; set; }
     
     public IFormFile? Icon { get; set; }

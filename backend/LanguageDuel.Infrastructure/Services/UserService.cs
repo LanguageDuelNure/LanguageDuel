@@ -171,7 +171,7 @@ public class UserService(UserManager<ApplicationUser> userManager, SignInManager
         };
     }
     
-    public async Task<TimeSpan?> IsUserBannedAsync(string userId)
+    public async Task<Result> IsUserBannedAsync(string userId)
     {
         var user = await userManager.FindByIdAsync(userId);
     
@@ -180,9 +180,24 @@ public class UserService(UserManager<ApplicationUser> userManager, SignInManager
             return null;
         }
 
-        return user.LockoutEnd.HasValue && user.LockoutEnd.Value > DateTimeOffset.UtcNow
-            ? user.LockoutEnd.Value - DateTimeOffset.UtcNow
-            : null;
+        if (user.LockoutEnd.HasValue && user.LockoutEnd.Value > DateTimeOffset.UtcNow)
+        {
+            return new Result
+            {
+                 Errors = [new Error()
+                 {
+                     Key = ErrorKey.Banned,
+                     Message = "You are banned.",
+                     Parameters =
+                     {
+                         {"TimeRemain", user.LockoutEnd - DateTime.UtcNow},
+                         {"Reason", user.BanReason},
+                     }
+                 }]
+            };
+        }
+        
+        return new Result();
     }
 
     public async Task<Result<LoginResultDto>> LoginAsync(LoginUserDto dto)
@@ -396,7 +411,7 @@ public class UserService(UserManager<ApplicationUser> userManager, SignInManager
         return new Result<IEnumerable<UserAdminListItemDto>> { Value = userDtos };
     }
 
-    public async Task<Result> BanUserAsync(Guid userId, int days)
+    public async Task<Result> BanUserAsync(Guid userId, BanUserDto dto)
     {
         var getUserResult = await GetUserAsync(userId);
         if (!getUserResult.IsSuccess)
@@ -405,7 +420,7 @@ public class UserService(UserManager<ApplicationUser> userManager, SignInManager
         }
 
         var user = getUserResult.Value;
-        var lockoutEndDate = DateTimeOffset.UtcNow.AddDays(days);
+        var lockoutEndDate = DateTimeOffset.UtcNow.AddDays(dto.Days);
 
         var result = await userManager.SetLockoutEndDateAsync(user, lockoutEndDate);
         
@@ -416,6 +431,9 @@ public class UserService(UserManager<ApplicationUser> userManager, SignInManager
                 Errors = [new Error { Message = "Failed to ban user", Key = ErrorKey.UnexpectedError }]
             };
         }
+        
+        user.BanReason = dto.Reason;
+        await userManager.UpdateAsync(user);
 
         return new Result();
     }

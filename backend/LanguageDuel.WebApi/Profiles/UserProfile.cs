@@ -12,5 +12,6 @@ public class UserProfile : Profile
         CreateMap<ConfirmEmailDto, EmailConfirmationRequestModel>();
         CreateMap<EmailConfirmationRequestModel, ConfirmEmailDto>();
         CreateMap<LoginRequestModel, LoginUserDto>();
+        CreateMap<BanUserRequestModel, BanUserDto>();
     }
 }

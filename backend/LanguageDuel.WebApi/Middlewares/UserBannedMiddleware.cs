@@ -21,25 +21,14 @@ public class UserBannedMiddleware
 
             if (!string.IsNullOrEmpty(userId))
             {
-                var banRemain = await userService.IsUserBannedAsync(userId);
-                if (banRemain == null)
+                var isUserBannedResult = await userService.IsUserBannedAsync(userId);
+                if (isUserBannedResult.IsSuccess)
                 {
                     await _next(context);
                     return;
                 }
                 context.Response.StatusCode = StatusCodes.Status403Forbidden;
-                await context.Response.WriteAsJsonAsync(new Result()
-                {
-                    Errors = [new Error()
-                    {
-                        Key = ErrorKey.Banned,
-                        Message = "You are banned.",
-                        Parameters =
-                        {
-                            {"TimeRemain", banRemain.ToString() ?? string.Empty}
-                        }
-                    }]
-                });
+                await context.Response.WriteAsJsonAsync(isUserBannedResult);
                 return;
             }
         }
