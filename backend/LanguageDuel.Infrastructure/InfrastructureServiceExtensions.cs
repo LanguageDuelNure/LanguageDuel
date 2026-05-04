@@ -31,6 +31,7 @@ public static class InfrastructureServiceExtensions
         services.AddScoped<ILanguageRepository, LanguageRepository>();
         services.AddScoped<ITicketRepository, TicketRepository>();
         services.AddScoped<ITicketMessageRepository, TicketMessageRepository>();
+        services.AddScoped<IGameRepository, GameRepository>();
         
         services.AddDefaultIdentity<ApplicationUser>(options =>
             {

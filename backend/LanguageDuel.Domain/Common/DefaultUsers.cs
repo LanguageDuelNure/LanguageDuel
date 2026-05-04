@@ -13,7 +13,8 @@ public static class DefaultUsers
         NormalizedEmail = "USER1@TEST.COM",
         EmailConfirmed = true,
         Name = "Alex Ivanov",
-        SecurityStamp = Guid.NewGuid().ToString()
+        SecurityStamp = Guid.NewGuid().ToString(),
+        LockoutEnabled = true,
     },
     new ApplicationUser
     {
@@ -23,7 +24,8 @@ public static class DefaultUsers
         NormalizedEmail = "USER2@TEST.COM",
         EmailConfirmed = true,
         Name = "Maria Kovalchuk",
-        SecurityStamp = Guid.NewGuid().ToString()
+        SecurityStamp = Guid.NewGuid().ToString(),
+        LockoutEnabled = true,
     },
     new ApplicationUser
     {
@@ -33,7 +35,8 @@ public static class DefaultUsers
         NormalizedEmail = "USER3@TEST.COM",
         EmailConfirmed = true,
         Name = "Dmitry Savchenko",
-        SecurityStamp = Guid.NewGuid().ToString()
+        SecurityStamp = Guid.NewGuid().ToString(),
+        LockoutEnabled = true,
     },
     new ApplicationUser
     {
@@ -43,7 +46,8 @@ public static class DefaultUsers
         NormalizedEmail = "USER4@TEST.COM",
         EmailConfirmed = true,
         Name = "Anna Petrenko",
-        SecurityStamp = Guid.NewGuid().ToString()
+        SecurityStamp = Guid.NewGuid().ToString(),
+        LockoutEnabled = true,
     },
     new ApplicationUser
     {
@@ -53,7 +57,8 @@ public static class DefaultUsers
         NormalizedEmail = "USER5@TEST.COM",
         EmailConfirmed = true,
         Name = "Sergey Bondar",
-        SecurityStamp = Guid.NewGuid().ToString()
+        SecurityStamp = Guid.NewGuid().ToString(),
+        LockoutEnabled = true,
     }
 ];
 

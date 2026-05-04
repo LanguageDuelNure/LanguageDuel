@@ -23,6 +23,14 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Ticket> Tickets { get; set; }
     
     public DbSet<TicketMessage> TicketMessages { get; set; }
+    
+    public DbSet<Game> Games { get; set; }
+    
+    public DbSet<GameApplicationUser> GameApplicationUsers { get; set; }
+    
+    public DbSet<GameQuestion> GameQuestions { get; set; }
+    
+    public DbSet<GameAnswer> GameAnswers { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -51,5 +59,11 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
         builder.Entity<ApplicationUserOpponent>()
             .HasKey(auo => new { auo.ApplicationUserId, auo.OpponentId });
+        
+        builder.Entity<GameApplicationUser>()
+            .HasKey(auo => new { auo.GameId, auo.ApplicationUserId });
+        
+        builder.Entity<GameAnswer>()
+            .HasKey(auo => new { auo.GameQuestionId, auo.AnswerId });
     }
 }

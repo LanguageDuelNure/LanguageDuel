@@ -1,3 +1,4 @@
+using LanguageDuel.Application.Dtos.Games;
 using LanguageDuel.Application.Dtos.Results;
 
 namespace LanguageDuel.Application.Services.Games;
@@ -12,4 +13,6 @@ public interface IGameService
     Task<Result> SendGameStateAsync(Guid gameId);
     Task<Result> SendGameInvitationsAsync(Guid userId, Guid languageId);
     Task<Result> GiveUpAsync(Guid userId, Guid gameId);
+    Task<Result<IEnumerable<GameResultListItemDto>>> GetGamesHistory(Guid userId);
+    Task<Result<GameResultDto>> GetGameHistory(Guid userId, Guid gameId);
 }

@@ -1,9 +1,9 @@
-﻿using LanguageDuel.Application.Dtos.Questions;
+﻿namespace LanguageDuel.Application.Dtos.Games;
 
-namespace LanguageDuel.Application.Dtos.Games;
-
-public class GameResultDto
+public class GameResultListItemDto
 {
+    public Guid Id { get; set; }
+    
     public bool IsVictory { get; set; }
     
     public string YourName { get; set; }
@@ -17,6 +17,4 @@ public class GameResultDto
     public Guid DifficultyLevelId { get; set; }
     
     public string DifficultyLevelName { get; set; }
-    
-    public IEnumerable<QuestionDto> Questions { get; set; }
 }

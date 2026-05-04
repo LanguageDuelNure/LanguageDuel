@@ -178,7 +178,14 @@ public class UserService(UserManager<ApplicationUser> userManager, SignInManager
     
         if (user == null)
         {
-            return null;
+            return new Result
+            {
+                Errors = [new Error()
+                {
+                    Key = ErrorKey.NotFound,
+                    Message = "Your account doesn't exist.",
+                }]
+            };
         }
 
         if (user.LockoutEnd.HasValue && user.LockoutEnd.Value > DateTimeOffset.UtcNow)

@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LanguageDuel.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260504104037_AddForeignKeyUserIdForTicket")]
-    partial class AddForeignKeyUserIdForTicket
+    [Migration("20260504141349_AddIsWinColumnForGameApplicationUser")]
+    partial class AddIsWinColumnForGameApplicationUser
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -195,6 +195,86 @@ namespace LanguageDuel.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("DifficultyLevels");
+                });
+
+            modelBuilder.Entity("LanguageDuel.Domain.Entities.Game", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("DifficultyLevelId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("LanguageId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DifficultyLevelId");
+
+                    b.HasIndex("LanguageId");
+
+                    b.ToTable("Games");
+                });
+
+            modelBuilder.Entity("LanguageDuel.Domain.Entities.GameAnswer", b =>
+                {
+                    b.Property<Guid>("GameQuestionId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("AnswerId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid?>("ApplicationUserId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("GameQuestionId", "AnswerId");
+
+                    b.HasIndex("AnswerId");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.ToTable("GameAnswers");
+                });
+
+            modelBuilder.Entity("LanguageDuel.Domain.Entities.GameApplicationUser", b =>
+                {
+                    b.Property<Guid>("GameId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("ApplicationUserId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<bool>("IsWin")
+                        .HasColumnType("tinyint(1)");
+
+                    b.HasKey("GameId", "ApplicationUserId");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.ToTable("GameApplicationUsers");
+                });
+
+            modelBuilder.Entity("LanguageDuel.Domain.Entities.GameQuestion", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("GameId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("QuestionId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GameId");
+
+                    b.HasIndex("QuestionId");
+
+                    b.ToTable("GameQuestions");
                 });
 
             modelBuilder.Entity("LanguageDuel.Domain.Entities.Language", b =>
@@ -463,6 +543,88 @@ namespace LanguageDuel.Infrastructure.Migrations
                     b.Navigation("Opponent");
                 });
 
+            modelBuilder.Entity("LanguageDuel.Domain.Entities.Game", b =>
+                {
+                    b.HasOne("LanguageDuel.Domain.Entities.DifficultyLevel", "DifficultyLevel")
+                        .WithMany()
+                        .HasForeignKey("DifficultyLevelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LanguageDuel.Domain.Entities.Language", "Language")
+                        .WithMany()
+                        .HasForeignKey("LanguageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DifficultyLevel");
+
+                    b.Navigation("Language");
+                });
+
+            modelBuilder.Entity("LanguageDuel.Domain.Entities.GameAnswer", b =>
+                {
+                    b.HasOne("LanguageDuel.Domain.Entities.Answer", "Answer")
+                        .WithMany()
+                        .HasForeignKey("AnswerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LanguageDuel.Domain.Entities.ApplicationUser", "ApplicationUser")
+                        .WithMany()
+                        .HasForeignKey("ApplicationUserId");
+
+                    b.HasOne("LanguageDuel.Domain.Entities.GameQuestion", "GameQuestion")
+                        .WithMany("GameAnswers")
+                        .HasForeignKey("GameQuestionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Answer");
+
+                    b.Navigation("ApplicationUser");
+
+                    b.Navigation("GameQuestion");
+                });
+
+            modelBuilder.Entity("LanguageDuel.Domain.Entities.GameApplicationUser", b =>
+                {
+                    b.HasOne("LanguageDuel.Domain.Entities.ApplicationUser", "ApplicationUser")
+                        .WithMany()
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LanguageDuel.Domain.Entities.Game", "Game")
+                        .WithMany("GameApplicationUsers")
+                        .HasForeignKey("GameId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUser");
+
+                    b.Navigation("Game");
+                });
+
+            modelBuilder.Entity("LanguageDuel.Domain.Entities.GameQuestion", b =>
+                {
+                    b.HasOne("LanguageDuel.Domain.Entities.Game", "Game")
+                        .WithMany("GameQuestions")
+                        .HasForeignKey("GameId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LanguageDuel.Domain.Entities.Question", "Question")
+                        .WithMany()
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Game");
+
+                    b.Navigation("Question");
+                });
+
             modelBuilder.Entity("LanguageDuel.Domain.Entities.Question", b =>
                 {
                     b.HasOne("LanguageDuel.Domain.Entities.DifficultyLevel", "DifficultyLevel")
@@ -577,6 +739,18 @@ namespace LanguageDuel.Infrastructure.Migrations
             modelBuilder.Entity("LanguageDuel.Domain.Entities.DifficultyLevel", b =>
                 {
                     b.Navigation("Questions");
+                });
+
+            modelBuilder.Entity("LanguageDuel.Domain.Entities.Game", b =>
+                {
+                    b.Navigation("GameApplicationUsers");
+
+                    b.Navigation("GameQuestions");
+                });
+
+            modelBuilder.Entity("LanguageDuel.Domain.Entities.GameQuestion", b =>
+                {
+                    b.Navigation("GameAnswers");
                 });
 
             modelBuilder.Entity("LanguageDuel.Domain.Entities.Language", b =>

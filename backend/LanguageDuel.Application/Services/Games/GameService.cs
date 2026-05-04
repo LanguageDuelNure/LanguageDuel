@@ -199,6 +199,72 @@ public class GameService(INotificationService notificationService, IServiceScope
         return new Result();
     }
 
+    public async Task<Result<IEnumerable<GameResultListItemDto>>> GetGamesHistory(Guid userId)
+    {
+        var serviceProvider = serviceScopeFactory.CreateScope().ServiceProvider;
+        var gameRep = serviceProvider.GetRequiredService<IGameRepository>();
+        var mapper = serviceProvider.GetRequiredService<IMapper>();
+        var games = (await gameRep.GetGamesByUserAsync(userId)).ToList();
+
+        var dto = mapper.Map<List<GameResultListItemDto>>(games);
+
+        for (int i = 0; i < dto.Count; i++)
+        {
+            FillGameParticipantDetails(userId, games[i], dto[i]);
+        }
+
+        return new Result<IEnumerable<GameResultListItemDto>>()
+        {
+            Value = dto,
+        };
+    }
+    
+    public async Task<Result<GameResultDto>> GetGameHistory(Guid userId, Guid gameId)
+    {
+        var serviceProvider = serviceScopeFactory.CreateScope().ServiceProvider;
+        var gameRep = serviceProvider.GetRequiredService<IGameRepository>();
+        var mapper = serviceProvider.GetRequiredService<IMapper>();
+        var game = await gameRep.GetGameByIdAsync(gameId);
+        if (game == null)
+        {
+            return new Result<GameResultDto>()
+            {
+                Errors = [new Error
+                {
+                    Key = ErrorKey.NotFound,
+                    Message = "Game not found",
+                }]
+            };
+        }
+
+        var dto = mapper.Map<GameResultDto>(game);
+        
+        FillQuestionsWithAnswers(dto, game);
+        
+        FillGameParticipantDetails(userId, game, dto);
+
+        return new Result<GameResultDto>()
+        {
+            Value = dto,
+        };
+    }
+
+    private static void FillGameParticipantDetails(Guid userId, Game game, GameResultDto dto)
+    {
+        var winUserId = game.GameApplicationUsers.FirstOrDefault(gu => gu.IsWin)?.ApplicationUserId;
+        dto.IsVictory = userId == winUserId;
+        dto.OpponentName = game.GameApplicationUsers.FirstOrDefault(gu => gu.ApplicationUserId != userId)?.ApplicationUser.Name!;
+        dto.YourName = game.GameApplicationUsers.FirstOrDefault(gu => gu.ApplicationUserId == userId)?.ApplicationUser.Name!;
+    }
+    
+    private static void FillGameParticipantDetails(Guid userId, Game game, GameResultListItemDto dto)
+    {
+        var winUserId = game.GameApplicationUsers.FirstOrDefault(gu => gu.IsWin)?.ApplicationUserId;
+        dto.IsVictory = userId == winUserId;
+        dto.OpponentName = game.GameApplicationUsers.FirstOrDefault(gu => gu.ApplicationUserId == winUserId)?.ApplicationUser.Name!;
+        dto.YourName = game.GameApplicationUsers.FirstOrDefault(gu => gu.ApplicationUserId == userId)?.ApplicationUser.Name!;
+    }
+
     public async Task<Result> SendGameInvitationsAsync(Guid userId, Guid languageId)
     {
         var serviceProvider = serviceScopeFactory.CreateScope().ServiceProvider;
@@ -322,6 +388,24 @@ public class GameService(INotificationService notificationService, IServiceScope
 
         return new Result();
     }
+    
+    private static void FillQuestionsWithAnswers(GameResultDto dto, Game game)
+    {
+        foreach (var questionDto in dto.Questions)
+        {
+            var gameQuestion = game.GameQuestions.FirstOrDefault(gq => gq.QuestionId == questionDto.Id);
+            if (gameQuestion == null) continue;
+            
+            var userAnswersForQuestion = gameQuestion.GameAnswers
+                .Where(ga => ga.ApplicationUserId.HasValue)
+                .Select(ga => new { UserId = ga.ApplicationUserId!.Value, ga.AnswerId });
+
+            foreach (var ua in userAnswersForQuestion)
+            {
+                questionDto.UserAnswers.TryAdd(ua.UserId, ua.AnswerId);
+            }
+        }
+    }
 
     private async Task ChangeUsersRatingAsync(GameSessionDto gameSession)
     {
@@ -351,6 +435,40 @@ public class GameService(INotificationService notificationService, IServiceScope
         await applicationUserOpponentService.UpdateStatisticsAsync(gameSession.Users[0].Id, gameSession.Users[1].Id);
         await unitOfWork.CommitAsync();
     }
+    
+    private async Task SaveGameAsync(GameSessionDto gameSession)
+    {
+        var serviceProvider = serviceScopeFactory.CreateScope().ServiceProvider;
+        var mapper = serviceProvider.GetRequiredService<IMapper>();
+        var game = mapper.Map<Game>(gameSession);
+        
+        var winUser = gameSession.Users.FirstOrDefault(u => u.Hp != 0 && !u.IsGiveUp);
+        var user = game.GameApplicationUsers
+            .FirstOrDefault(gau => gau.ApplicationUserId == winUser?.Id);
+        if (user != null)
+        {
+            user.IsWin = true;
+        }
+        
+        foreach (var question in gameSession.Questions)
+        {
+            foreach (var userAnswer in question.UserAnswers.Select(ua => new { UserId = ua.Key, AnswerId = ua.Value }))
+            {
+                var answer = game.GameQuestions
+                    .Where(q => q.QuestionId == question.Id)
+                    .SelectMany(q =>
+                        q.GameAnswers.Where(ga => ga.AnswerId == userAnswer.AnswerId))
+                    .FirstOrDefault();
+                answer.ApplicationUserId = userAnswer.UserId;
+            }
+        }
+        
+        var unitOfWork = serviceProvider.GetRequiredService<IUnitOfWork>();
+        var gameRep = serviceProvider.GetRequiredService<IRepository<Game>>();
+        
+        gameRep.Add(game);
+        await unitOfWork.CommitAsync();
+    }
 
     private async Task HandleGameStateAsync(GameSessionDto gameSession)
     {
@@ -366,7 +484,10 @@ public class GameService(INotificationService notificationService, IServiceScope
     private async Task FinishGameAsync(GameSessionDto gameSession)
     {
         gameSession.Timer.Dispose();
+        gameSession.Questions
+            .RemoveRange(gameSession.CurrentQuestionIndex, gameSession.Questions.Count - gameSession.CurrentQuestionIndex);
         await ChangeUsersRatingAsync(gameSession);
+        await SaveGameAsync(gameSession);
         await SendGameResultAsync(gameSession);
         _games.Remove(gameSession.Id, out _);
     }
@@ -405,7 +526,7 @@ public class GameService(INotificationService notificationService, IServiceScope
         await notificationService.SendNotificationAsync(
             GetGameGroupAsync(gameSession.Id),
             "ReceiveGameResult",
-            new GameResultDto
+            new GameResultSessionDto
             {
                 Questions = [.. gameSession.Questions.Take(gameSession.CurrentQuestionIndex)],
                 WinnerUserId = winner?.Id,
@@ -436,6 +557,7 @@ public class GameService(INotificationService notificationService, IServiceScope
             Id = Guid.NewGuid(),
             LanguageId = languageId,
             LanguageName = (await languageRep.GetAsync(languageId)).Name,
+            DifficultyLevelId = difficultyLevelId,
             Questions = randomQuestions,
             CurrentQuestionIndex = -1,
             Timer = new Timer(_gameLogicOptions.TimeForQuestionInSeconds * 1000),

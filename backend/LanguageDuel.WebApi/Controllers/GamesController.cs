@@ -1,4 +1,5 @@
-﻿using LanguageDuel.Application.Services.Games;
+﻿using LanguageDuel.Application.Dtos.Games;
+using LanguageDuel.Application.Services.Games;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,6 +18,30 @@ public class GamesController(IGameService gameService) : BaseController
     public ActionResult GetGame()
     {
         var result = gameService.GetGame(GetUserId());
+        return !result.IsSuccess ? HandleErrors(result) : Ok(result.Value);
+    }
+    
+    /// <remarks>
+    /// Error keys:
+    /// - UNEXPECTED_ERROR
+    /// </remarks>
+    [HttpGet("{gameId}/history")]
+    [Authorize]
+    public async Task<ActionResult<GameResultDto>> GetGameHistory(Guid gameId)
+    {
+        var result = await gameService.GetGameHistory(GetUserId(), gameId);
+        return !result.IsSuccess ? HandleErrors(result) : Ok(result.Value);
+    }
+    
+    /// <remarks>
+    /// Error keys:
+    /// - UNEXPECTED_ERROR
+    /// </remarks>
+    [HttpGet("history")]
+    [Authorize]
+    public async Task<ActionResult<IEnumerable<GameResultListItemDto>>> GetGamesHistory()
+    {
+        var result = await gameService.GetGamesHistory(GetUserId());
         return !result.IsSuccess ? HandleErrors(result) : Ok(result.Value);
     }
 

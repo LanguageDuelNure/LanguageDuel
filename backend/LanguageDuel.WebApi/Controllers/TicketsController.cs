@@ -1,8 +1,10 @@
-﻿using AutoMapper;
+﻿using System.Security.Claims;
+using AutoMapper;
 using LanguageDuel.Application.Dtos.Results;
 using LanguageDuel.Application.Dtos.Tickets;
 using LanguageDuel.Application.Dtos.Users;
 using LanguageDuel.Application.Services.Tickets;
+using LanguageDuel.WebApi.ActionAttributes;
 using LanguageDuel.WebApi.Requests.Tickets;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -24,6 +26,7 @@ public class TicketsController(ITicketService ticketService, IMapper mapper) : B
     /// </remarks>
     [HttpPost]
     [Authorize]
+    [AllowBanned]
     [ProducesResponseType(typeof(CreateTicketDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(Result), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(Result), StatusCodes.Status404NotFound)]
