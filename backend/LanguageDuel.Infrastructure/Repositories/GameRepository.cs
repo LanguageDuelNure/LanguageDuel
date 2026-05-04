@@ -31,6 +31,7 @@ public class GameRepository(ApplicationDbContext dbContext) : Repository<Game>(d
             .Include(g => g.GameApplicationUsers)
             .ThenInclude(q => q.ApplicationUser)
             .Include(g => g.GameQuestions)
+            .OrderByDescending(g => g.CreatedAt)
             .ToListAsync();
     }
 }
