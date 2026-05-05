@@ -3,18 +3,21 @@ import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import '../utils/app_constants.dart';
+import '../models/game_models.dart';
 
 class ApiException implements Exception {
   final String message;
   final int? statusCode;
   final String? field;
   final DateTime? bannedUntil;
+  final String? banReason;
 
   const ApiException({
     required this.message,
     this.statusCode,
     this.field,
     this.bannedUntil,
+    this.banReason,
   });
 
   bool get isBanned => statusCode == 403 || statusCode == 401 || message.toLowerCase().contains('banned');
@@ -23,7 +26,8 @@ class ApiException implements Exception {
   String toString() =>
       'ApiException($statusCode): $message'
       '${field != null ? ' [field: $field]' : ''}'
-      '${bannedUntil != null ? ' [bannedUntil: $bannedUntil]' : ''}';
+      '${bannedUntil != null ? ' [bannedUntil: $bannedUntil]' : ''}'
+      '${banReason != null ? ' [banReason: $banReason]' : ''}';
 }
 
 class ApiService {
@@ -51,11 +55,11 @@ class ApiService {
     String errorMessage = 'Request failed with status $statusCode';
     String? field;
     DateTime? bannedUntil;
+    String? banReason;
 
     try {
       final body = json.decode(response.body) as Map<String, dynamic>;
       
-      // Look for bannedUntil at the root of the error response
       if (body.containsKey('bannedUntil') && body['bannedUntil'] != null) {
         bannedUntil = DateTime.tryParse(body['bannedUntil'].toString());
       }
@@ -67,9 +71,19 @@ class ApiService {
         errorMessage = firstError['message'] as String? ?? errorMessage;
         field = firstError['field'] as String?;
         
-        // Sometimes backend frameworks nest custom fields inside the error object
         if (firstError.containsKey('bannedUntil') && firstError['bannedUntil'] != null) {
           bannedUntil ??= DateTime.tryParse(firstError['bannedUntil'].toString());
+        }
+
+        // Parse Parameters dictionary for Reason and the newly added BannedUntil
+        if (firstError.containsKey('parameters') && firstError['parameters'] != null) {
+          final params = firstError['parameters'] as Map<String, dynamic>;
+          banReason = params['Reason']?.toString() ?? params['reason']?.toString();
+          
+          final blockedUntilStr = params['BannedUntil']?.toString() ?? params['bannedUntil']?.toString();
+          if (blockedUntilStr != null) {
+            bannedUntil ??= DateTime.tryParse(blockedUntilStr);
+          }
         }
       }
     } catch (_) {}
@@ -79,6 +93,7 @@ class ApiService {
       statusCode: statusCode,
       field: field,
       bannedUntil: bannedUntil,
+      banReason: banReason,
     );
   }
 
@@ -154,9 +169,6 @@ class ApiService {
     return UserDto.fromJson(data);
   }
 
-  /// Update profile: name and/or avatar image bytes.
-  /// Pass [imageBytes] + [imageName] to upload a new avatar.
-  /// Pass [name] to change the display name (can be null to leave unchanged).
   Future<void> updateProfileWithAvatar({
     required String token,
     String? name,
@@ -189,7 +201,6 @@ class ApiService {
     }
   }
 
-  /// Legacy: update name only (kept for AuthProvider.updateName compatibility).
   Future<void> updateProfile({
     required String token,
     required String name,
@@ -208,7 +219,6 @@ class ApiService {
     return LoginResult.fromJson(data);
   }
 
-  /// Fetch leaderboard. Pass [languageId] to filter by language, or null for global.
   Future<List<LeaderboardItemDto>> getLeaderboard({String? languageId}) async {
     final uri = Uri.parse('$baseUrl/Users/leaderboard').replace(
       queryParameters: languageId != null ? {'languageId': languageId} : null,
@@ -221,7 +231,6 @@ class ApiService {
         .toList();
   }
 
-  /// Admin: fetch all users. Requires [token] with Admin role.
   Future<List<UserAdminListItemDto>> getAllUsers({required String token}) async {
     final response = await _client.get(
       Uri.parse('$baseUrl/Users'),
@@ -229,7 +238,6 @@ class ApiService {
     );
 
     if (response.statusCode >= 400) {
-      // Let _parseResponse throw the structured error
       await _parseResponse(response);
     }
 
@@ -239,29 +247,27 @@ class ApiService {
           .map((e) => UserAdminListItemDto.fromJson(e as Map<String, dynamic>))
           .toList();
     }
-    // Fallback: server may wrap in an object
     final list = (decoded as Map<String, dynamic>)['users'] as List<dynamic>? ?? [];
     return list
         .map((e) => UserAdminListItemDto.fromJson(e as Map<String, dynamic>))
         .toList();
   }
 
-  /// Admin: ban a user for [days] days. Requires [token] with Admin role.
   Future<void> banUser({
     required String token,
     required String userId,
     required int days,
+    required String reason, // ADDED REASON
   }) async {
     final response = await _client.post(
       Uri.parse('$baseUrl/Users/$userId/ban'),
       headers: _buildHeaders(token: token),
-      body: json.encode({'days': days}),
+      body: json.encode({'days': days, 'reason': reason}), // ADDED REASON
     );
 
     await _parseResponse(response);
   }
 
-  /// Admin: unban a user. Requires [token] with Admin role.
   Future<void> unbanUser({
     required String token,
     required String userId,
@@ -271,6 +277,133 @@ class ApiService {
       headers: _buildHeaders(token: token),
     );
 
+    await _parseResponse(response);
+  }
+
+  // ─── GAME HISTORY ──────────────────────────────────────────────────────────
+
+  Future<List<GameHistoryListItemDto>> getGamesHistory({required String token}) async {
+    final response = await _client.get(
+      Uri.parse('$baseUrl/Games/history'),
+      headers: _buildHeaders(token: token),
+    );
+    
+    // Check for errors first
+    if (response.statusCode >= 400) {
+      await _parseResponse(response); // let it throw the ApiException
+    }
+    
+    // Parse directly as a list
+    final decoded = json.decode(response.body);
+    final list = decoded is List ? decoded : (decoded['value'] as List<dynamic>? ?? []);
+    return list.map((e) => GameHistoryListItemDto.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<GameHistoryDetailDto> getGameHistory({required String token, required String gameId}) async {
+    final response = await _client.get(
+      Uri.parse('$baseUrl/Games/$gameId/history'),
+      headers: _buildHeaders(token: token),
+    );
+    final data = await _parseResponse(response); // Objects (Maps) are fine here
+    return GameHistoryDetailDto.fromJson(data['value'] ?? data);
+  }
+
+  // ─── TICKETS ───────────────────────────────────────────────────────────────
+
+  Future<void> createTicket({required String token, required String message, String? ticketId}) async {
+    // Only send ticketId if it exists to prevent C# null parsing errors
+    final body = <String, dynamic>{'message': message};
+    if (ticketId != null) {
+      body['ticketId'] = ticketId;
+    }
+    
+    final response = await _client.post(
+      Uri.parse('$baseUrl/Tickets'),
+      headers: _buildHeaders(token: token),
+      body: json.encode(body),
+    );
+    await _parseResponse(response);
+  }
+
+  Future<List<TicketListItemDto>> getTicketsByUser({required String token}) async {
+    final response = await _client.get(
+      Uri.parse('$baseUrl/Tickets'),
+      headers: _buildHeaders(token: token),
+    );
+    
+    if (response.statusCode >= 400) {
+      await _parseResponse(response); 
+    }
+    
+    final decoded = json.decode(response.body);
+    // Safely extract the list whether it is direct or wrapped in a 'value' object
+    final list = decoded is List ? decoded : ((decoded as Map?)?['value'] as List<dynamic>? ?? []);
+    
+    final parsedTickets = <TicketListItemDto>[];
+    for (var item in list) {
+      try {
+        // Map.from() is crucial here to prevent Flutter Web TypeError crashes
+        parsedTickets.add(TicketListItemDto.fromJson(Map<String, dynamic>.from(item as Map)));
+      } catch (e) {
+        // If a single ticket fails, it will log it here instead of breaking the whole screen
+        print('Failed to parse a ticket: $e');
+        print('Problematic ticket data: $item');
+      }
+    }
+    
+    return parsedTickets;
+  }
+
+  Future<TicketDto> getTicket({required String token, required String ticketId}) async {
+    final response = await _client.get(
+      Uri.parse('$baseUrl/Tickets/$ticketId'),
+      headers: _buildHeaders(token: token),
+    );
+    final data = await _parseResponse(response);
+    return TicketDto.fromJson(data['value'] ?? data);
+  }
+
+  Future<List<TicketListItemDto>> getAdminTickets({required String token, required String status}) async {
+    final response = await _client.get(
+      Uri.parse('$baseUrl/Tickets/$status'),
+      headers: _buildHeaders(token: token),
+    );
+    
+    // Check for errors before parsing the list
+    if (response.statusCode >= 400) {
+      await _parseResponse(response); 
+    }
+    
+    // Safe list parsing
+    final decoded = json.decode(response.body);
+    final list = decoded is List ? decoded : (decoded['value'] as List<dynamic>? ?? []);
+    return list.map((e) => TicketListItemDto.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<void> replyToTicket({required String token, required String ticketId, required String message}) async {
+    final response = await _client.post(
+      Uri.parse('$baseUrl/Tickets/reply'),
+      headers: _buildHeaders(token: token),
+      body: json.encode({'ticketId': ticketId, 'message': message}),
+    );
+    await _parseResponse(response);
+  }
+
+  // Used by regular users (including banned) to add a message to their own ticket
+  Future<void> addUserMessage({required String token, required String ticketId, required String message}) async {
+    final response = await _client.post(
+      Uri.parse('$baseUrl/Tickets/$ticketId/message'),
+      headers: _buildHeaders(token: token),
+      body: json.encode({'message': message}),
+    );
+    await _parseResponse(response);
+  }
+
+  Future<void> closeTicket({required String token, required String ticketId}) async {
+    final response = await _client.patch(
+      Uri.parse('$baseUrl/Tickets/$ticketId/close'),
+      headers: _buildHeaders(token: token),
+    );
     await _parseResponse(response);
   }
 }
@@ -357,8 +490,6 @@ class UserDto {
   final int totalGames;
   final int totalWins;
   final List<UserLanguageDto> languageRatings;
-  
-  // 👇 Add the fields here
   final bool isBanned;
   final DateTime? bannedUntil;
 
@@ -425,7 +556,6 @@ class LeaderboardItemDto {
       );
 }
 
-/// Mirrors UserAdminListItemDto returned by GET /api/Users (Admin only).
 class UserAdminListItemDto {
   final String id;
   final String name;
@@ -457,4 +587,122 @@ class UserAdminListItemDto {
       bannedUntil: bannedUntil,
     );
   }
+}
+
+// Handles both ISO 8601 and the API's "M/d/yyyy h:mm:ss AM/PM" format safely
+DateTime _parseDate(String? raw) {
+  if (raw == null || raw.isEmpty) return DateTime.now();
+  final iso = DateTime.tryParse(raw);
+  if (iso != null) return iso;
+  try {
+    final parts = raw.split(' ');
+    if (parts.length >= 2) {
+      final d = parts[0].split('/');
+      final t = parts[1].split(':');
+      if (d.length == 3 && t.length == 3) {
+        int month = int.parse(d[0]);
+        int day   = int.parse(d[1]);
+        int year  = int.parse(d[2]);
+        int hour  = int.parse(t[0]);
+        int min   = int.parse(t[1]);
+        int sec   = int.parse(t[2]);
+        final ampm = parts.length == 3 ? parts[2].toUpperCase() : '';
+        if (ampm == 'PM' && hour != 12) hour += 12;
+        if (ampm == 'AM' && hour == 12) hour = 0;
+        return DateTime(year, month, day, hour, min, sec);
+      }
+    }
+  } catch (_) {}
+  return DateTime.now();
+}
+
+class GameHistoryListItemDto {
+  final String id;
+  final DateTime createdAt;
+  final bool isVictory;
+  final String yourName;
+  final String opponentName;
+  final String languageName;
+  final String difficultyLevelName;
+
+  GameHistoryListItemDto.fromJson(Map<String, dynamic> json)
+      : id = json['id'],
+        createdAt = _parseDate(json['createdAt']?.toString()),
+        isVictory = json['isVictory'] ?? false,
+        yourName = json['yourName'] ?? '',
+        opponentName = json['opponentName'] ?? '',
+        languageName = json['languageName'] ?? '',
+        difficultyLevelName = json['difficultyLevelName'] ?? '';
+}
+
+class GameHistoryDetailDto {
+  final bool isVictory;
+  final DateTime createdAt;
+  final String yourName;
+  final String opponentName;
+  final String languageName;
+  final String difficultyLevelName;
+  final List<QuestionDto> questions;
+
+  GameHistoryDetailDto.fromJson(Map<String, dynamic> json)
+      : isVictory = json['isVictory'] ?? false,
+        createdAt = _parseDate(json['createdAt']?.toString()),
+        yourName = json['yourName'] ?? '',
+        opponentName = json['opponentName'] ?? '',
+        languageName = json['languageName'] ?? '',
+        difficultyLevelName = json['difficultyLevelName'] ?? '',
+        questions = (json['questions'] as List<dynamic>? ?? [])
+            .map((q) => QuestionDto.fromJson(q))
+            .toList();
+}
+
+class TicketListItemDto {
+  final String id;
+  final String? userId;
+  final String userName;
+  final String? lastMessage;
+  final String status;
+  final DateTime createdAt;
+
+  TicketListItemDto.fromJson(Map<String, dynamic> json)
+      : id = json['id']?.toString() ?? '000000',
+        userId = json['userId']?.toString(),
+        userName = json['userName']?.toString() ?? 'User',
+        lastMessage = json['lastMessage']?.toString(),
+        status = json['status']?.toString() ?? 'Open',
+        createdAt = _parseDate(json['createdAt']?.toString());
+}
+
+class TicketMessageDto {
+  final String id;
+  final String message;
+  final DateTime createdAt;
+  final bool isMine;
+  final String? userId;
+
+  TicketMessageDto.fromJson(Map<String, dynamic> json)
+      : id = json['id']?.toString() ?? '',
+        message = json['message']?.toString() ?? '',
+        createdAt = _parseDate(json['createdAt']?.toString()),
+        isMine = json['isMine'] ?? false,
+        userId = json['userId']?.toString();
+}
+
+class TicketDto {
+  final String id;
+  final String userName;
+  final String status;
+  final DateTime createdAt;
+  final String? userId;
+  final List<TicketMessageDto> messages;
+
+  TicketDto.fromJson(Map<String, dynamic> json)
+      : id = json['id']?.toString() ?? '',
+        userName = json['userName']?.toString() ?? '',
+        status = json['status']?.toString() ?? 'Open',
+        createdAt = _parseDate(json['createdAt']?.toString()),
+        userId = json['userId']?.toString(),
+        messages = (json['messages'] as List<dynamic>? ?? [])
+            .map((m) => TicketMessageDto.fromJson(m as Map<String, dynamic>))
+            .toList();
 }

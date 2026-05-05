@@ -21,6 +21,8 @@ services:
       - "8080:80"
     depends_on:
       - db
+    volumes:
+      - ./uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
 
 volumes:
   db_data:

@@ -8,6 +8,9 @@ import '../services/api_service.dart';
 import '../utils/app_theme.dart';
 import '../services/game_service.dart';
 import '../services/locale_provider.dart';
+import 'game_history_screen.dart';
+import 'tickets_screen.dart';
+import 'admin_tickets_screen.dart';
 
 class ProfilePage extends StatefulWidget {
   final VoidCallback onLogout;
@@ -24,9 +27,9 @@ class _ProfilePageState extends State<ProfilePage> {
   String? _error;
 
   bool _isBanned = false;
-  DateTime? _bannedUntil; // Added state for the date
+  DateTime? _bannedUntil;
+  String? _banReason;
 
-  // Avatar upload state
   bool _uploadingAvatar = false;
 
   @override
@@ -63,21 +66,19 @@ class _ProfilePageState extends State<ProfilePage> {
       }
     } catch (e) {
       if (mounted) {
-        // Assuming your ApiException exposes isBanned and bannedUntil
         final isApiEx = e is ApiException;
         final banned = isApiEx && e.isBanned;
         
         setState(() {
           _isBanned = banned;
-          _bannedUntil = isApiEx ? e.bannedUntil : null; // Extract date
+          _bannedUntil = isApiEx ? e.bannedUntil : null;
+          _banReason = isApiEx ? e.banReason : null;
           _error = banned ? null : e.toString();
           _isLoading = false;
         });
       }
     }
   }
-
-  // ── Avatar picking ──────────────────────────────────────────────────────────
 
   Future<void> _pickAndUploadAvatar() async {
     final l10n = AppLocalizations.of(context)!;
@@ -130,8 +131,6 @@ class _ProfilePageState extends State<ProfilePage> {
     } catch (_) {}
   }
 
-  // ── Name editing ────────────────────────────────────────────────────────────
-
   Future<void> _showEditNameDialog() async {
     final auth = context.read<AuthProvider>();
     final l10n = AppLocalizations.of(context)!;
@@ -166,8 +165,6 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  // ── Build ───────────────────────────────────────────────────────────────────
-
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
@@ -186,7 +183,6 @@ class _ProfilePageState extends State<ProfilePage> {
               .fadeIn(),
           const SizedBox(height: 28),
 
-          // ── Avatar + name row ─────────────────────────────────────────────
           Row(
             children: [
               _AvatarWithUpload(
@@ -241,9 +237,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
           const SizedBox(height: 32),
 
-          // ── Banned banner ─────────────────────────────────────────────────
           if (_isBanned) ...[
-            _BannedBanner(bannedUntil: _bannedUntil).animate().fadeIn(delay: 150.ms),
+            _BannedBanner(bannedUntil: _bannedUntil, banReason: _banReason).animate().fadeIn(delay: 150.ms),
             const SizedBox(height: 32),
           ],
 
@@ -288,11 +283,33 @@ class _ProfilePageState extends State<ProfilePage> {
             }),
           ],
 
-          ],  // end if (!_isBanned)
+          ],
 
+          const SizedBox(height: 24),
+          _ProfileMenuButton(
+            icon: Icons.history,
+            label: l10n.matchHistoryTitle, // ЛОКАЛІЗАЦІЯ
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const GameHistoryScreen())),
+          ).animate().fadeIn(delay: 360.ms),
+          
+          const SizedBox(height: 12),
+          _ProfileMenuButton(
+            icon: Icons.support_agent,
+            label: l10n.myTicketsTitle, // ЛОКАЛІЗАЦІЯ
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const TicketsScreen())),
+          ).animate().fadeIn(delay: 370.ms),
+
+          if (role == 'Admin') ...[
+            const SizedBox(height: 12),
+            _ProfileMenuButton(
+              icon: Icons.admin_panel_settings,
+              label: l10n.manageTicketsAdmin, // ЛОКАЛІЗАЦІЯ
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminTicketsScreen())),
+            ).animate().fadeIn(delay: 380.ms),
+          ],
+          
           const SizedBox(height: 32),
 
-          // --- Language Settings Widget ---
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
@@ -359,7 +376,37 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 }
 
-// ── Avatar widget with upload overlay ──────────────────────────────────────────
+class _ProfileMenuButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  const _ProfileMenuButton({required this.icon, required this.label, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: AppTheme.surface,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: AppTheme.border),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: AppTheme.accent, size: 22),
+            const SizedBox(width: 14),
+            Expanded(child: Text(label, style: const TextStyle(color: AppTheme.textPrimary, fontSize: 16, fontWeight: FontWeight.w500))),
+            const Icon(Icons.chevron_right, color: AppTheme.textSecondary),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
 class _AvatarWithUpload extends StatelessWidget {
   final UserDto? user;
@@ -383,7 +430,6 @@ class _AvatarWithUpload extends StatelessWidget {
       onTap: uploading ? null : onTap,
       child: Stack(
         children: [
-          // Avatar circle
           Container(
             width: 72,
             height: 72,
@@ -410,8 +456,6 @@ class _AvatarWithUpload extends StatelessWidget {
                   : _InitialAvatar(userName: userName),
             ),
           ),
-
-          // Upload spinner or camera badge
           Positioned(
             right: 0,
             bottom: 0,
@@ -469,8 +513,6 @@ class _InitialAvatar extends StatelessWidget {
   }
 }
 
-// ── Edit-name dialog ────────────────────────────────────────────────────────────
-
 class _EditNameDialog extends StatelessWidget {
   final TextEditingController controller;
   const _EditNameDialog({required this.controller});
@@ -521,8 +563,6 @@ class _EditNameDialog extends StatelessWidget {
     );
   }
 }
-
-// ── Rest of widgets (unchanged) ─────────────────────────────────────────────────
 
 class _RoleBadge extends StatelessWidget {
   final String role;
@@ -609,51 +649,70 @@ class _StatsGrid extends StatelessWidget {
       (l10n.statBestRating, '$_bestRating', Icons.military_tech_outlined),
     ];
 
-    return GridView.count(
-      crossAxisCount: 2,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      crossAxisSpacing: 12,
-      mainAxisSpacing: 12,
-      childAspectRatio: 1.6,
-      children: stats.map((s) {
-        final (label, value, icon) = s;
-        return Container(
-          padding: const EdgeInsets.all(16),
+    Widget buildTile((String, String, IconData) s) {
+      final (label, value, icon) = s;
+      return Expanded(
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
           decoration: BoxDecoration(
             color: AppTheme.surface,
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(12),
             border: Border.all(color: AppTheme.border),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Icon(icon, color: AppTheme.textSecondary, size: 18),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    value,
-                    style: const TextStyle(
-                      color: AppTheme.textPrimary,
-                      fontSize: 24,
-                      fontWeight: FontWeight.w700,
+              Icon(icon, color: AppTheme.textSecondary, size: 20),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      value,
+                      style: const TextStyle(
+                        color: AppTheme.textPrimary,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        height: 1.2,
+                      ),
                     ),
-                  ),
-                  Text(
-                    label,
-                    style: const TextStyle(
-                      color: AppTheme.textSecondary,
-                      fontSize: 12,
+                    Text(
+                      label,
+                      style: const TextStyle(
+                        color: AppTheme.textSecondary,
+                        fontSize: 11,
+                        height: 1.2,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ],
           ),
-        );
-      }).toList(),
+        ),
+      );
+    }
+
+    return Column(
+      children: [
+        IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [buildTile(stats[0]), const SizedBox(width: 10), buildTile(stats[1])],
+          ),
+        ),
+        const SizedBox(height: 10),
+        IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [buildTile(stats[2]), const SizedBox(width: 10), buildTile(stats[3])],
+          ),
+        ),
+      ],
     );
   }
 }
@@ -820,18 +879,16 @@ class _StatChip extends StatelessWidget {
   }
 }
 
-// ── Banned banner ───────────────────────────────────────────────────────────────
-
 class _BannedBanner extends StatelessWidget {
   final DateTime? bannedUntil;
+  final String? banReason;
 
-  const _BannedBanner({this.bannedUntil});
+  const _BannedBanner({this.bannedUntil, this.banReason});
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     
-    // Format the date dynamically
     String dateStr = '';
     if (bannedUntil != null) {
       final local = bannedUntil!.toLocal();
@@ -873,6 +930,17 @@ class _BannedBanner extends StatelessWidget {
                     height: 1.4,
                   ),
                 ),
+                if (banReason != null && banReason!.isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    l10n.banReasonLabel(banReason!), // ЛОКАЛІЗАЦІЯ
+                    style: const TextStyle(
+                      color: AppTheme.textPrimary,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ]
               ],
             ),
           ),

@@ -949,6 +949,138 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your account has been restricted from matchmaking until {date}.'**
   String bannedUntilMessage(String date);
+
+  /// No description provided for @matchHistoryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Match History'**
+  String get matchHistoryTitle;
+
+  /// No description provided for @myTicketsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'My Tickets'**
+  String get myTicketsTitle;
+
+  /// No description provided for @manageTicketsAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Tickets (Admin)'**
+  String get manageTicketsAdmin;
+
+  /// No description provided for @banReasonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason: {reason}'**
+  String banReasonLabel(String reason);
+
+  /// No description provided for @noMatchHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'No match history found'**
+  String get noMatchHistory;
+
+  /// No description provided for @victoryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'VICTORY'**
+  String get victoryLabel;
+
+  /// No description provided for @defeatLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'DEFEAT'**
+  String get defeatLabel;
+
+  /// No description provided for @matchDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Match Details'**
+  String get matchDetailsTitle;
+
+  /// No description provided for @failedLoadDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load details'**
+  String get failedLoadDetails;
+
+  /// No description provided for @newTicketTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New Ticket'**
+  String get newTicketTitle;
+
+  /// No description provided for @ticketIssueHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe your issue...'**
+  String get ticketIssueHint;
+
+  /// No description provided for @submitBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit'**
+  String get submitBtn;
+
+  /// No description provided for @noTicketsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No tickets found'**
+  String get noTicketsFound;
+
+  /// No description provided for @ticketIdLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Ticket #{id}'**
+  String ticketIdLabel(String id);
+
+  /// No description provided for @ticketStatusTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ticket {status}'**
+  String ticketStatusTitle(String status);
+
+  /// No description provided for @errorLoadingTicket.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading ticket'**
+  String get errorLoadingTicket;
+
+  /// No description provided for @messageHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Message...'**
+  String get messageHint;
+
+  /// No description provided for @manageTicketsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Tickets'**
+  String get manageTicketsTitle;
+
+  /// No description provided for @ticketStatusOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get ticketStatusOpen;
+
+  /// No description provided for @ticketStatusInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'In Progress'**
+  String get ticketStatusInProgress;
+
+  /// No description provided for @ticketStatusClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed'**
+  String get ticketStatusClosed;
+
+  /// No description provided for @noMessages.
+  ///
+  /// In en, this message translates to:
+  /// **'No messages'**
+  String get noMessages;
 }
 
 class _AppLocalizationsDelegate
