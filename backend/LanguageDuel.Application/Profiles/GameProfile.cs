@@ -34,9 +34,12 @@ public class GameProfile : Profile
             .ForMember(dest => dest.LanguageName, opt => opt.MapFrom(src => src.Language.Name));
 
         CreateMap<GameQuestion, QuestionDto>()
-            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Question.Name));
+            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Question.Name))
+            .ForMember(dest => dest.Answers, opt => opt.MapFrom(src => src.GameAnswers));
         
         CreateMap<GameAnswer, AnswerDto>()
-            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Answer.Name));
+            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Answer.Name))
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.AnswerId))
+            .ForMember(dest => dest.IsCorrect, opt => opt.MapFrom(src => src.Answer.IsCorrect));
     }
 }
