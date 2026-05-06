@@ -18,7 +18,7 @@ public class GamesController(IGameService gameService) : BaseController
     [Authorize]
     [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(Result), StatusCodes.Status404NotFound)]
-    public ActionResult GetGame()
+    public ActionResult<Guid> GetGame()
     {
         var result = gameService.GetGame(GetUserId());
         return !result.IsSuccess ? HandleErrors(result) : Ok(result.Value);

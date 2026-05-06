@@ -14,8 +14,9 @@ public static class ApplicationServiceExtensions
 {
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
+        services.AddSingleton<IGameSessionStorage, GameSessionStorage>();
         services.AddScoped<IUserService, UserService>();
-        services.AddSingleton<IGameService, GameService>();
+        services.AddScoped<IGameService, GameService>();
         services.AddScoped<ILanguageService, LanguageService>();
         services.AddScoped<IQuestionService, QuestionService>();
         services.AddScoped<IDifficultyLevelService, DifficultyLevelService>();
