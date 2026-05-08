@@ -7,7 +7,7 @@ using LanguageDuel.Domain.Entities;
 
 namespace LanguageDuel.Application.Services.Tickets;
 
-public class TicketService(IUnitOfWork unitOfWork, ITicketRepository ticketRep, ITicketMessageRepository ticketMessageRep, IMapper mapper, IUserService userService) : ITicketService
+public class TicketService(IUnitOfWork unitOfWork, ITicketRepository ticketRep, IRepository<TicketMessage> ticketMessageRep, IMapper mapper, IUserService userService) : ITicketService
 {
     public async Task<Result<CreateTicketDto>> CreateTicketAsync(Guid userId, CreateTicketDto dto)
     {
