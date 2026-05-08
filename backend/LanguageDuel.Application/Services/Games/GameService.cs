@@ -102,6 +102,18 @@ public class GameService(
     public async Task<Result> ChooseAnswerAsync(Guid userId, Guid gameId, Guid answerId)
     {
         storage.Games.TryGetValue(gameId, out var gameSession);
+        if (gameSession == null)
+        {
+            return new Result
+            {
+                Errors = [new Error
+                {
+                    Key = ErrorKey.NotFound,
+                    Message = "Game not found",
+                }]
+            };
+        }
+        
         var currentQuestion = gameSession!.Questions[gameSession.CurrentQuestionIndex];
         var chosenAnswer = currentQuestion.Answers.FirstOrDefault(a => a.Id == answerId);
 
