@@ -20,7 +20,7 @@ public static class InfrastructureServiceExtensions
         services.AddDbContextFactory<ApplicationDbContext>(options =>
             options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
-        services.AddScoped<IEmailSender, SmtpEmailSender>();
+        services.AddSingleton<IEmailSender, SmtpEmailSender>();
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IFileService, FileService>();
 
