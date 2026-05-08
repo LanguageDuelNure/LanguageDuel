@@ -382,10 +382,9 @@ public class GameService(
         }
 
         await applicationUserOpponentService.UpdateStatisticsAsync(gameSession.Users[0].Id, gameSession.Users[1].Id);
-        await unitOfWork.CommitAsync();
     }
 
-    private async Task SaveGameAsync(GameSessionDto gameSession)
+    private void SaveGame(GameSessionDto gameSession)
     {
         var game = mapper.Map<Game>(gameSession);
         var winUser = gameSession.Users.FirstOrDefault(u => u.Hp != 0 && !u.IsGiveUp);
@@ -406,7 +405,6 @@ public class GameService(
         }
 
         gameRep.Add(game);
-        await unitOfWork.CommitAsync();
     }
 
     private async Task HandleGameStateAsync(GameSessionDto gameSession)
@@ -425,7 +423,8 @@ public class GameService(
         gameSession.Timer.Dispose();
         gameSession.Questions.RemoveRange(gameSession.CurrentQuestionIndex, gameSession.Questions.Count - gameSession.CurrentQuestionIndex);
         await ChangeUsersRatingAsync(gameSession);
-        await SaveGameAsync(gameSession);
+        SaveGame(gameSession);
+        await unitOfWork.CommitAsync();
         await SendGameResultAsync(gameSession);
         storage.Games.Remove(gameSession.Id, out _);
     }
