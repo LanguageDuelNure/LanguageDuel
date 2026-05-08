@@ -1,4 +1,4 @@
-﻿using LanguageDuel.Application.Services;
+﻿using LanguageDuel.Application.Services.Games;
 using LanguageDuel.Infrastructure.Hubs;
 using Microsoft.AspNetCore.SignalR;
 
@@ -10,13 +10,6 @@ public class NotificationService(IHubContext<GameHub> hubContext) : INotificatio
     {
         await hubContext.Clients
             .Group(groupName)
-            .SendAsync(message, args);
-    }
-
-    public async Task SendNotificationToUserAsync(string userId, string message, object? args)
-    {
-        await hubContext.Clients
-            .User(userId)
             .SendAsync(message, args);
     }
 }

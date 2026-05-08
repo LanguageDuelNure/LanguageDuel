@@ -1,7 +1,6 @@
-﻿namespace LanguageDuel.Application.Services;
+﻿namespace LanguageDuel.Application.Services.Games;
 
 public interface INotificationService
 {
     Task SendNotificationAsync(string groupName, string message, object? args);
-    Task SendNotificationToUserAsync(string userId, string message, object? args);
 }
