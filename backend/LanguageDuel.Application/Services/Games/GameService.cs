@@ -114,7 +114,7 @@ public class GameService(
             };
         }
         
-        var currentQuestion = gameSession!.Questions[gameSession.CurrentQuestionIndex];
+        var currentQuestion = gameSession.Questions[gameSession.CurrentQuestionIndex];
         var chosenAnswer = currentQuestion.Answers.FirstOrDefault(a => a.Id == answerId);
 
         var isOpponentSelectedThisAnswer = currentQuestion.UserAnswers.ContainsValue(answerId);
