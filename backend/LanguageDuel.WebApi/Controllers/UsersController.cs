@@ -213,28 +213,6 @@ public class UsersController(IUserService userService, IMapper mapper) : BaseCon
 
         return NoContent();
     }
-    
-    /// <remarks>
-    /// Error keys:
-    /// - NOT_FOUND
-    /// - BAD_REQUEST
-    /// - UNEXPECTED_ERROR
-    /// </remarks>
-    [HttpPost("ticket")]
-    [Authorize]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(Result), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(Result), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> CreateTicket(Guid userId, CreateTicketRequestModel request)
-    {
-        var result = await userService.BanUserAsync(userId, mapper.Map<BanUserDto>(request));
-        if (!result.IsSuccess)
-        {
-            return HandleErrors(result);
-        }
-
-        return NoContent();
-    }
 
     /// <remarks>
     /// Error keys:
