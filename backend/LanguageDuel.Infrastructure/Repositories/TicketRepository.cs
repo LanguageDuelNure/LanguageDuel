@@ -9,6 +9,7 @@ public class TicketRepository(ApplicationDbContext dbContext) : Repository<Ticke
     public async Task<IEnumerable<Ticket>> GetTicketsByUserAsync(Guid userId)
     {
         return await DbSet
+            .AsNoTracking()
             .Where(t => t.ApplicationUserId == userId)
             .Include(t => t.Messages)
             .ToListAsync();
@@ -17,6 +18,7 @@ public class TicketRepository(ApplicationDbContext dbContext) : Repository<Ticke
     public async Task<Ticket?> GetTicketAsync(Guid ticketId)
     {
         return await DbSet
+            .AsNoTracking()
             .Where(t => t.Id == ticketId)
             .Include(t => t.Messages)
             .FirstOrDefaultAsync();
@@ -26,6 +28,7 @@ public class TicketRepository(ApplicationDbContext dbContext) : Repository<Ticke
     {
         var ticketStatusesList = ticketStatuses.ToList();
         return await DbSet
+            .AsNoTracking()
             .Where(t => ticketStatusesList.Count == 0 || ticketStatusesList.Contains(t.Status))
             .Include(t => t.Messages)
             .ToListAsync();

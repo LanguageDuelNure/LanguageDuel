@@ -9,6 +9,7 @@ public class DifficultyRepository(ApplicationDbContext dbContext) : Repository<D
     public async Task<DifficultyLevel> GetDifficultyLevelByRatingAsync(int rating)
     {
         return await DbSet
+            .AsNoTracking()
             .OrderBy(dl => dl.StartRating)
             .Where(dl => dl.StartRating <= rating)
             .FirstOrDefaultAsync();

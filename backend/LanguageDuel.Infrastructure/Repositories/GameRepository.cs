@@ -9,6 +9,7 @@ public class GameRepository(ApplicationDbContext dbContext) : Repository<Game>(d
     public async Task<Game?> GetGameByIdAsync(Guid gameId)
     {
         return await DbSet
+            .AsNoTracking()
             .Where(g => g.Id == gameId)
             .Include(g => g.DifficultyLevel)
             .Include(g => g.Language)
@@ -25,12 +26,12 @@ public class GameRepository(ApplicationDbContext dbContext) : Repository<Game>(d
     public async Task<IEnumerable<Game>> GetGamesByUserAsync(Guid userId)
     {
         return await DbSet
+            .AsNoTracking()
             .Where(g => g.GameApplicationUsers.Any(gu => gu.ApplicationUserId == userId))
             .Include(g => g.DifficultyLevel)
             .Include(g => g.Language)
             .Include(g => g.GameApplicationUsers)
             .ThenInclude(q => q.ApplicationUser)
-            .Include(g => g.GameQuestions)
             .OrderByDescending(g => g.CreatedAt)
             .ToListAsync();
     }

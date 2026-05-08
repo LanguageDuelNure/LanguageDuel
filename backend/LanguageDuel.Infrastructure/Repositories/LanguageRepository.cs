@@ -9,6 +9,7 @@ public class LanguageRepository(ApplicationDbContext dbContext) : Repository<Lan
     public async Task<IEnumerable<Language>> GetLanguagesWithRatingAsync(Guid userId)
     {
         return await DbSet
+            .AsNoTracking()
             .Include(l => l.ApplicationUserLanguages
                 .Where(aul => aul.ApplicationUserId == userId))
             .ToListAsync();
