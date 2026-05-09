@@ -10,14 +10,15 @@ namespace LanguageDuel.WebApi.Controllers;
 [ApiController]
 public class LanguagesController(ILanguageService languageService) : BaseController
 {
+    /// <summary>
+    /// Retrieves a list of available languages.
+    /// </summary>
     /// <remarks>
-    /// Error keys:
-    /// - UNEXPECTED_ERROR
+    /// Provides a list of languages supported by the application along with user-specific statistics or settings if available.
     /// </remarks>
     [HttpGet]
     [Authorize]
     [ProducesResponseType(typeof(IEnumerable<LanguageDto>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(Result), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<LanguageDto>> GetLanguages()
     {
         var result = await languageService.GetLanguagesAsync(GetUserId());

@@ -14,12 +14,18 @@ namespace LanguageDuel.WebApi.Controllers;
 [ApiController]
 public class TicketsController(ITicketService ticketService, IMapper mapper) : BaseController
 {
+    /// <summary>
+    /// Creates a new support ticket.
+    /// </summary>
+    /// <remarks>
+    /// Allows a user to submit a support request or report an issue.
+    /// </remarks>
     [HttpPost]
     [Authorize]
-    [AllowBanned] // User can create tickets while banned
+    [AllowBanned]
     [ProducesResponseType(typeof(CreateTicketDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(Result), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(Result), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<CreateTicketDto>> CreateTicket(CreateTicketRequestModel request)
     {
         var result = await ticketService.CreateTicketAsync(GetUserId(), mapper.Map<CreateTicketDto>(request));
@@ -27,12 +33,15 @@ public class TicketsController(ITicketService ticketService, IMapper mapper) : B
         return Ok(result.Value);
     }
 
+    /// <summary>
+    /// Retrieves all tickets created by the authorized user.
+    /// </summary>
     [HttpGet]
     [Authorize]
-    [AllowBanned] // <--- ADDED: So banned users can fetch their ticket list
+    [AllowBanned]
     [ProducesResponseType(typeof(IEnumerable<TicketListItemDto>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(Result), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(Result), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<IEnumerable<TicketListItemDto>>> GetTicketsByUser()
     {
         var result = await ticketService.GetTicketsByUserAsync(GetUserId());
@@ -40,6 +49,12 @@ public class TicketsController(ITicketService ticketService, IMapper mapper) : B
         return Ok(result.Value);
     }
 
+    /// <summary>
+    /// Retrieves all tickets with an 'Open' status.
+    /// </summary>
+    /// <remarks>
+    /// Restricted to users with the Admin role.
+    /// </remarks>
     [HttpGet("open")]
     [Authorize(Roles = "Admin")]
     [ProducesResponseType(typeof(IEnumerable<TicketListItemDto>), StatusCodes.Status200OK)]
@@ -50,6 +65,12 @@ public class TicketsController(ITicketService ticketService, IMapper mapper) : B
         return Ok(result.Value);
     }
 
+    /// <summary>
+    /// Retrieves all tickets with an 'In Progress' status.
+    /// </summary>
+    /// <remarks>
+    /// Restricted to users with the Admin role.
+    /// </remarks>
     [HttpGet("in-progress")]
     [Authorize(Roles = "Admin")]
     [ProducesResponseType(typeof(IEnumerable<TicketListItemDto>), StatusCodes.Status200OK)]
@@ -60,6 +81,12 @@ public class TicketsController(ITicketService ticketService, IMapper mapper) : B
         return Ok(result.Value);
     }
 
+    /// <summary>
+    /// Retrieves all closed support tickets.
+    /// </summary>
+    /// <remarks>
+    /// Restricted to users with the Admin role.
+    /// </remarks>
     [HttpGet("closed")]
     [Authorize(Roles = "Admin")]
     [ProducesResponseType(typeof(IEnumerable<TicketListItemDto>), StatusCodes.Status200OK)]
@@ -70,12 +97,15 @@ public class TicketsController(ITicketService ticketService, IMapper mapper) : B
         return Ok(result.Value);
     }
 
+    /// <summary>
+    /// Retrieves details of a specific ticket.
+    /// </summary>
     [HttpGet("{ticketId}")]
     [Authorize]
-    [AllowBanned] // <--- ADDED: So banned users can open and read a specific ticket
+    [AllowBanned]
     [ProducesResponseType(typeof(TicketDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(Result), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(Result), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<TicketDto>> GetTicket(Guid ticketId)
     {
         var result = await ticketService.GetTicketAsync(GetUserId(), ticketId);
@@ -83,6 +113,12 @@ public class TicketsController(ITicketService ticketService, IMapper mapper) : B
         return Ok(result.Value);
     }
 
+    /// <summary>
+    /// Sends an administrator reply to a ticket.
+    /// </summary>
+    /// <remarks>
+    /// Restricted to users with the Admin role.
+    /// </remarks>
     [HttpPost("reply")]
     [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -93,12 +129,15 @@ public class TicketsController(ITicketService ticketService, IMapper mapper) : B
         return NoContent();
     }
 
+    /// <summary>
+    /// Adds a new message to an existing ticket from the user's side.
+    /// </summary>
     [HttpPost("{ticketId}/message")]
     [Authorize]
-    [AllowBanned] // Banned users can still message on their own ticket
+    [AllowBanned]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(Result), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(Result), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
     public async Task<ActionResult> AddUserMessage(Guid ticketId, [FromBody] AddUserMessageRequestModel request)
     {
         var dto = new CreateTicketDto { TicketId = ticketId, Message = request.Message };
@@ -107,6 +146,12 @@ public class TicketsController(ITicketService ticketService, IMapper mapper) : B
         return NoContent();
     }
 
+    /// <summary>
+    /// Closes a support ticket.
+    /// </summary>
+    /// <remarks>
+    /// Restricted to users with the Admin role.
+    /// </remarks>
     [HttpPatch("{ticketId}/close")]
     [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]

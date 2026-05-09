@@ -8,11 +8,14 @@ namespace LanguageDuel.WebApi.Controllers;
 [ApiController]
 public class DifficultyLevelsController(IDifficultyLevelService difficultyLevelService) : BaseController
 {
+    /// <summary>
+    /// Retrieves a list of all available game difficulty levels.
+    /// </summary>
     /// <remarks>
-    /// Error keys:
-    /// - UNEXPECTED_ERROR
+    /// Provides information about difficulty tiers, including their rating requirements and configuration.
     /// </remarks>
     [HttpGet]
+    [ProducesResponseType(typeof(IEnumerable<DifficultyLevelDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<DifficultyLevelDto>> GetDifficultyLevels()
     {
         var result = await difficultyLevelService.GetDifficultyLevelsAsync();
