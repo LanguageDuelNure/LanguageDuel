@@ -2,18 +2,15 @@
 using Google.Apis.Auth;
 using LanguageDuel.Application.Dtos.Results;
 using LanguageDuel.Application.Dtos.Users;
-using LanguageDuel.Application.Repositories;
-using LanguageDuel.Application.Services;
 using LanguageDuel.Domain.Common;
 using LanguageDuel.Domain.Entities;
+using LanguageDuel.Infrastructure.Services;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
-using SixLabors.ImageSharp;
 
-namespace LanguageDuel.Infrastructure.Services;
+namespace LanguageDuel.Application.Services.Users;
 
-public class UserService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IEmailSender emailSender, ApplicationDbContext dbContext, IJwtTokenService jwtTokenService, IMapper mapper, IFileService fileService) : IUserService
+public class UserService(UserManager<ApplicationUser> userManager, IEmailSender emailSender, IJwtTokenService jwtTokenService, IMapper mapper, IFileService fileService) : IUserService
 {
     private const int UserOpponentCount = 10;
     private const string IconFolderName = "icons";
@@ -158,7 +155,6 @@ public class UserService(UserManager<ApplicationUser> userManager, SignInManager
 
         user.EmailConfirmed = true;
         _ = await userManager.UpdateAsync(user);
-        await signInManager.SignInAsync(user, true);
 
         var role = (await userManager.GetRolesAsync(user)).First();
 
@@ -221,9 +217,9 @@ public class UserService(UserManager<ApplicationUser> userManager, SignInManager
                 ]
             };
         }
-        var result = await signInManager.PasswordSignInAsync(user, dto.Password, true, false);
+        var isPasswordCorrect = await userManager.CheckPasswordAsync(user, dto.Password);
         bool emailConfirmed = true;
-        if (!result.Succeeded)
+        if (!isPasswordCorrect)
         {
             if (user.EmailConfirmed)
             {
@@ -310,8 +306,6 @@ public class UserService(UserManager<ApplicationUser> userManager, SignInManager
             await userManager.AddLoginAsync(user, info);
         }
 
-        await signInManager.SignInAsync(user, true);
-
         var role = (await userManager.GetRolesAsync(user)).First();
 
         return new Result<LoginResultDto>
@@ -329,7 +323,7 @@ public class UserService(UserManager<ApplicationUser> userManager, SignInManager
 
     public async Task<Result<UserDto>> GetUserDtoAsync(Guid userId)
     {
-        var user = await dbContext.Users
+        var user = await userManager.Users
             .Where(u => u.Id == userId)
             .Include(u => u.ApplicationUserLanguages)
             .Include(u => u.ApplicationUserOpponents)
@@ -378,7 +372,7 @@ public class UserService(UserManager<ApplicationUser> userManager, SignInManager
     
     public async Task<Result<IEnumerable<LeaderboardItemDto>>> GetLeaderboardAsync(Guid? languageId)
     {
-        var users = await dbContext.Users
+        var users = await userManager.Users
             .Include(u => u.ApplicationUserLanguages)
             .ThenInclude(ul => ul.Language)
             .Where(u => u.ApplicationUserLanguages.Any(l => languageId == null || l.LanguageId == languageId))
@@ -404,7 +398,7 @@ public class UserService(UserManager<ApplicationUser> userManager, SignInManager
     
     public async Task<Result<IEnumerable<UserAdminListItemDto>>> GetAllUsersAsync()
     {
-        var users = await dbContext.Users
+        var users = await userManager.Users
             .Include(u => u.ApplicationUserLanguages)
             .ToListAsync();
 

@@ -6,6 +6,7 @@ using LanguageDuel.Application.Services.Games;
 using LanguageDuel.Application.Services.Languages;
 using LanguageDuel.Application.Services.Questions;
 using LanguageDuel.Application.Services.Tickets;
+using LanguageDuel.Application.Services.Users;
 using LanguageDuel.Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
 namespace LanguageDuel.Infrastructure;

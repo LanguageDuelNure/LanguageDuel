@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using IEmailSender = LanguageDuel.Infrastructure.Services.IEmailSender;
+
 namespace LanguageDuel.Infrastructure;
 
 public static class InfrastructureServiceExtensions
