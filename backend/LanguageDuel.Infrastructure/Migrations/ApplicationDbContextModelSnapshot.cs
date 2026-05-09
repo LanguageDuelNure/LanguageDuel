@@ -220,7 +220,8 @@ namespace LanguageDuel.Infrastructure.Migrations
 
             modelBuilder.Entity("LanguageDuel.Domain.Entities.GameAnswer", b =>
                 {
-                    b.Property<Guid>("GameQuestionId")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
                     b.Property<Guid>("AnswerId")
@@ -229,11 +230,16 @@ namespace LanguageDuel.Infrastructure.Migrations
                     b.Property<Guid?>("ApplicationUserId")
                         .HasColumnType("char(36)");
 
-                    b.HasKey("GameQuestionId", "AnswerId");
+                    b.Property<Guid>("GameQuestionId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("AnswerId");
 
                     b.HasIndex("ApplicationUserId");
+
+                    b.HasIndex("GameQuestionId");
 
                     b.ToTable("GameAnswers");
                 });

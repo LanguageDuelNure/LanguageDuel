@@ -306,6 +306,7 @@ namespace LanguageDuel.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     LanguageId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     DifficultyLevelId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci")
                 },
@@ -389,7 +390,8 @@ namespace LanguageDuel.Infrastructure.Migrations
                 columns: table => new
                 {
                     GameId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    ApplicationUserId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci")
+                    ApplicationUserId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    IsWin = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -461,13 +463,14 @@ namespace LanguageDuel.Infrastructure.Migrations
                 name: "GameAnswers",
                 columns: table => new
                 {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     GameQuestionId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     AnswerId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     ApplicationUserId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_GameAnswers", x => new { x.GameQuestionId, x.AnswerId });
+                    table.PrimaryKey("PK_GameAnswers", x => x.Id);
                     table.ForeignKey(
                         name: "FK_GameAnswers_Answers_AnswerId",
                         column: x => x.AnswerId,
@@ -549,6 +552,11 @@ namespace LanguageDuel.Infrastructure.Migrations
                 name: "IX_GameAnswers_ApplicationUserId",
                 table: "GameAnswers",
                 column: "ApplicationUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GameAnswers_GameQuestionId",
+                table: "GameAnswers",
+                column: "GameQuestionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_GameApplicationUsers_ApplicationUserId",

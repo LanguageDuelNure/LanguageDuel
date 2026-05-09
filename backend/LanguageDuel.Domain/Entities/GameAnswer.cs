@@ -2,6 +2,8 @@
 
 public class GameAnswer
 {
+    public Guid Id { get; set; }
+    
     public Guid GameQuestionId { get; set; }
     
     public GameQuestion GameQuestion { get; set; }

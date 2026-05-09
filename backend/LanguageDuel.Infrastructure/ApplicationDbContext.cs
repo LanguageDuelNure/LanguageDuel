@@ -32,14 +32,6 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     
     public DbSet<GameAnswer> GameAnswers { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        base.OnConfiguring(optionsBuilder);
-
-        optionsBuilder.ConfigureWarnings(w =>
-            w.Ignore(CoreEventId.NavigationBaseIncludeIgnored));
-    }
-
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
@@ -62,8 +54,5 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         
         builder.Entity<GameApplicationUser>()
             .HasKey(auo => new { auo.GameId, auo.ApplicationUserId });
-        
-        builder.Entity<GameAnswer>()
-            .HasKey(auo => new { auo.GameQuestionId, auo.AnswerId });
     }
 }

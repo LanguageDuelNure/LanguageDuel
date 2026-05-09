@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LanguageDuel.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260504141349_AddIsWinColumnForGameApplicationUser")]
-    partial class AddIsWinColumnForGameApplicationUser
+    [Migration("20260509174207_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -203,6 +203,9 @@ namespace LanguageDuel.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<Guid>("DifficultyLevelId")
                         .HasColumnType("char(36)");
 
@@ -220,7 +223,8 @@ namespace LanguageDuel.Infrastructure.Migrations
 
             modelBuilder.Entity("LanguageDuel.Domain.Entities.GameAnswer", b =>
                 {
-                    b.Property<Guid>("GameQuestionId")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
                     b.Property<Guid>("AnswerId")
@@ -229,11 +233,16 @@ namespace LanguageDuel.Infrastructure.Migrations
                     b.Property<Guid?>("ApplicationUserId")
                         .HasColumnType("char(36)");
 
-                    b.HasKey("GameQuestionId", "AnswerId");
+                    b.Property<Guid>("GameQuestionId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("AnswerId");
 
                     b.HasIndex("ApplicationUserId");
+
+                    b.HasIndex("GameQuestionId");
 
                     b.ToTable("GameAnswers");
                 });

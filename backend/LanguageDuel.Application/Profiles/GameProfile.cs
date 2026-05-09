@@ -18,10 +18,12 @@ public class GameProfile : Profile
             .ForMember(dest => dest.ApplicationUserId, opt => opt.MapFrom(src => src.Id));
         
         CreateMap<QuestionDto, GameQuestion>()
+            .ForMember(dest => dest.Id, opt => opt.Ignore())
             .ForMember(dest => dest.QuestionId, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.GameAnswers, opt => opt.MapFrom(src => src.Answers));
 
         CreateMap<AnswerDto, GameAnswer>()
+            .ForMember(dest => dest.Id, opt => opt.Ignore())
             .ForMember(dest => dest.AnswerId, opt => opt.MapFrom(src => src.Id));
 
         CreateMap<Game, GameResultDto>()
