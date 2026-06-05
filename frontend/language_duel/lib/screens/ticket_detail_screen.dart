@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
 import 'package:language_duel/l10n/app_localizations.dart';
+
 import 'package:provider/provider.dart';
+
 import '../services/api_service.dart';
 import '../services/auth_provider.dart';
 import '../utils/app_theme.dart';
@@ -18,11 +22,19 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
   TicketDto? _ticket;
   bool _isLoading = true;
   final TextEditingController _msgController = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
     _loadTicket();
+  }
+
+  @override
+  void dispose() {
+    _msgController.dispose();
+    _focusNode.dispose();
+    super.dispose();
   }
 
   Future<void> _loadTicket() async {
@@ -37,8 +49,8 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
   }
 
   Future<void> _sendMessage() async {
-    if (_msgController.text.trim().isEmpty) return;
     final txt = _msgController.text.trim();
+    if (txt.isEmpty) return;
     _msgController.clear();
     setState(() => _isLoading = true);
     final token = context.read<AuthProvider>().token!;
@@ -129,11 +141,13 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
                         itemCount: _ticket!.messages.length,
                         itemBuilder: (ctx, i) {
                           final msg = _ticket!.messages[i];
-                          // isMyBubble: for user → their own msgs on right;
-                          //             for admin → user msgs on left, admin on right
-                          final bool isMyBubble = widget.isAdmin ? !msg.isMine : msg.isMine;
-                          // isMine=true → ticket owner (user), isMine=false → Support
-                          final String senderName = msg.isMine ? _ticket!.userName : 'Support';
+
+                          // isMine = true → sent by current viewer → RIGHT
+                          // isMine = false → sent by other party → LEFT
+                          final bool isMyBubble = msg.isMine;
+                          final String senderName = msg.isMine
+                              ? (widget.isAdmin ? 'Support' : _ticket!.userName)
+                              : (widget.isAdmin ? _ticket!.userName : 'Support');
 
                           return Align(
                             alignment: isMyBubble ? Alignment.centerRight : Alignment.centerLeft,
@@ -147,7 +161,7 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
                                     ? CrossAxisAlignment.end
                                     : CrossAxisAlignment.start,
                                 children: [
-                                  // Sender nickname
+                                  // Sender label
                                   Padding(
                                     padding: const EdgeInsets.only(bottom: 3, left: 4, right: 4),
                                     child: Text(
@@ -215,16 +229,38 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
                           border: Border(top: BorderSide(color: AppTheme.border)),
                         ),
                         child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             Expanded(
-                              child: TextField(
-                                controller: _msgController,
-                                style: const TextStyle(color: AppTheme.textPrimary),
-                                decoration: InputDecoration(
-                                  hintText: l10n.messageHint,
-                                  hintStyle: const TextStyle(color: AppTheme.textSecondary),
-                                  border: InputBorder.none,
-                                  contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                              // KeyboardListener intercepts Enter/Shift+Enter before
+                              // the TextField sees them, enabling send-on-Enter.
+                              child: KeyboardListener(
+                                focusNode: FocusNode(),
+                                onKeyEvent: (event) {
+                                  if (event is KeyDownEvent &&
+                                      event.logicalKey == LogicalKeyboardKey.enter &&
+                                      !HardwareKeyboard.instance.isShiftPressed) {
+                                    _sendMessage();
+                                  }
+                                },
+                                child: TextField(
+                                  controller: _msgController,
+                                  focusNode: _focusNode,
+                                  style: const TextStyle(color: AppTheme.textPrimary),
+                                  // Multiline with capped visible height
+                                  maxLines: 5,
+                                  minLines: 1,
+                                  keyboardType: TextInputType.multiline,
+                                  textInputAction: TextInputAction.newline,
+                                  decoration: InputDecoration(
+                                    hintText: l10n.messageHint,
+                                    hintStyle: const TextStyle(color: AppTheme.textSecondary),
+                                    border: InputBorder.none,
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 10,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
