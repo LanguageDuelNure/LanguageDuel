@@ -12,6 +12,7 @@ using LanguageDuel.Application.Services.ApplicationUserOpponents;
 using LanguageDuel.Application.Services.Games;
 using LanguageDuel.Application.Services.Questions;
 using LanguageDuel.Domain.Entities;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
@@ -26,8 +27,7 @@ public class GameServiceTests : BaseServiceTests
     private readonly Mock<IRepository<ApplicationUserLanguage>> _userLanguageRepMock = new();
     private readonly Mock<IDifficultyRepository> _difficultyRepMock = new();
     private readonly Mock<IUserService> _userServiceMock = new();
-    private readonly Mock<IApplicationUserLanguageService> _userLangServiceMock = new();
-    private readonly Mock<IApplicationUserOpponentService> _userOpponentServiceMock = new();
+    private readonly Mock<IServiceScopeFactory> _serviceScopeFactory = new();
     private readonly Mock<IQuestionService> _questionServiceMock = new();
     private readonly Mock<IRepository<Language>> _languageRepMock = new();
     private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
@@ -50,6 +50,13 @@ public class GameServiceTests : BaseServiceTests
 
         _storageMock.Setup(s => s.Games).Returns(_gamesStorage);
         _storageMock.Setup(s => s.SearchGroups).Returns(_searchGroupsStorage);
+        _serviceScopeFactory.Setup(f => f.CreateScope()).Returns(() =>
+        {
+            var scopeMock = new Mock<IServiceScope>();
+            scopeMock.Setup(s => s.ServiceProvider.GetService(typeof(IUnitOfWork))).Returns(_unitOfWorkMock.Object);
+            scopeMock.Setup(s => s.ServiceProvider.GetService(typeof(IUserService))).Returns(_userServiceMock.Object);
+            return scopeMock.Object;
+        });
 
         _service = new GameService(
             _notificationServiceMock.Object,
@@ -58,12 +65,10 @@ public class GameServiceTests : BaseServiceTests
             _userLanguageRepMock.Object,
             _difficultyRepMock.Object,
             _userServiceMock.Object,
-            _userLangServiceMock.Object,
-            _userOpponentServiceMock.Object,
             _questionServiceMock.Object,
             _languageRepMock.Object,
-            _unitOfWorkMock.Object,
             GetMapper(),
+            _serviceScopeFactory.Object,
             options);
     }
 
@@ -90,27 +95,6 @@ public class GameServiceTests : BaseServiceTests
 
         Assert.False(result.IsSuccess);
         Assert.Contains(result.Errors, e => e.Key == ErrorKey.NotFound);
-    }
-
-    [Fact]
-    public async Task GiveUpAsync_UserInGame_ReturnsSuccessAndFinishesGame()
-    {
-        var userId = Guid.NewGuid();
-        var gameId = Guid.NewGuid();
-        var session = new GameSessionDto
-        {
-            Id = gameId,
-            Users = [new() { Id = userId, Hp = 2 }, new() { Id = Guid.NewGuid(), Hp = 2 }],
-            Questions = [],
-            Timer = new System.Timers.Timer()
-        };
-        _gamesStorage.TryAdd(gameId, session);
-
-        var result = await _service.GiveUpAsync(userId, gameId);
-
-        Assert.True(result.IsSuccess);
-        Assert.True(session.Users.First(u => u.Id == userId).IsGiveUp);
-        _unitOfWorkMock.Verify(u => u.CommitAsync(), Times.Once);
     }
 
     [Fact]

@@ -8,6 +8,7 @@ using LanguageDuel.Application.Services.ApplicationUserLanguages;
 using LanguageDuel.Application.Services.ApplicationUserOpponents;
 using LanguageDuel.Application.Services.Questions;
 using LanguageDuel.Domain.Entities;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 namespace LanguageDuel.Application.Services.Games;
@@ -19,12 +20,10 @@ public class GameService(
     IRepository<ApplicationUserLanguage> applicationUserLanguageRep,
     IDifficultyRepository difficultyRep,
     IUserService userService,
-    IApplicationUserLanguageService applicationUserLanguageService,
-    IApplicationUserOpponentService applicationUserOpponentService,
     IQuestionService questionService,
     IRepository<Language> languageRep,
-    IUnitOfWork unitOfWork,
     IMapper mapper,
+    IServiceScopeFactory serviceScopeFactory,
     IOptions<GameLogicOptions> gameLogicOptions) : IGameService
 {
     private readonly GameLogicOptions _gameLogicOptions = gameLogicOptions.Value;
@@ -94,7 +93,9 @@ public class GameService(
 
         user.IsGiveUp = true;
         gameSession.Timer.Stop();
-        await FinishGameAsync(gameSession);
+
+        using var scope = serviceScopeFactory.CreateScope();
+        await FinishGameInternalAsync(gameSession, scope.ServiceProvider);
 
         return new Result();
     }
@@ -152,7 +153,7 @@ public class GameService(
                 user.Hp--;
             }
 
-            return await MoveToNextQuestionAsync(gameSession);
+            return await ExecuteScopedAction(gameSession, (s) => MoveToNextQuestionInternalAsync(gameSession, s));
         }
 
         var allChooseIncorrectQuestions = currentQuestion.UserAnswers.Count == PlayersInGame;
@@ -163,14 +164,20 @@ public class GameService(
                 user.Hp--;
             }
 
-            return await MoveToNextQuestionAsync(gameSession);
+            return await ExecuteScopedAction(gameSession, (s) => MoveToNextQuestionInternalAsync(gameSession, s));
         }
 
-        await HandleGameStateAsync(gameSession);
+        await SendGameStateChangeAsync(gameSession);
         return new Result();
     }
 
-    private async Task<Result> MoveToNextQuestionAsync(GameSessionDto gameSession)
+    private async Task<Result> ExecuteScopedAction(GameSessionDto gameSession, Func<IServiceProvider, Task<Result>> action)
+    {
+        using var scope = serviceScopeFactory.CreateScope();
+        return await action(scope.ServiceProvider);
+    }
+
+    private async Task<Result> MoveToNextQuestionInternalAsync(GameSessionDto gameSession, IServiceProvider sp)
     {
         gameSession.Timer.Stop();
         Guid? correctAnswerId = null;
@@ -191,8 +198,69 @@ public class GameService(
         gameSession.Timer.Start();
         gameSession.CurrentQuestionStartDateTime = DateTime.UtcNow;
 
-        await HandleGameStateAsync(gameSession);
+        return await HandleGameStateInternalAsync(gameSession, sp);
+    }
+
+    private async Task<Result> HandleGameStateInternalAsync(GameSessionDto gameSession, IServiceProvider sp)
+    {
+        if (gameSession.Users.Any(u => u.Hp == 0))
+        {
+            await FinishGameInternalAsync(gameSession, sp);
+        }
+        else
+        {
+            await SendGameStateChangeAsync(gameSession);
+        }
         return new Result();
+    }
+
+    private async Task FinishGameInternalAsync(GameSessionDto gameSession, IServiceProvider sp)
+    {
+        gameSession.Timer.Dispose();
+        gameSession.Questions.RemoveRange(gameSession.CurrentQuestionIndex, gameSession.Questions.Count - gameSession.CurrentQuestionIndex);
+        
+        var userService = sp.GetRequiredService<IUserService>();
+        var userLanguageService = sp.GetRequiredService<IApplicationUserLanguageService>();
+        var userOpponentService = sp.GetRequiredService<IApplicationUserOpponentService>();
+        var unitOfWork = sp.GetRequiredService<IUnitOfWork>();
+        var gameRep = sp.GetRequiredService<IGameRepository>();
+
+        var isDraw = gameSession.Users.All(u => u.Hp == 0);
+        foreach (var user in gameSession.Users)
+        {
+            bool isWin = !isDraw && user is { Hp: > 0, IsGiveUp: false };
+            int ratingChange = isWin 
+                ? _gameLogicOptions.RatingChangeAfterWinOrLoss 
+                : (isDraw ? 0 : -_gameLogicOptions.RatingChangeAfterWinOrLoss);
+
+            await userService.UpdateUserStatisticAsync(user.Id, isWin);
+            await userLanguageService.UpdateStatisticsAsync(user.Id, gameSession.LanguageId, ratingChange);
+        }
+
+        await userOpponentService.UpdateStatisticsAsync(gameSession.Users[0].Id, gameSession.Users[1].Id);
+
+        var game = mapper.Map<Game>(gameSession);
+        var winUser = gameSession.Users.FirstOrDefault(u => u.Hp != 0 && !u.IsGiveUp);
+        var dbUser = game.GameApplicationUsers.FirstOrDefault(gau => gau.ApplicationUserId == winUser?.Id);
+        
+        if (dbUser != null) dbUser.IsWin = true;
+
+        foreach (var question in gameSession.Questions)
+        {
+            foreach (var userAnswer in question.UserAnswers.Select(ua => new { UserId = ua.Key, AnswerId = ua.Value }))
+            {
+                var answer = game.GameQuestions
+                    .Where(q => q.QuestionId == question.Id)
+                    .SelectMany(q => q.GameAnswers.Where(ga => ga.AnswerId == userAnswer.AnswerId))
+                    .FirstOrDefault();
+                if (answer != null) answer.ApplicationUserId = userAnswer.UserId;
+            }
+        }
+
+        gameRep.Add(game);
+        await unitOfWork.CommitAsync();
+        await SendGameResultAsync(gameSession);
+        storage.Games.Remove(gameSession.Id, out _);
     }
 
     private IEnumerable<string> GetGameGroups(Guid languageId, ApplicationUserLanguage? applicationUserLanguage)
@@ -338,7 +406,7 @@ public class GameService(
                 await notificationService.SendNotificationAsync(opponentGroupsList.First(), "ReceiveGameInvitation", invitation);
 
                 await Task.Delay(BeforeGameDelayMs);
-                await MoveToNextQuestionAsync(gameSession);
+                await ExecuteScopedAction(gameSession, (s) => MoveToNextQuestionInternalAsync(gameSession, s));
 
                 return new Result();
             }
@@ -377,70 +445,6 @@ public class GameService(
         }
     }
 
-    private async Task ChangeUsersRatingAsync(GameSessionDto gameSession)
-    {
-        var isDraw = gameSession.Users.All(u => u.Hp == 0);
-        foreach (var user in gameSession.Users)
-        {
-            int ratingChange;
-            var isWin = !isDraw && user is { Hp: > 0, IsGiveUp: false };
-            if (isWin)
-                ratingChange = _gameLogicOptions.RatingChangeAfterWinOrLoss;
-            else
-                ratingChange = isDraw ? 0 : -_gameLogicOptions.RatingChangeAfterWinOrLoss;
-
-            await userService.UpdateUserStatisticAsync(user.Id, isWin);
-            await applicationUserLanguageService.UpdateStatisticsAsync(user.Id, gameSession.LanguageId, ratingChange);
-        }
-
-        await applicationUserOpponentService.UpdateStatisticsAsync(gameSession.Users[0].Id, gameSession.Users[1].Id);
-    }
-
-    private void SaveGame(GameSessionDto gameSession)
-    {
-        var game = mapper.Map<Game>(gameSession);
-        var winUser = gameSession.Users.FirstOrDefault(u => u.Hp != 0 && !u.IsGiveUp);
-        var user = game.GameApplicationUsers.FirstOrDefault(gau => gau.ApplicationUserId == winUser?.Id);
-        
-        if (user != null) user.IsWin = true;
-
-        foreach (var question in gameSession.Questions)
-        {
-            foreach (var userAnswer in question.UserAnswers.Select(ua => new { UserId = ua.Key, AnswerId = ua.Value }))
-            {
-                var answer = game.GameQuestions
-                    .Where(q => q.QuestionId == question.Id)
-                    .SelectMany(q => q.GameAnswers.Where(ga => ga.AnswerId == userAnswer.AnswerId))
-                    .FirstOrDefault();
-                if (answer != null) answer.ApplicationUserId = userAnswer.UserId;
-            }
-        }
-
-        gameRep.Add(game);
-    }
-
-    private async Task HandleGameStateAsync(GameSessionDto gameSession)
-    {
-        if (gameSession.Users.Any(u => u.Hp == 0))
-        {
-            await FinishGameAsync(gameSession);
-            return;
-        }
-
-        await SendGameStateChangeAsync(gameSession);
-    }
-
-    private async Task FinishGameAsync(GameSessionDto gameSession)
-    {
-        gameSession.Timer.Dispose();
-        gameSession.Questions.RemoveRange(gameSession.CurrentQuestionIndex, gameSession.Questions.Count - gameSession.CurrentQuestionIndex);
-        await ChangeUsersRatingAsync(gameSession);
-        SaveGame(gameSession);
-        await unitOfWork.CommitAsync();
-        await SendGameResultAsync(gameSession);
-        storage.Games.Remove(gameSession.Id, out _);
-    }
-
     public async Task<Result> SendGameStateAsync(Guid gameId)
     {
         await SendGameStateChangeAsync(storage.Games[gameId]);
@@ -461,7 +465,7 @@ public class GameService(
                 Users = gameSession.Users,
                 TimeRemainingInSeconds = gameSession.CurrentQuestionIndex < 0
                     ? null
-                    : _gameLogicOptions.TimeForQuestionInSeconds - questionDuration.Seconds,
+                    : _gameLogicOptions.TimeForQuestionInSeconds - (int)questionDuration.TotalSeconds,
                 CorrectAnswerId = correctAnswerId,
                 LanguageName = gameSession.LanguageName,
             });
@@ -503,10 +507,11 @@ public class GameService(
             Timer = new System.Timers.Timer(_gameLogicOptions.TimeForQuestionInSeconds * 1000),
         };
 
-        gameSession.Timer.Elapsed += async (sender, e) =>
+        gameSession.Timer.Elapsed += async (_, _) =>
         {
+            using var scope = serviceScopeFactory.CreateScope();
             foreach (var user in gameSession.Users) user.Hp--;
-            await MoveToNextQuestionAsync(gameSession);
+            await MoveToNextQuestionInternalAsync(gameSession, scope.ServiceProvider);
         };
         gameSession.Timer.AutoReset = false;
 
